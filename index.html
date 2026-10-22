@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F5EFE2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="刘大爷每日一卦">
+<meta name="application-name" content="刘大爷每日一卦">
+<title>刘大爷每日一卦</title>
+<style>
+:root{
+  --bg:#F5EFE2; --card:#FCF8EF; --ink:#332C22; --sub:#8C8270; --line:#D9CEB6;
+  --accent:#9C3D2E; --accent-soft:#F1E3D4; --accent-grad:linear-gradient(135deg,#8E3B2C,#B05744);
+  --good:#4A6B4F; --bad:#A6402E;
+}
+body.t-metal{--bg:#F3EEE2;--accent:#7C6A45;--accent-soft:#EAE2CE;--accent-grad:linear-gradient(135deg,#6F5F3E,#A08B60);--line:#D8D0BC}
+body.t-wood{--bg:#F1F2E6;--accent:#56694A;--accent-soft:#E4E9D5;--accent-grad:linear-gradient(135deg,#4E6242,#7C9068);--line:#D4D8C0}
+body.t-water{--bg:#EDF1F0;--accent:#3E5D6E;--accent-soft:#DDE7E7;--accent-grad:linear-gradient(135deg,#375463,#658899);--line:#D0DBD8}
+body.t-fire{--bg:#F7EDE4;--accent:#9C3D2E;--accent-soft:#F2E0D2;--accent-grad:linear-gradient(135deg,#8E3B2C,#B55A44);--line:#E4D2C2}
+body.t-earth{--bg:#F5EFE2;--accent:#8A5A2E;--accent-soft:#EFE2CC;--accent-grad:linear-gradient(135deg,#7E5228,#A97F4E);--line:#DFD2B8}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"Songti SC","Noto Serif SC","STSong","SimSun",-apple-system,"PingFang SC","Microsoft YaHei",serif;
+  color:var(--ink); font-size:16px; line-height:1.6;
+  background-color:var(--bg);
+  background-image:radial-gradient(rgba(120,100,60,.055) 1px,transparent 1px);
+  background-size:13px 13px;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  transition:background .4s;
+}
+body::before{content:'易';position:fixed;right:-36px;bottom:-56px;font-size:330px;line-height:1;color:rgba(90,70,40,.05);font-family:"Songti SC","SimSun",serif;pointer-events:none;z-index:0}
+.page{max-width:520px;margin:0 auto;padding:20px 18px 40px;position:relative;z-index:1}
+@media (min-width:700px){ .page{max-width:860px;padding-top:36px} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start} }
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(80,60,30,.06);position:relative}
+.card::before{content:'';position:absolute;inset:5px;border:1px solid var(--line);border-radius:3px;pointer-events:none;opacity:.75}
+.mingge::before{border-color:rgba(255,255,255,.35)}
+h1{font-size:23px;font-weight:700;letter-spacing:3px}
+h2{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px;letter-spacing:3px}
+h2::before{content:'';width:5px;height:15px;background:var(--accent);border-radius:1px;flex:none}
+.sub{color:var(--sub);font-size:13px}
+.pill{display:inline-block;padding:2px 10px;border-radius:3px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;margin-right:6px;border:1px solid rgba(255,255,255,.4)}
+.seal{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;background:#9C3D2E;color:#FFF6EA;border-radius:4px;font-size:15px;font-weight:700;vertical-align:4px;margin-left:9px;box-shadow:0 2px 5px rgba(156,61,46,.35)}
+
+/* 刘大爷形象 */
+.logo-img{
+  width:118px;height:118px;border-radius:30px;margin:0 auto 10px;
+  background-color:#E8DFC8;
+  background-size:cover;background-position:center;
+  border:4px solid #fff;box-shadow:0 8px 24px rgba(60,50,30,.18);
+}
+.daye-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.daye{
+  width:48px;height:48px;border-radius:50%;flex:none;
+  background-color:#E8DFC8;
+  background-size:130% 130%;background-position:50% 18%;
+  border:2px solid var(--accent-soft);box-shadow:0 3px 10px rgba(60,50,30,.12);
+}
+.bubble{position:relative;background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:6px 12px;font-size:13px;font-weight:500}
+.bubble::before{content:'';position:absolute;left:-5px;top:50%;transform:translateY(-50%);border:5px solid transparent;border-right-color:var(--accent-soft);border-left:0}
+
+/* 输入页 */
+.brand{text-align:center;padding:34px 0 18px}
+.brand .logo{font-size:44px}
+.brand p{color:var(--sub);font-size:14px;margin-top:6px}
+label{display:block;font-size:13px;color:var(--sub);margin:12px 0 6px}
+select,input[type="text"]{
+  width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:#fff;
+  font-size:16px;color:var(--ink);padding:0 12px;appearance:none;-webkit-appearance:none;
+}
+.row3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px}
+.calseg{display:flex;gap:8px}
+.seg{flex:1;height:42px;border:1px solid var(--line);background:#fff;border-radius:5px;font-family:inherit;font-size:15px;color:var(--sub);cursor:pointer;letter-spacing:4px;text-indent:4px}
+.seg.active{background:var(--accent-grad);color:#FFF6EA;border-color:transparent}
+.btn{
+  width:100%;height:48px;border:none;border-radius:5px;background:var(--accent-grad);
+  color:#FFF6EA;font-size:17px;font-weight:600;letter-spacing:8px;text-indent:8px;cursor:pointer;margin-top:20px;
+  font-family:inherit;box-shadow:0 3px 8px rgba(120,60,40,.25);
+}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--line);font-weight:500;margin-top:10px;letter-spacing:0}
+
+/* 命格卡 */
+.mingge{text-align:center;padding:24px 16px 20px;background:var(--accent-grad);border:none;color:#fff}
+.mingge .elem{font-size:40px;font-weight:700;letter-spacing:4px}
+.mingge .nayin{font-size:15px;opacity:.92;margin-top:2px}
+.mingge .nayin-sub{font-size:12px;opacity:.72;margin-top:3px}
+.mingge .tags{margin-top:10px;font-size:13px;opacity:.9}
+.bazi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.bazi .col{background:rgba(255,255,255,.16);border-radius:12px;padding:8px 2px;font-size:13px}
+.bazi .col .h{opacity:.75;font-size:11px}
+.bazi .col .v{font-size:20px;font-weight:600;letter-spacing:2px;white-space:nowrap}
+.bazi.c5 .col .v{font-size:15px;letter-spacing:0}
+.wxbar{margin-top:14px;text-align:left}
+.wxbar .item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.92);margin-top:6px}
+.wxbar .bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}
+.wxbar .bar i{display:block;height:100%;background:rgba(255,255,255,.85);border-radius:3px;transition:width .6s}
+
+/* 当日运势 */
+.today-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px}
+.today-head .date{font-size:20px;font-weight:700}
+.today-head .lunar{font-size:12px;color:var(--sub)}
+.scores{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+@media (min-width:700px){.scores{grid-template-columns:repeat(4,1fr)}}
+.score{text-align:center}
+.score .ring{position:relative;width:64px;height:64px;margin:0 auto}
+.score .ring svg{transform:rotate(-90deg)}
+.score .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--accent)}
+.score .name{font-size:13px;color:var(--sub);margin-top:4px}
+.lucky{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.lucky span{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 12px;font-size:13px}
+.yiji{display:grid;gap:14px}
+@media (min-width:700px){.yiji{grid-template-columns:1fr 1fr}}
+.yiji h3{font-size:14px;margin-bottom:8px;display:inline-flex;align-items:center;gap:8px}
+.yiji h3 .z{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:1.5px solid currentColor;border-radius:4px;font-size:15px;font-weight:700}
+.yiji h3 .t{font-size:13px;color:var(--sub);letter-spacing:2px}
+.yi h3{color:var(--good)} .ji h3{color:var(--bad)}
+.yiji ul{list-style:none}
+.yiji li{display:flex;gap:8px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.yiji li:last-child{border-bottom:none}
+.yiji li .mk{font-weight:700;flex:none}
+.yi .mk{color:var(--good)} .ji .mk{color:var(--bad)}
+.yiji li .d{color:var(--sub);font-size:12px}
+
+/* 今日卦象 */
+.gua-wrap{display:flex;align-items:center;gap:18px}
+.gua{display:flex;flex-direction:column-reverse;gap:5px;padding:12px 13px;background:var(--accent-soft);border:1px solid var(--line);border-radius:5px;flex:none}
+.gua .yao{height:7px;width:46px;border-radius:1.5px;background:var(--ink);position:relative}
+.gua .yao.yin{background:transparent}
+.gua .yao.yin::before,.gua .yao.yin::after{content:'';position:absolute;top:0;bottom:0;width:18px;background:var(--ink);border-radius:1.5px}
+.gua .yao.yin::before{left:0}
+.gua .yao.yin::after{right:0}
+.gua-info .gname{font-size:21px;font-weight:700;letter-spacing:4px}
+.gua-info .gnum{font-size:12px;color:var(--sub);margin-top:4px;letter-spacing:1px}
+.gua-xiang{margin-top:12px;font-size:13.5px;background:var(--accent-soft);border-left:3px solid var(--accent);padding:9px 11px;border-radius:0 5px 5px 0;line-height:1.8}
+
+/* 卦象详解 */
+.ghint{font-size:12px;color:var(--accent);letter-spacing:1px;font-weight:400}
+.gua-detail{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px;animation:fadeUp .4s ease}
+.gd-top{display:flex;gap:18px;align-items:center}
+.gua-big .yao{width:64px;height:9px}
+.gua-big .yao.yin::before,.gua-big .yao.yin::after{width:24px}
+/* 今日问事 */
+.wen-row{display:flex;gap:10px;margin-top:12px}
+.wen-row input{flex:1 1 auto;width:100%;min-width:0;height:46px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
+.wen-row input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.wen-row .btn{flex:0 0 auto;width:auto;height:46px;margin-top:0;padding:0 18px;font-size:16px;letter-spacing:3px;text-indent:3px}
+.yao.moving{background:var(--accent)!important;box-shadow:0 0 0 3px var(--accent-soft),0 0 8px var(--accent)}
+.yao.moving.yin{background:transparent!important}
+.yao.moving.yin::before,.yao.moving.yin::after{background:var(--accent)!important}
+.wen-head{display:flex;align-items:center;gap:16px;margin-top:16px}
+.wen-badge{display:inline-block;font-size:13px;font-weight:700;padding:4px 12px;border-radius:999px;letter-spacing:1px;flex:none}
+.wen-badge.lv1{background:#E6F4EA;color:#137A3E}
+.wen-badge.lv2{background:#FDF3E0;color:#9A6A00}
+.wen-badge.lv3{background:#FBEAEA;color:#B3352C}
+.wen-guaci{font-size:14px;line-height:1.9;margin-top:12px;background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 5px 5px 0}
+.wen-guaci .src{display:block;font-size:11.5px;color:var(--sub);margin-top:4px}
+.wen-bai{font-size:14px;line-height:1.8;margin-top:10px}
+.wen-yao{font-size:13.5px;color:var(--sub);line-height:1.8;margin-top:8px}
+.wen-tip{font-size:14px;line-height:1.8;margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
+.wen-note{font-size:11.5px;color:var(--sub);margin-top:12px;text-align:center}
+.gd-info .gd-name{font-size:17px;font-weight:700;letter-spacing:2px}
+.gd-info .gd-line{font-size:12.5px;color:var(--sub);margin-top:4px;line-height:1.7}
+.gd-baihua{margin-top:12px;font-size:13.5px;line-height:1.8}
+.gd-baihua b{color:var(--accent);font-weight:700}
+
+/* 每日一签 */
+.qt-row{display:flex;justify-content:center}
+.qiantong{position:relative;width:96px;height:112px;margin-top:30px;background:linear-gradient(180deg,#7E5228,#543417);border-radius:10px 10px 14px 14px;box-shadow:0 5px 12px rgba(60,40,20,.35);transform-origin:50% 92%}
+.qiantong::before{content:'';position:absolute;left:6px;right:6px;top:10px;height:4px;background:rgba(0,0,0,.25);border-radius:2px}
+.qiantong i{position:absolute;width:8px;height:46px;background:linear-gradient(180deg,#C9A96A,#A8834A);border-radius:4px;top:-32px}
+.qiantong .s1{left:18px;height:50px;transform:rotate(-6deg)}
+.qiantong .s2{left:42px;height:54px}
+.qiantong .s3{left:64px;height:48px;transform:rotate(5deg)}
+.qiantong .s4{left:80px;height:44px;transform:rotate(-3deg)}
+.qiantong.shaking{animation:qtshake .75s ease-in-out 2}
+@keyframes qtshake{0%,100%{transform:rotate(0)}15%{transform:rotate(-9deg)}30%{transform:rotate(8deg)}45%{transform:rotate(-7deg)}60%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}}
+.qianpanel{margin-top:16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:6px;padding:18px 14px;text-align:center;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.qianpanel .lv{display:inline-block;padding:3px 16px;border-radius:4px;color:#FFF6EA;font-size:14px;letter-spacing:4px;text-indent:4px;margin-bottom:12px}
+.qianpanel .poem{font-size:17px;line-height:2.1;letter-spacing:3px}
+.qianpanel .jx{margin-top:12px;font-size:13.5px;color:var(--sub);text-align:left;line-height:1.8}
+.qian-num{font-size:12px;color:var(--sub);margin-top:10px}
+
+/* 导出弹窗 */
+.modal{position:fixed;inset:0;background:rgba(25,18,8,.72);display:flex;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal-box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;max-width:92vw;max-height:92vh;overflow:auto;text-align:center}
+.modal-box img{max-width:min(74vw,400px);border:1px solid var(--line);border-radius:6px;display:block;margin:0 auto}
+
+/* 一周趋势 */
+#weekChart svg{width:100%;height:auto;display:block}
+.wk-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.wk-row:last-child{border-bottom:none}
+.wk-row .wd{flex:none;width:9em;color:var(--sub)}
+.wk-row .ws{flex:none;width:2.6em;text-align:center;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:1px 0}
+.wk-row .wy{color:var(--good);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-row.best .ws{background:var(--accent);color:#fff}
+
+/* 二维码 */
+#qrBox{text-align:center}
+#qrBox img,#qrBox canvas{width:180px;height:180px;border-radius:12px;border:1px solid var(--line);background:#fff}
+.urlText{word-break:break-all;font-size:12px;color:var(--sub);margin-top:10px}
+footer{text-align:center;color:var(--sub);font-size:11px;margin-top:18px;line-height:1.8}
+.hidden{display:none!important}
+.linkline{color:var(--accent);font-size:13px;text-align:center;margin-top:6px;cursor:pointer}
+
+/* 缘分合盘 */
+.he-person{margin-top:12px;background:var(--accent-soft);border:1px dashed var(--line);border-radius:10px;padding:12px}
+.he-pname{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;letter-spacing:2px}
+.he-useme{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--sub);margin:0 0 6px;cursor:pointer}
+.he-useme input{width:auto;margin:0;accent-color:var(--accent)}
+.he-useme b{width:100%;margin-left:24px;color:var(--accent);font-weight:500;font-size:12.5px}
+.he-person select{margin-bottom:8px}
+.he-person input[type=text]{margin-bottom:8px}
+.he-verdict{display:inline-block;padding:4px 18px;border-radius:999px;color:#FFF6EA;font-size:15px;font-weight:700;letter-spacing:3px;text-indent:3px}
+.he-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.he-num{font-size:34px;font-weight:800;color:var(--accent);line-height:1}
+.he-scorelabel{font-size:11.5px;color:var(--sub);margin-top:3px;text-align:center}
+.he-bar{height:8px;background:var(--accent-soft);border-radius:999px;overflow:hidden;margin:12px 0 4px}
+.he-bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .8s ease}
+.he-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.he-pair .pp{background:var(--accent-soft);border-radius:10px;padding:10px;text-align:center;min-width:0}
+.he-pair .pp .n{font-weight:700;font-size:14px}
+.he-pair .pp .d{font-size:11.5px;color:var(--sub);margin-top:4px;line-height:1.7}
+.he-guas{display:flex;gap:8px;align-items:stretch;margin-top:12px}
+.he-guas .hg{flex:1;background:var(--accent-soft);border-radius:10px;padding:12px 8px;text-align:center;min-width:0}
+.he-guas .hg .gua{margin:0 auto}
+.he-guas .hg .gn{font-size:15px;font-weight:700;margin-top:8px;letter-spacing:1px}
+.he-guas .hg .gt{font-size:11px;color:var(--sub);margin-top:2px}
+.he-arrow{align-self:center;color:var(--accent);font-size:18px;flex:none}
+.he-rel{margin-top:10px;background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.9}
+.he-rel b{color:var(--accent)}
+.he-advice{margin-top:10px;font-size:13.5px;line-height:1.9}
+.he-advice li{margin:6px 0 0 1.2em}
+.he-sum{margin-top:12px;font-size:13.5px;line-height:1.9;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px}
+.he-note{margin-top:12px;font-size:11.5px;color:var(--sub);text-align:center;line-height:1.7}
+/* 单列布局（命格卡移底后） */
+.col1{display:block}
+@media (min-width:700px){ .col1{max-width:600px;margin:0 auto} }
+/* 命格卡底部组合区 */
+.bottom-wrap{margin-top:16px}
+.src-line{margin-top:10px;font-size:11px;color:var(--sub);line-height:1.8;text-align:center}
+.place-note{margin-top:8px;font-size:12px;color:var(--sub);line-height:1.8;background:var(--accent-soft);border-radius:10px;padding:8px 12px;display:none}
+.place-note.show{display:block}
+/* 术数源流卡 */
+.src-card details{margin-top:4px}
+.src-card summary{cursor:pointer;font-size:13px;color:var(--accent);list-style:none;text-align:center;padding:6px 0}
+.src-card summary::-webkit-details-marker{display:none}
+.src-card .src-body{margin-top:8px;font-size:12.5px;line-height:2;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px}
+.src-card .src-body b{color:var(--accent);font-weight:600}
+/* 罗盘页 */
+.lp-dial-wrap{display:flex;justify-content:center;padding:18px 0 6px}
+.lp-dial{position:relative;width:min(78vw,300px);aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle at 50% 42%,#FFFDF6,var(--accent-soft));border:2px solid var(--ink);box-shadow:0 8px 26px rgba(0,0,0,.12);flex:none}
+.lp-ring{position:absolute;inset:0}
+.lp-zhi{position:absolute;width:26px;text-align:center;font-size:13px;font-weight:600;color:var(--ink);transform:translate(-50%,-50%);transition:transform .3s}
+.lp-zhi.gua{font-size:12px;font-weight:500;color:var(--sub);width:30px}
+.lp-zhi.hit{color:#B3352C;font-weight:700;transform:translate(-50%,-50%) scale(1.35)}
+.lp-center{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink);z-index:3}
+.lp-needle{position:absolute;left:50%;top:50%;width:6px;height:118px;margin:-118px 0 0 -3px;transform-origin:50% 100%;transition:transform 2.4s cubic-bezier(.15,.85,.15,1);z-index:2}
+.lp-needle i{position:absolute;left:0;width:100%;display:block}
+.lp-needle .n-up{top:0;height:64px;background:linear-gradient(#B3352C,#D4604F);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.lp-needle .n-dn{bottom:-56px;height:56px;background:linear-gradient(var(--sub),#B9BFCB);clip-path:polygon(0 0,100% 0,50% 100%)}
+.lp-res{margin-top:14px}
+.lp-dir{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:2px}
+.lp-dir .dname{font-size:22px;font-weight:700;color:#B3352C;letter-spacing:2px}
+.lp-dir .dwx{font-size:12px;color:var(--sub)}
+.lp-xiang{margin-top:10px;font-size:13.5px;line-height:1.9;text-align:center}
+.lp-advice{margin-top:10px;background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.9}
+.lp-say{margin-top:12px;font-size:13px;line-height:1.9;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px;text-align:center}
+.lp-back{position:absolute;left:18px;top:20px;font-size:14px;color:var(--accent);cursor:pointer;z-index:5}
+/* 首页折叠大项 */
+.sec{margin-top:14px;background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:background .3s}
+.sec[open]{background:rgba(255,255,255,.8)}
+.sec summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 16px;user-select:none;-webkit-user-select:none}
+.sec summary::-webkit-details-marker{display:none}
+.sec .sn{flex:none;width:30px;height:30px;border-radius:9px;background:var(--ink);color:#FFF8EC;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+.sec .st{font-size:17px;font-weight:700;letter-spacing:4px;color:var(--ink)}
+.sec .sd{font-size:11px;color:var(--sub);margin-left:auto;margin-right:10px;text-align:right;line-height:1.5}
+.sec .ar{flex:none;width:8px;height:8px;border-right:2px solid var(--sub);border-bottom:2px solid var(--sub);transform:rotate(45deg);transition:transform .25s;margin-left:auto}
+.sec .sd+.ar{margin-left:0}
+.sec[open] .ar{transform:rotate(-135deg)}
+.sec-body{padding:0 12px 12px}
+.sec-body .card{margin-top:12px}
+@media (max-width:400px){.sec .sd{display:none}}
+.xp-line{position:absolute;left:0;right:0;height:28px;margin-top:-14px;cursor:ns-resize;touch-action:none}
+.xp-line::before{content:'';position:absolute;left:0;right:0;top:13px;border-top:2px dashed rgba(255,122,24,.95);box-shadow:0 0 5px rgba(0,0,0,.45)}
+.xp-line span{position:absolute;right:6px;top:0;font-size:11px;color:#FFF;background:rgba(20,16,10,.62);padding:2px 9px;border-radius:10px;pointer-events:none;line-height:1.5}
+.xp-bar{height:10px;border-radius:6px;background:var(--accent-grad);min-width:6%}
+</style>
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" sizes="180x180" href="https://images.weserv.nl/?url=pfiles.chatglm.cn/workspace_image/image/82/8232139961.jpg&w=180&h=180&fit=cover&cx=20&cy=250&cw=680&ch=680&output=png&q=90">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E5%88%98%E5%A4%A7%E7%88%B7%E6%AF%8F%E6%97%A5%E4%B8%80%E5%8D%A6%22%2C%22short_name%22%3A%22%E6%AF%8F%E6%97%A5%E4%B8%80%E5%8D%A6%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F5EFE2%22%2C%22theme_color%22%3A%22%23F5EFE2%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fimages.weserv.nl%2F%3Furl%3Dpfiles.chatglm.cn%2Fworkspace_image%2Fimage%2F82%2F8232139961.jpg%26w%3D512%26h%3D512%26fit%3Dcover%26cx%3D20%26cy%3D250%26cw%3D680%26ch%3D680%26output%3Dpng%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
+</head>
+<body>
+<!-- 输入页 -->
+<div id="pageInput" class="page">
+  <div class="brand">
+    <div class="logo-img" role="img" aria-label="刘大爷"></div>
+    <h1>刘大爷每日一卦<span class="seal">劉</span></h1>
+    <p>观天之道 · 报上生辰时辰 · 演卦趋吉避凶</p>
+  </div>
+  <div class="card">
+    <label for="inName">称呼（可不填）</label>
+    <input type="text" id="inName" maxlength="12" placeholder="如：小刘">
+    <label>历法</label>
+    <div class="calseg">
+      <button type="button" class="seg active" id="segSolar" onclick="setCalType(0)">公历</button>
+      <button type="button" class="seg" id="segLunar" onclick="setCalType(1)">农历</button>
+    </div>
+    <label id="dateLabel">出生年月日（公历）</label>
+    <div class="row3">
+      <select id="inYear"></select>
+      <select id="inMonth"></select>
+      <select id="inDay"></select>
+    </div>
+    <label for="inHour">出生时辰（可不选，选了八字更完整）</label>
+    <select id="inHour"></select>
+    <label for="inProvince">出生地（可不填，填了按时辰做真太阳时校正）</label>
+    <select id="inProvince"></select>
+    <select id="inCity" class="hidden" aria-label="出生城市"></select>
+    <button class="btn" onclick="submitBirth()">掐 指 一 算</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="resetAll()">♻ 刷 新 · 清 除 信 息</button>
+  </div>
+  <footer>仅供娱乐参考，不构成任何决策建议</footer>
+</div>
+
+<!-- 结果页 -->
+<div id="pageResult" class="page hidden">
+  <div class="col1">
+    <div>
+      <div class="card">
+        <div class="daye-row">
+          <div class="daye" role="img" aria-label="刘大爷"></div>
+          <div class="bubble" id="dayeBubble">刘大爷掐指一算，今日运程在此</div>
+        </div>
+        <div class="today-head">
+          <div class="date" id="todayDate"></div>
+          <div class="lunar" id="todayLunar"></div>
+        </div>
+        <div class="scores" id="scores"></div>
+        <div class="lucky" id="lucky"></div>
+      </div>
+      <details class="sec">
+        <summary><span class="sn">壹</span><span class="st">天垂卦象</span><span class="sd">今日卦画<br>宜忌之训</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card">
+        <div class="yiji">
+          <div class="yi"><h3><span class="z">宜</span><span class="t">今日可为</span></h3><ul id="yiList"></ul></div>
+          <div class="ji"><h3><span class="z">忌</span><span class="t">今日勿为</span></h3><ul id="jiList"></ul></div>
+        </div>
+      </div>
+      <div class="card" id="guaCard">
+        <h2 style="cursor:pointer;justify-content:space-between" onclick="toggleGua()">今日卦象<span class="ghint" id="guaHint">▾ 点看详解</span></h2>
+        <div class="gua-wrap">
+          <div class="gua" id="guaLines" aria-label="今日六爻卦画"></div>
+          <div class="gua-info">
+            <div class="gname" id="guaName">——</div>
+            <div class="gnum" id="guaNum">——</div>
+          </div>
+        </div>
+        <div class="gua-xiang" id="guaXiang">——</div>
+        <div id="guaDetail" class="gua-detail hidden"></div>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">贰</span><span class="st">卜以决疑</span><span class="sd">今日问事<br>罗盘指方</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card" id="wenCard">
+        <h2>🕯️ 今日问事 · 周易断可否</h2>
+        <div class="sub">写下今天要办的事，以字数合生辰起一卦（法《梅花易数》），卦辞出《周易》，看今天做它合不合适</div>
+        <div class="wen-row">
+          <input id="wenText" maxlength="30" placeholder="如：签合同 / 搬家 / 谈一单生意" enterkeyhint="send" onkeydown="if(event.key==='Enter')castWen()">
+          <button class="btn" id="wenBtn" onclick="castWen()">起 卦</button>
+        </div>
+        <div id="wenResult" class="hidden"></div>
+      </div>
+      <div class="card" id="lpCard">
+        <h2>🧭 罗盘问事 · 指点方位</h2>
+        <div class="sub">写下要占的事，转一转罗盘，看这事该往哪个方向使劲</div>
+        <button class="btn" style="margin-top:14px" onclick="showLuopan()">进 入 罗 盘</button>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">叁</span><span class="st">摇签问卜</span><span class="sd">每日一签<br>心诚则灵</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card" id="qianCard">
+        <h2>每日一签</h2>
+        <div id="qianStage">
+          <div class="qt-row">
+            <div class="qiantong" id="qiTong"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i></div>
+          </div>
+          <div class="sub" style="text-align:center;margin-top:10px">心诚则灵 · 每日首签最准</div>
+          <button class="btn" style="margin-top:14px" id="qianBtn" onclick="drawQian(false)">摇 签</button>
+        </div>
+        <div id="qianResult" class="hidden"></div>
+        <div style="text-align:center;margin-top:10px"><span class="linkline hidden" id="qianAgain" onclick="drawQian(true)">另摇一签 ↻</span></div>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">肆</span><span class="st">缘定三生</span><span class="sd">两人一卦<br>爱情事业</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card" id="heCard">
+        <h2>💞 缘分合盘 · 两人一卦</h2>
+        <div class="sub">填上TA的生辰，选爱情或事业，起一卦看你们合不合、怎么处</div>
+        <div class="calseg" style="margin-top:12px">
+          <button type="button" class="seg active" id="heModeLove" onclick="setHeMode(0)">❤️ 看爱情</button>
+          <button type="button" class="seg" id="heModeWork" onclick="setHeMode(1)">💼 看事业</button>
+        </div>
+        <div class="he-person">
+          <div class="he-pname">我方</div>
+          <label class="he-useme"><input type="checkbox" id="heUseMe" checked onchange="heToggleMe()"> 用上面已填的生辰<b id="heMeInfo"></b></label>
+          <div id="heInputA" class="hidden">
+            <div class="row3">
+              <select id="heYearA" aria-label="我方出生年"></select>
+              <select id="heMonthA" aria-label="我方出生月"></select>
+              <select id="heDayA" aria-label="我方出生日"></select>
+            </div>
+            <select id="heHourA" aria-label="我方时辰"></select>
+          </div>
+        </div>
+        <div class="he-person">
+          <div class="he-pname">对方</div>
+          <input type="text" id="heNameB" maxlength="12" placeholder="TA的称呼（可不填）">
+          <div class="row3">
+            <select id="heYearB" aria-label="对方出生年"></select>
+            <select id="heMonthB" aria-label="对方出生月"></select>
+            <select id="heDayB" aria-label="对方出生日"></select>
+          </div>
+          <select id="heHourB" aria-label="对方时辰"></select>
+        </div>
+        <button class="btn" onclick="castHe()">合 盘 起 卦</button>
+        <div id="heResult" class="hidden"></div>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">伍</span><span class="st">七日来复</span><span class="sd">未来七日<br>运势起伏</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card" id="weekCard">
+        <h2>一周运势走势</h2>
+        <div id="weekChart"></div>
+        <div id="weekList"></div>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">陆</span><span class="st">尽性至命</span><span class="sd">八字命盘<br>子平之法</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="bottom-wrap">
+        <div class="card mingge" id="minggeCard">
+          <div style="font-size:12px;opacity:.85" id="who"></div>
+          <div class="elem" id="elemChar">金</div>
+          <div class="nayin" id="nayinName">——</div>
+          <div class="nayin-sub" id="yearNayinName"></div>
+          <div class="tags" id="tags"></div>
+          <div class="bazi" id="bazi"></div>
+          <div class="wxbar" id="wxbar"></div>
+          <div class="place-note" id="placeNote"></div>
+          <div class="src-line">八字推命依子平法 · 纲本《渊海子平》《三命通会》 · 格局气势参《滴天髓》《子平真诠》 · 调候参《穷通宝鉴》</div>
+        </div>
+        <button class="btn ghost" onclick="backToInput()">✎ 修改出生信息</button>
+      </div>
+      <div class="card src-card" style="margin-top:16px">
+        <details>
+          <summary>📚 术数源流 · 这些算的是什么</summary>
+          <div class="src-body">
+            <b>一辈子大体命运 → 八字（子平术）</b>：按出生年月日时推命，命格卡即此法；纲本《渊海子平》《三命通会》，五行格局参《滴天髓》《子平真诠》，调候参《穷通宝鉴》。<br>
+            <b>专门问一件事成败 → 六爻</b>：摇铜钱、一事一占，法《增删卜易》《卜筮正宗》；本页问事卡暂以梅花起卦代之。<br>
+            <b>临时快占小事、寻物 → 梅花易数</b>：随时起卦，体用生克、八卦类象，法邵雍《梅花易数》；本页「今日问事」「罗盘问事」用此法。<br>
+            <b>大事决策 → 大六壬</b>：三式之一，体系庞大，法《六壬大全》，本页暂未设。<br>
+            <b>看性格气色 → 相面</b>：法《麻衣神相》《柳庄神相》《神相全编》，本页「相由心生」卡用此法（传照拉线，本机测量，照片不上传）。<br>
+            <b>万术之源 → 《周易》</b>：本页所有卦辞皆录《周易》原文；另有《星学大成》七政四余星命，与八字非一系，未涉及。
+          </div>
+        </details>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">柒</span><span class="st">相由心生</span><span class="sd">麻衣相法<br>传照观面</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card" id="xiangCard">
+        <h2>🧭 麻衣相法 · 传照观面</h2>
+        <div class="sub">选一张正面照片（或直接拍），本机自动拉线：测三停、定五行形局。照片只在本机测量，不上传不留存；虚线可上下拖动微调，再点断局</div>
+        <input type="file" id="xpFile" accept="image/*" style="display:none">
+        <button class="btn" style="letter-spacing:3px;text-indent:3px" onclick="document.getElementById('xpFile').click()">📷 选照片 · 观相</button>
+        <div id="xpStage" class="hidden" style="margin-top:12px">
+          <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310;touch-action:none">
+            <canvas id="xpCanvas" style="display:block;width:100%;height:auto"></canvas>
+            <div class="xp-line" id="xpL0" data-y="0.3"><span>发际</span></div>
+            <div class="xp-line" id="xpL1" data-y="0.45"><span>眉</span></div>
+            <div class="xp-line" id="xpL2" data-y="0.6"><span>鼻底</span></div>
+            <div class="xp-line" id="xpL3" data-y="0.88"><span>下巴</span></div>
+          </div>
+          <div class="sub" style="margin-top:8px">虚线没对准？上下拖到对应位置：发际线 → 眉 → 鼻底 → 下巴尖</div>
+          <button class="btn" style="margin-top:12px" onclick="castXiang()">观 相 断 局</button>
+        </div>
+        <div id="xiangResult" class="hidden"></div>
+      </div>
+        </div>
+      </details>
+      <details class="sec">
+        <summary><span class="sn">捌</span><span class="st">留影传阅</span><span class="sd">生成卡片<br>扫码分享</span><i class="ar"></i></summary>
+        <div class="sec-body">
+      <div class="card">
+        <h2>运势卡片 · 发圈专用</h2>
+        <div class="sub">生成今日专属运势图，保存后即可发朋友圈</div>
+        <button class="btn" style="margin-top:14px" onclick="exportCard()">生 成 卡 片</button>
+      </div>
+      <div class="card" id="qrCard">
+        <h2>分享 · 扫码传阅</h2>
+        <div id="qrBox">
+          <div class="sub" style="margin-bottom:10px">用手机 / 平板扫一扫，打开同一份运势</div>
+          <img id="qrImg" alt="二维码" onerror="qrFallback()">
+          <div class="urlText hidden" id="qrUrlText"></div>
+          <div class="linkline" onclick="copyLink()">复制链接</div>
+        </div>
+      </div>
+        </div>
+      </details>
+      <footer>《易》曰：积善之家，必有余庆。演算出于传统民俗，仅供娱乐参考</footer>
+    </div>
+  </div>
+</div>
+
+<!-- 罗盘页 -->
+<div id="pageLuopan" class="page hidden">
+  <div class="lp-back" onclick="backLuopan()">← 返回运势</div>
+  <div class="brand" style="padding-top:40px">
+    <h1 style="font-size:22px;letter-spacing:2px">🧭 罗盘 · 指点迷津</h1>
+    <p>法《梅花易数》观物取象 · 以事定卦 · 以卦指方</p>
+  </div>
+  <div class="card">
+    <label for="lpText">要占的事</label>
+    <input type="text" id="lpText" maxlength="30" placeholder="如：该不该换工作 / 生意往哪边找">
+    <button class="btn" style="margin-top:14px" onclick="castLP()">转 盘 问 事</button>
+  </div>
+  <div class="card lp-res hidden" id="lpResultCard">
+    <div class="lp-dial-wrap">
+      <div class="lp-dial" id="lpDial">
+        <div class="lp-ring" id="lpRing"></div>
+        <div class="lp-needle" id="lpNeedle"><i class="n-up"></i><i class="n-dn"></i></div>
+        <div class="lp-center"></div>
+      </div>
+    </div>
+    <div id="lpOut"></div>
+  </div>
+  <footer>方位指示出于传统民俗演算，仅供娱乐参考</footer>
+</div>
+
+<!-- 导出卡片弹窗 -->
+<div id="cardModal" class="modal hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-box">
+    <img id="cardImg" alt="今日运势卡片">
+    <div class="sub" style="margin:10px 0 2px">长按上方图片可保存 / 转发朋友圈</div>
+    <button class="btn hidden" id="cardShareBtn" onclick="shareCard()" style="margin-top:10px">保存 / 分享图片</button>
+    <a class="btn" id="cardDl" download="刘大爷每日一卦.png" style="display:block;text-decoration:none;text-align:center;letter-spacing:4px;margin-top:10px">下载卡片（电脑）</a>
+    <button class="btn ghost" style="margin-top:10px" onclick="document.getElementById('cardModal').classList.add('hidden')">关 闭</button>
+  </div>
+</div>
+
+<script>
+/* ============ solarlunar 农历公历互转库 (MIT) ============ */
+!function(b,f){"object"==typeof exports&&"object"==typeof module?module.exports=f():"function"==typeof define&&define.amd?define("solarlunar",[],f):"object"==typeof exports?exports.solarlunar=f():b.solarlunar=f()}(this,function(){return function(b){function f(c){if(e[c])return e[c].exports;var t=e[c]={i:c,l:!1,exports:{}};return b[c].call(t.exports,t,t.exports,f),t.l=!0,t.exports}var e={};return f.m=b,f.c=e,f.d=function(b,e,c){f.o(b,e)||Object.defineProperty(b,e,{configurable:!1,enumerable:!0,get:c})},f.n=function(b){var e=b&&b.__esModule?function(){return b.default}:function(){return b};return f.d(e,"a",e),e},f.o=function(b,f){return Object.prototype.hasOwnProperty.call(b,f)},f.p="",f(f.s=0)}([function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0});var c=e(1),t=function(b){return b&&b.__esModule?b:{default:b}}(c);f.default=t.default,b.exports=f.default},function(b,f,e){"use strict";function c(b){return b&&b.__esModule?b:{default:b}}Object.defineProperty(f,"__esModule",{value:!0});var t=e(2),a=c(t),r=e(3),n=c(r),d=e(4),u=c(d),s=e(5),o=c(s),l=e(6),i=c(l),p=e(7),y=c(p),h=e(8),v=c(h),g=e(9),M=c(g),D=e(10),_=c(D),x=e(11),m=c(x),I={lunarInfo:a.default,solarMonth:n.default,gan:u.default,zhi:o.default,animals:i.default,lunarTerm:y.default,lTermInfo:v.default,nStr1:M.default,nStr2:_.default,nStr3:m.default,lYearDays:function(b){var f,e=348;for(f=32768;f>8;f>>=1)e+=I.lunarInfo[b-1900]&f?1:0;return e+I.leapDays(b)},leapMonth:function(b){return 15&I.lunarInfo[b-1900]},leapDays:function(b){return I.leapMonth(b)?65536&I.lunarInfo[b-1900]?30:29:0},monthDays:function(b,f){return f>12||f<1?-1:I.lunarInfo[b-1900]&65536>>f?30:29},solarDays:function(b,f){if(f>12||f<1)return-1;var e=f-1;return 1==e?b%4==0&&b%100!=0||b%400==0?29:28:I.solarMonth[e]},toGanZhi:function(b){return I.gan[b%10]+I.zhi[b%12]},getTerm:function(b,f){if(b<1900||b>2100)return-1;if(f<1||f>24)return-1;var e=I.lTermInfo[b-1900],c=[parseInt("0x"+e.substr(0,5)).toString(),parseInt("0x"+e.substr(5,5)).toString(),parseInt("0x"+e.substr(10,5)).toString(),parseInt("0x"+e.substr(15,5)).toString(),parseInt("0x"+e.substr(20,5)).toString(),parseInt("0x"+e.substr(25,5)).toString()],t=[c[0].substr(0,1),c[0].substr(1,2),c[0].substr(3,1),c[0].substr(4,2),c[1].substr(0,1),c[1].substr(1,2),c[1].substr(3,1),c[1].substr(4,2),c[2].substr(0,1),c[2].substr(1,2),c[2].substr(3,1),c[2].substr(4,2),c[3].substr(0,1),c[3].substr(1,2),c[3].substr(3,1),c[3].substr(4,2),c[4].substr(0,1),c[4].substr(1,2),c[4].substr(3,1),c[4].substr(4,2),c[5].substr(0,1),c[5].substr(1,2),c[5].substr(3,1),c[5].substr(4,2)];return parseInt(t[f-1])},toChinaYear:function(b){var f=parseInt(b/1e3),e=parseInt(b%1e3/100),c=parseInt(b%100/10),t=b%10;return I.nStr1[f]+I.nStr1[e]+I.nStr1[c]+I.nStr1[t]+"年"},toChinaMonth:function(b){if(b>12||b<1)return-1;var f=I.nStr3[b-1];return f+="月"},toChinaDay:function(b){var f;switch(b){case 10:f="初十";break;case 20:f="二十";break;case 30:f="三十";break;default:f=I.nStr2[Math.floor(b/10)],f+=I.nStr1[b%10]}return f},getAnimal:function(b){return I.animals[(b-4)%12]},solar2lunar:function(b,f,e){if(b<1900||b>2100)return-1;if(1900==b&&1==f&&e<31)return-1;if(b)var c=new Date(b,parseInt(f)-1,e);else var c=new Date;var t,a=0,r=0,b=c.getFullYear(),f=c.getMonth()+1,e=c.getDate(),n=(Date.UTC(c.getFullYear(),c.getMonth(),c.getDate())-Date.UTC(1900,0,31))/864e5;for(t=1900;t<2101&&n>0;t++)r=I.lYearDays(t),n-=r;n<0&&(n+=r,t--);var d=new Date,u=!1;d.getFullYear()==b&&d.getMonth()+1==f&&d.getDate()==e&&(u=!0);var s=c.getDay(),o=I.nStr1[s];0==s&&(s=7);var l=t,a=I.leapMonth(t),i=!1;for(t=1;t<13&&n>0;t++)a>0&&t==a+1&&0==i?(--t,i=!0,r=I.leapDays(l)):r=I.monthDays(l,t),1==i&&t==a+1&&(i=!1),n-=r;0==n&&a>0&&t==a+1&&(i?i=!1:(i=!0,--t)),n<0&&(n+=r,--t);var p=t,y=n+1,h=f-1,v=I.getTerm(l,3),g=I.toGanZhi(l-4);g=h<2&&e<v?I.toGanZhi(l-5):I.toGanZhi(l-4);var M=I.getTerm(b,2*f-1),D=I.getTerm(b,2*f),_=I.toGanZhi(12*(b-1900)+f+11);e>=M&&(_=I.toGanZhi(12*(b-1900)+f+12));var x=!1,m="";M==e&&(x=!0,m=I.lunarTerm[2*f-2]),D==e&&(x=!0,m=I.lunarTerm[2*f-1]);var T=Date.UTC(b,h,1,0,0,0,0)/864e5+25567+10,j=I.toGanZhi(T+e-1);return{lYear:l,lMonth:p,lDay:y,animal:I.getAnimal(l),yearCn:I.toChinaYear(l),monthCn:(i?"闰":"")+I.toChinaMonth(p),dayCn:I.toChinaDay(y),cYear:b,cMonth:f,cDay:e,gzYear:g,gzMonth:_,gzDay:j,isToday:u,isLeap:i,nWeek:s,ncWeek:"星期"+o,isTerm:x,term:m}},lunar2solar:function(b,f,e,c){var t=I.leapMonth(b);I.leapDays(b);if(c&&t!=f)return-1;if(2100==b&&12==f&&e>1||1900==b&&1==f&&e<31)return-1;var a=I.monthDays(b,f);if(b<1900||b>2100||e>a)return-1;for(var r=0,n=1900;n<b;n++)r+=I.lYearDays(n);for(var d=0,u=!1,n=1;n<f;n++)d=I.leapMonth(b),u||d<=n&&d>0&&(r+=I.leapDays(b),u=!0),r+=I.monthDays(b,n);c&&(r+=a);var s=Date.UTC(1900,1,30,0,0,0),o=new Date(864e5*(r+e-31)+s),l=o.getUTCFullYear(),i=o.getUTCMonth()+1,p=o.getUTCDate();return I.solar2lunar(l,i,p)}};f.default=I,b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=[19416,19168,42352,21717,53856,55632,91476,22176,39632,21970,19168,42422,42192,53840,119381,46400,54944,44450,38320,84343,18800,42160,46261,27216,27968,109396,11104,38256,21234,18800,25958,54432,59984,28309,23248,11104,100067,37600,116951,51536,54432,120998,46416,22176,107956,9680,37584,53938,43344,46423,27808,46416,86869,19872,42416,83315,21168,43432,59728,27296,44710,43856,19296,43748,42352,21088,62051,55632,23383,22176,38608,19925,19152,42192,54484,53840,54616,46400,46752,103846,38320,18864,43380,42160,45690,27216,27968,44870,43872,38256,19189,18800,25776,29859,59984,27480,21952,43872,38613,37600,51552,55636,54432,55888,30034,22176,43959,9680,37584,51893,43344,46240,47780,44368,21977,19360,42416,86390,21168,43312,31060,27296,44368,23378,19296,42726,42208,53856,60005,54576,23200,30371,38608,19415,19152,42192,118966,53840,54560,56645,46496,22224,21938,18864,42359,42160,43600,111189,27936,44448,84835,37744,18936,18800,25776,92326,59984,27424,108228,43744,41696,53987,51552,54615,54432,55888,23893,22176,42704,21972,21200,43448,43344,46240,46758,44368,21920,43940,42416,21168,45683,26928,29495,27296,44368,84821,19296,42352,21732,53600,59752,54560,55968,92838,22224,19168,43476,41680,53584,62034,54560],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=[31,28,31,30,31,30,31,31,30,31,30,31],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["小寒","大寒","立春","雨水","惊蛰","春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c3598082c95f8c965cc920f","97bd0b06bdb0722c965ce1cfcc920f","b027097bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c359801ec95f8c965cc920f","97bd0b06bdb0722c965ce1cfcc920f","b027097bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c359801ec95f8c965cc920f","97bd0b06bdb0722c965ce1cfcc920f","b027097bd097c36b0b6fc9274c91aa","9778397bd19801ec9210c965cc920e","97b6b97bd19801ec95f8c965cc920f","97bd09801d98082c95f8e1cfcc920f","97bd097bd097c36b0b6fc9210c8dc2","9778397bd197c36c9210c9274c91aa","97b6b97bd19801ec95f8c965cc920e","97bd09801d98082c95f8e1cfcc920f","97bd097bd097c36b0b6fc9210c8dc2","9778397bd097c36c9210c9274c91aa","97b6b97bd19801ec95f8c965cc920e","97bcf97c3598082c95f8e1cfcc920f","97bd097bd097c36b0b6fc9210c8dc2","9778397bd097c36c9210c9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c3598082c95f8c965cc920f","97bd097bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c3598082c95f8c965cc920f","97bd097bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c359801ec95f8c965cc920f","97bd097bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c359801ec95f8c965cc920f","97bd097bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf97c359801ec95f8c965cc920f","97bd097bd07f595b0b6fc920fb0722","9778397bd097c36b0b6fc9210c8dc2","9778397bd19801ec9210c9274c920e","97b6b97bd19801ec95f8c965cc920f","97bd07f5307f595b0b0bc920fb0722","7f0e397bd097c36b0b6fc9210c8dc2","9778397bd097c36c9210c9274c920e","97b6b97bd19801ec95f8c965cc920f","97bd07f5307f595b0b0bc920fb0722","7f0e397bd097c36b0b6fc9210c8dc2","9778397bd097c36c9210c9274c91aa","97b6b97bd19801ec9210c965cc920e","97bd07f1487f595b0b0bc920fb0722","7f0e397bd097c36b0b6fc9210c8dc2","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf7f1487f595b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf7f1487f595b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf7f1487f531b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c965cc920e","97bcf7f1487f531b0b0bb0b6fb0722","7f0e397bd07f595b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b97bd19801ec9210c9274c920e","97bcf7f0e47f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","9778397bd097c36b0b6fc9210c91aa","97b6b97bd197c36c9210c9274c920e","97bcf7f0e47f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","9778397bd097c36b0b6fc9210c8dc2","9778397bd097c36c9210c9274c920e","97b6b7f0e47f531b0723b0b6fb0722","7f0e37f5307f595b0b0bc920fb0722","7f0e397bd097c36b0b6fc9210c8dc2","9778397bd097c36b0b70c9274c91aa","97b6b7f0e47f531b0723b0b6fb0721","7f0e37f1487f595b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc9210c8dc2","9778397bd097c36b0b6fc9274c91aa","97b6b7f0e47f531b0723b0b6fb0721","7f0e27f1487f595b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","9778397bd097c36b0b6fc9274c91aa","97b6b7f0e47f531b0723b0787b0721","7f0e27f0e47f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","9778397bd097c36b0b6fc9210c91aa","97b6b7f0e47f149b0723b0787b0721","7f0e27f0e47f531b0723b0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","9778397bd097c36b0b6fc9210c8dc2","977837f0e37f149b0723b0787b0721","7f07e7f0e47f531b0723b0b6fb0722","7f0e37f5307f595b0b0bc920fb0722","7f0e397bd097c35b0b6fc9210c8dc2","977837f0e37f14998082b0787b0721","7f07e7f0e47f531b0723b0b6fb0721","7f0e37f1487f595b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc9210c8dc2","977837f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","977837f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd097c35b0b6fc920fb0722","977837f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","977837f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","977837f0e37f14998082b0787b06bd","7f07e7f0e47f149b0723b0787b0721","7f0e27f0e47f531b0b0bb0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","977837f0e37f14998082b0723b06bd","7f07e7f0e37f149b0723b0787b0721","7f0e27f0e47f531b0723b0b6fb0722","7f0e397bd07f595b0b0bc920fb0722","977837f0e37f14898082b0723b02d5","7ec967f0e37f14998082b0787b0721","7f07e7f0e47f531b0723b0b6fb0722","7f0e37f1487f595b0b0bb0b6fb0722","7f0e37f0e37f14898082b0723b02d5","7ec967f0e37f14998082b0787b0721","7f07e7f0e47f531b0723b0b6fb0722","7f0e37f1487f531b0b0bb0b6fb0722","7f0e37f0e37f14898082b0723b02d5","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e37f1487f531b0b0bb0b6fb0722","7f0e37f0e37f14898082b072297c35","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e37f0e37f14898082b072297c35","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e37f0e366aa89801eb072297c35","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f149b0723b0787b0721","7f0e27f1487f531b0b0bb0b6fb0722","7f0e37f0e366aa89801eb072297c35","7ec967f0e37f14998082b0723b06bd","7f07e7f0e47f149b0723b0787b0721","7f0e27f0e47f531b0723b0b6fb0722","7f0e37f0e366aa89801eb072297c35","7ec967f0e37f14998082b0723b06bd","7f07e7f0e37f14998083b0787b0721","7f0e27f0e47f531b0723b0b6fb0722","7f0e37f0e366aa89801eb072297c35","7ec967f0e37f14898082b0723b02d5","7f07e7f0e37f14998082b0787b0721","7f07e7f0e47f531b0723b0b6fb0722","7f0e36665b66aa89801e9808297c35","665f67f0e37f14898082b0723b02d5","7ec967f0e37f14998082b0787b0721","7f07e7f0e47f531b0723b0b6fb0722","7f0e36665b66a449801e9808297c35","665f67f0e37f14898082b0723b02d5","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e36665b66a449801e9808297c35","665f67f0e37f14898082b072297c35","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e26665b66a449801e9808297c35","665f67f0e37f1489801eb072297c35","7ec967f0e37f14998082b0787b06bd","7f07e7f0e47f531b0723b0b6fb0721","7f0e27f1487f531b0b0bb0b6fb0722"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["零","一","二","三","四","五","六","七","八","九","十"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["初","十","廿","卅"],b.exports=f.default},function(b,f,e){"use strict";Object.defineProperty(f,"__esModule",{value:!0}),f.default=["正","二","三","四","五","六","七","八","九","十","冬","腊"],b.exports=f.default}])});
+</script>
+<script>
+/* ============ 基础数据 ============ */
+const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const GAN_WX=["木","木","火","火","土","土","金","金","水","水"];
+const ZHI_WX=["水","土","木","木","土","火","火","土","金","金","土","水"];
+const SHENGXIAO=["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"];
+const NAYIN=["海中金","炉中火","大林木","路旁土","剑锋金","山头火","涧下水","城头土","白蜡金","杨柳木","泉中水","屋上土","霹雳火","松柏木","长流水","沙中金","山下火","平地木","壁上土","金箔金","覆灯火","天河水","大驿土","钗钏金","桑柘木","大溪水","沙中土","天上火","石榴木","大海水"];
+const ELEM_THEME={"金":"t-metal","木":"t-wood","水":"t-water","火":"t-fire","土":"t-earth"};
+
+/* ============ 每日幸运色主题 ============ */
+const LUCK_THEMES=[
+["朱砂","#F6EEE6","#9C3D2E","#F3E1D3","linear-gradient(135deg,#8E3B2C,#B05744)","#E2D0C0"],
+["杏黄","#F6F1E3","#A06A28","#F2E6CB","linear-gradient(135deg,#94601F,#C08F4A)","#E0D3B4"],
+["竹青","#F0F3E8","#5A7A46","#E2EAD4","linear-gradient(135deg,#4E6E3A,#7E9A62)","#D2DCC0"],
+["黛蓝","#EEF2F4","#3E5D72","#DEE8EC","linear-gradient(135deg,#375463,#5F8499)","#CBD8DD"],
+["绛紫","#F4EFF3","#7A4A6E","#EADFE8","linear-gradient(135deg,#6E405F,#9A6C8C)","#DCCDD6"],
+["藕粉","#F7EEEC","#A05650","#F0DDD9","linear-gradient(135deg,#8E4A44,#B87268)","#E2CCC7"],
+["松绿","#EEF3F0","#3F6B5A","#DEE9E3","linear-gradient(135deg,#355D4C,#5F8A76)","#C9DAD2"],
+["赭石","#F5F0E8","#8A5A2E","#EDDFCB","linear-gradient(135deg,#7E5228,#A97F4E)","#DCCEB6"],
+["天青","#EFF3F3","#44707A","#DFEAEA","linear-gradient(135deg,#3A6169,#6A929B)","#CFDEDE"],
+["琥珀","#F7F2E6","#9A7428","#F1E4C4","linear-gradient(135deg,#8A671F,#BC9A4A)","#E0D5B4"]];
+const LUCK_KEYS=["--bg","--accent","--accent-soft","--accent-grad","--line"];
+function pickLuckFor(y,m,d){const t=new Date();const ds=t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate();
+ return LUCK_THEMES[hash32("luck|"+(y==null?"":y+"-"+m+"-"+d+"|")+ds)%LUCK_THEMES.length];}
+function applyLuckTheme(t){const s=document.body.style;
+ LUCK_KEYS.forEach((k,i)=>s.setProperty(k,t[i+1]));
+ document.querySelector('meta[name=theme-color]').content=t[1];}
+const ELEM_DESC={
+ "金":"金主义，性刚毅果断，重信守诺",
+ "木":"木主仁，性正直温和，生发向上",
+ "水":"水主智，性聪慧灵变，包容善谋",
+ "火":"火主礼，性热情开朗，行动力强",
+ "土":"土主信，性厚道稳重，踏实可靠"
+};
+
+/* ============ 干支算法 ============ */
+function jdn(y,m,d){const a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;
+ return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+function dayPillarIdx(y,m,d){return ((jdn(y,m,d)-jdn(1949,10,1))%60+60)%60;}
+function yearPillar(y,m,d){let yy=y;if(m<2||(m===2&&d<4))yy-=1;
+ return {g:((yy-4)%10+10)%10,z:((yy-4)%12+12)%12,year:yy};}
+function monthPillar(y,m,d,yearG){
+ const terms=[6,4,6,5,6,6,7,8,8,8,7,7];
+ const k=(d>=terms[m-1])?(m-2+12)%12:(m-3+12)%12;
+ const first=(yearG%5)*2+2;
+ return {g:(first+k)%10,z:(k+2)%12};}
+function pillarStr(p){return GAN[p.g]+ZHI[p.z];}
+
+/* ============ 伪随机（同一人同一天结果稳定） ============ */
+function hash32(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ============ 宜忌与运势文案库 ============ */
+const YI=[
+ ["拜访贵人","主动联系能帮上忙的人"],["签约合作","合同细节今天看得更清楚"],
+ ["表白约会","把心里话说出来"],["谈薪议价","为自己的价值开口"],
+ ["运动出汗","快走、慢跑都好"],["学习充电","静下心读半小时书"],
+ ["理财规划","整理账单，看看钱都去哪了"],["早睡早起","把作息调回正轨"],
+ ["整理房间","清理旧物，心情也清爽"],["联系老友","一顿饭或一个电话都行"],
+ ["写下计划","把模糊的想法落到纸上"],["下厨做饭","喂饱自己是最稳的幸福"],
+ ["出门走走","晒晒太阳，换个环境"],["开口求助","别一个人硬扛"],
+ ["复盘总结","回头看看最近的路"],["陪伴家人","把时间留给最亲的人"]];
+const JI=[
+ ["冲动消费","大件先放购物车，睡一晚再决定"],["熬夜刷手机","十二点前放下它"],
+ ["与人争执","赢了一时口舌，输了心情"],["借贷担保","钱上的事今天别拍板"],
+ ["暴饮暴食","肠胃不想加班"],["轻信承诺","好听的话多留个心眼"],
+ ["拖延要事","越拖越沉，先做十分钟"],["背后议论","话会飞，别让它飞出去"],
+ ["频繁跳槽念头","想清楚再动简历"],["饮酒过量","浅酌即可"],
+ ["赶时间抢行","慢一点反而更快"],["临时改重要决定","今天直觉不太在线"],
+ ["透支信用卡","预算内的日子更踏实"],["硬扛生病","不舒服就去看医生"],
+ ["翻旧账","翻篇比翻账有用"],["盲目跟风投资","看不懂的不碰"]];
+const SCORE_NAMES=[["爱情","❤️"],["事业","💼"],["财运","💰"],["健康","🍀"]];
+const COLORS={"金":["白色","金色","银色","米色"],"木":["绿色","青色","原木色"],"水":["蓝色","黑色","灰色"],"火":["红色","橙色","紫色"],"土":["黄色","棕色","咖啡色"]};
+const DIRS=["正东","正南","正西","正北","东南","西南","东北","西北"];
+// 今日财神方位（财神方位歌诀：甲乙东北是财神，丙丁向在西南寻，戊己正北坐方位，庚辛正东去安身，壬癸原来正南坐）
+const CAISHEN_DIR=["东北","东北","西南","西南","正北","正北","正东","正东","正南","正南"];
+const HOUR_LABELS=["子时 23:00-00:59","丑时 01:00-02:59","寅时 03:00-04:59","卯时 05:00-06:59","辰时 07:00-08:59","巳时 09:00-10:59","午时 11:00-12:59","未时 13:00-14:59","申时 15:00-16:59","酉时 17:00-18:59","戌时 19:00-20:59","亥时 21:00-22:59"];
+
+/* 刘大爷语录（每日一句，按生辰+日期固定） */
+const QUOTES=[
+"老夫夜观天象，你这命数啊，藏在茶碗里。",
+"急什么？卦象说了，心急吃不了热豆腐。",
+"掐指一算，今日宜稳住，忌上头。",
+"运来的时候，门板都挡不住；运没来，先喝口茶。",
+"老夫算过，你这命，缺的不是钱，是早睡。",
+"卦不欺人，人自欺。守住本分，运势自来。",
+"今日这卦，宜慢半拍，忌抢头香。",
+"老夫掐指一算：你今天笑一笑，运气涨三分。",
+"命是底子，运是天气；底子再好，也别顶着坏天出门。",
+"卦象平平？平平才是福，大起大落最伤身。",
+"老夫看你是富贵命——至少今天是。",
+"宜：把麻烦事今日了结；忌：把今日的事推给明日。",
+"老夫夜观天象，发现你还没关心自己的身子骨。",
+"算命不如修心，修心不如先吃早饭。",
+"今日财星不亮？莫慌，省下的就是赚到的。",
+"老夫推演半宿，结论是：多喝水，少生气。",
+"你这桃花运啊，在楼下的烟火气里，不在网速里。",
+"卦曰：事缓则圆。今日别催，稳稳地来。",
+"老夫掐指一算，你前几日立下的愿，今日宜续上。",
+"命里有时终须有，命里没时要掂量掂量。",
+"今日宜听老人言——比如老夫这一句。",
+"运势如天气，出门带把伞，总没错。",
+"老夫算过了：你迟早发达，就是别熬夜熬塌了本钱。",
+"心诚则灵。手快有，手慢——再等等卦象。"
+];
+
+/* 六十四卦：上卦/下卦 → 卦序（行上列下，乾兑离震巽坎艮坤） */
+const TRIG_NAME=["乾","兑","离","震","巽","坎","艮","坤"];
+const TRIG_IMG=["天","泽","火","雷","风","水","山","地"];
+const TRIG_BITS=[[1,1,1],[1,1,0],[1,0,1],[1,0,0],[0,1,1],[0,1,0],[0,0,1],[0,0,0]];
+const HEX_TABLE=[
+[1,10,14,25,44,6,33,12],
+[43,58,49,17,28,47,31,45],
+[13,38,30,21,50,64,56,35],
+[34,54,55,51,32,40,62,16],
+[9,61,37,42,57,59,53,20],
+[5,60,63,3,48,29,39,8],
+[26,41,22,27,18,4,52,23],
+[11,19,36,24,46,7,15,2]
+];
+const HEX_NAMES=["乾","坤","屯","蒙","需","讼","师","比","小畜","履","泰","否","同人","大有","谦","豫","随","蛊","临","观","噬嗑","贲","剥","复","无妄","大畜","颐","大过","坎","离","咸","恒","遁","大壮","晋","明夷","家人","睽","蹇","解","损","益","夬","姤","萃","升","困","井","革","鼎","震","艮","渐","归妹","丰","旅","巽","兑","涣","节","中孚","小过","既济","未济"];
+const HEX_XIANG=[
+"天行健，君子以自强不息","地势坤，君子以厚德载物","云雷，屯；君子以经纶","山下出泉，蒙；君子以果行育德","云上于天，需；君子以饮食宴乐","天与水违行，讼；君子以作事谋始","地中有水，师；君子以容民畜众","地上有水，比；先王以建万国，亲诸侯","风行天上，小畜；君子以懿文德","上天下泽，履；君子以辩上下，定民志","天地交，泰","天地不交，否；君子以俭德辟难","天与火，同人；君子以类族辨物","火在天上，大有；君子以遏恶扬善","地中有山，谦；君子以裒多益寡","雷出地奋，豫；先王以作乐崇德","泽中有雷，随；君子以晦入宴息","山下有风，蛊；君子以振民育德","泽上有地，临；君子以教思无穷","风行地上，观；先王以省方观民设教","雷电，噬嗑；先王以明罚敕法","山下有火，贲；君子以明庶政","山附于地，剥；上以厚下安宅","雷在地中，复；先王以至日闭关","天下雷行，物与无妄","天在山中，大畜；君子以多识前言往行","山下有雷，颐；君子以慎言语，节饮食","泽灭木，大过；君子以独立不惧","水洊至，习坎；君子以常德行","明两作，离；大人以继明照于四方","山上有泽，咸；君子以虚受人","雷风，恒；君子以立不易方","天下有山，遁；君子以远小人","雷在天上，大壮；君子以非礼弗履","明出地上，晋；君子以自昭明德","明入地中，明夷；君子以莅众用晦而明","风自火出，家人；君子以言有物而行有恒","上火下泽，睽；君子以同而异","山上有水，蹇；君子以反身修德","雷雨作，解；君子以赦过宥罪","山下有泽，损；君子以惩忿窒欲","风雷，益；君子以见善则迁，有过则改","泽上于天，夬；君子以施禄及下","天下有风，姤；后以施命诰四方","泽上于地，萃；君子以除戎器，戒不虞","地中生木，升；君子以顺德，积小以高大","泽无水，困；君子以致命遂志","木上有水，井；君子以劳民劝相","泽中有火，革；君子以治历明时","木上有火，鼎；君子以正位凝命","洊雷，震；君子以恐惧修省","兼山，艮；君子以思不出其位","山上有木，渐；君子以居贤德善俗","泽上有雷，归妹；君子以永终知敝","雷电皆至，丰；君子以折狱致刑","山上有火，旅；君子以明慎用刑","随风，巽；君子以申命行事","丽泽，兑；君子以朋友讲习","风行水上，涣；先王以享于帝立庙","泽上有水，节；君子以制数度，议德行","泽上有风，中孚；君子以议狱缓死","山上有雷，小过；君子以行过乎恭","水在火上，既济；君子以思患而豫防之","火在水上，未济；君子以慎辨物居方"];
+
+/* 六十四卦白话大意（与 HEX_NAMES 同序） */
+const XIANG_BAIHUA=[
+"刚健进取之象，宜主动作为，自强不息","厚德承载之象，宜包容稳进，以柔致远","万事起头难，宜聚人心、打基础，不惧暂困","蒙昧初开，宜虚心求教，择善而学","时机未至，宜耐心等待，养精蓄锐","争讼非吉，宜以和为贵，谋定而后动","兴师有律，宜师出有名，纪律为先","亲比相依，宜广结善缘，择善而从","力量初蓄，宜积小成大，暂敛锋芒","如履虎尾，宜谨慎守礼，步步为营","天地交泰，通达顺遂，宜趁势而上","诸事闭塞，宜俭德守身，静待转机","与人同心，宜坦诚合作，和衷共济","大有收获，宜谦而不骄，遏恶扬善","谦受益，满招损，宜低调蓄德","喜乐安逸，宜居安思危，未雨绸缪","随时而动，宜顺势而为，择善而从","积弊待整，宜正本清源，整治革新","临事而察，宜宽厚待人，教思无穷","观仰风范，宜多看多学，以身作则","齿合去梗，宜明辨是非，果断除障","文饰之美，宜内外兼修，质先于文","剥落之时，宜守正避害，厚固根本","一阳来复，否极泰来，宜把握转机","守正无妄，宜循理而行，不存侥幸","蕴蓄深厚，宜厚积薄发，涵养实力","颐养之道，宜慎言节食，养身养德","非常之时，宜独立不惧，量力而行","重险叠陷，宜持守常心，步步求实","光明相续，宜依附正道，普照有度","交感相通，宜以诚感人，虚心相待","恒久有守，宜持之以恒，不改其方","退避之时，宜远小人，全身而退","阳气壮盛，宜壮而守礼，不逞强斗狠","晋升之象，宜自昭明德，稳步向前","光明入地，宜藏才守拙，用晦而明","治家有道，宜言行有恒，先正其身","背离相异，宜求同存异，以和化怨","行路艰难，宜反身修德，遇阻则止","雷雨作解，宜纾困解难，宽以待人","损益相济，宜惩忿窒欲，舍得有度","风雷增益，宜见善则迁，施惠于众","决去小人，宜光明正大，果断而行","不期而遇，宜防微杜渐，慎择所遇","聚而成群，宜聚贤汇力，戒备无常","积小成高，宜顺德而行，步步上升","处困守志，宜不坠青云之志，静待时变","井养不穷，宜修己济人，常保其源","泽火相息，宜顺天应人，革故鼎新","鼎新凝命，宜正位安命，养贤成事","雷声震动，宜恐惧修省，临危不乱","两山相重，宜知止而止，思不出位","鸿雁渐飞，宜循序渐进，稳中求成","名分宜正，宜守礼知敝，慎始善终","盛大之时，宜守中不骄，明察善断","旅居在外，宜谨慎谦和，明辨是非","随风入物，宜谦逊行事，申命有度","和悦相说，宜朋友讲习，以诚相悦","风行水上，宜聚拢人心，重整旗鼓","泽上有水，宜节制有度，量入为出","中心诚信，宜以诚待人，信义为先","小事可过，宜恭俭自守，大事勿狂","功成初定，宜思患预防，守成不易","事未竟成，宜慎辨审势，蓄力再进"];
+
+/* 每日一签（原创签诗16支） */
+const QIAN_LV_BG={"上上":"#9C3D2E","上":"#A8543F","中":"#5A5243","中平":"#7A7263","下":"#3E5D6E"};
+const QIAN=[
+{lv:"上上",poem:["云开月正明","万里一舟轻","得失从心断","前程步步生"],jx:"云开见月，诸事通泰，进取则吉。"},
+{lv:"上上",poem:["瑞气满庭前","花开并蒂连","家和诸事顺","福禄自绵绵"],jx:"家和百福生，婚恋家宅尤吉。"},
+{lv:"上上",poem:["金榜题名日","春风满面时","运通财自旺","贵人处处随"],jx:"功名财禄两旺，多得贵人提携。"},
+{lv:"上",poem:["静水流深远","虚舟浪自平","守常终有获","何用苦相争"],jx:"以静制动，守正则自有收获。"},
+{lv:"上",poem:["细雨润新苗","功成不在朝","深耕自有获","岁晚结珠桃"],jx:"功到自然成，宜深耕缓图，忌急躁冒进。"},
+{lv:"上",poem:["江上片帆归","风顺鸟自飞","但存忠厚意","天必不相违"],jx:"心存厚道，顺风顺水，出行大利。"},
+{lv:"上",poem:["枯木逢春发","寒窗见日暖","坚持心志定","名利两相全"],jx:"困局将破，坚持即见转机。"},
+{lv:"中",poem:["月照半窗明","云来又复晴","事多心莫乱","静坐自分明"],jx:"纷扰暂多，静心自明，不宜仓促行事。"},
+{lv:"中",poem:["行路遇岔口","踌躇费思量","问君何所往","稳处是康庄"],jx:"抉择未定，取稳弃险，谋定而后动。"},
+{lv:"中",poem:["池浅难容鲤","深修自有方","且将根基固","时至自轩昂"],jx:"根基未固，宜修内功，待时而起。"},
+{lv:"中",poem:["雾里看花影","真相未可求","守拙休轻进","转眼雾自收"],jx:"真相未明，不宜妄动，稍候自清。"},
+{lv:"中",poem:["旧舟行旧渡","新水涨新滩","凡事循常规","安步当车看"],jx:"守常为上，勿贸然开辟新局。"},
+{lv:"中平",poem:["半晴半雨日","宜守不宜攻","门户勤洒扫","平淡亦从容"],jx:"平顺之日，宜打理内务，守成为先。"},
+{lv:"中平",poem:["壶中茶渐淡","添水再烹香","旧事宜重理","新图且缓张"],jx:"旧事重理有味，新计划宜缓行。"},
+{lv:"下",poem:["风急浪头高","孤舟未可操","不如归港避","静待信风号"],jx:"外境险急，宜避其锋芒，静待时机。"},
+{lv:"下",poem:["掘井九仞处","未及一篑功","莫怨时未至","蓄力待春风"],jx:"功亏一篑之叹，宜蓄力再进，勿怨勿弃。"}
+];
+
+function toggleGua(){
+ const d=$("guaDetail");
+ if(d.classList.contains("hidden")){
+  const c=window.CUR;if(!c)return;
+  const h=c.hex;
+  const wxOf=["金","金","火","木","木","水","土","土"];
+  d.innerHTML=`<div class="gd-top"><div class="gua gua-big">${h.bits.map(b=>`<div class="yao ${b?'yang':'yin'}"></div>`).join("")}</div>
+   <div class="gd-info"><div class="gd-name">${h.name}</div>
+   <div class="gd-line">第${h.num}卦 · 上${TRIG_NAME[h.up]}下${TRIG_NAME[h.lo]}<br>上卦属${wxOf[h.up]} · 下卦属${wxOf[h.lo]}</div></div></div>
+   <div class="gua-xiang" style="margin-top:14px">《象》曰：${h.xiang}。</div>
+   <div class="gd-baihua"><b>白话大意</b>：${XIANG_BAIHUA[h.num-1]}。</div>`;
+  d.classList.remove("hidden");
+  $("guaHint").textContent="▴ 收起详解";
+ }else{
+  d.classList.add("hidden");
+  $("guaHint").textContent="▾ 点看详解";
+ }
+}
+
+function drawQian(again){
+ const today=new Date();
+ const dstr=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+ let idx;
+ if(!again){
+  try{
+   const sv=JSON.parse(localStorage.getItem("ys_qian")||"null");
+   if(sv&&sv.date===dstr){showQian(sv.idx);return;}
+  }catch(e){}
+  let b={};try{b=JSON.parse(localStorage.getItem("ys_birth")||"{}")||{};}catch(e){}
+  idx=hash32(`${b.y||0}-${b.m||0}-${b.d||0}|${dstr}|qian`)%QIAN.length;
+  try{localStorage.setItem("ys_qian",JSON.stringify({date:dstr,idx}));}catch(e){}
+ }else{
+  idx=Math.floor(Math.random()*QIAN.length);
+  try{localStorage.setItem("ys_qian",JSON.stringify({date:dstr,idx}));}catch(e){}
+ }
+ // 抽签动画
+ const tong=$("qiTong");
+ $("qianResult").classList.add("hidden");
+ $("qianAgain").classList.add("hidden");
+ if($("qianBtn"))$("qianBtn").classList.add("hidden");
+ tong.classList.remove("shaking");
+ void tong.offsetWidth;
+ tong.classList.add("shaking");
+ setTimeout(()=>{tong.classList.remove("shaking");showQian(idx);},1550);
+}
+
+function showQian(idx){
+ const q=QIAN[idx];
+ $("qianResult").innerHTML=`<div class="qianpanel">
+  <span class="lv" style="background:${QIAN_LV_BG[q.lv]}">${q.lv}签 · 第${idx+1}签</span>
+  <div class="poem">${q.poem.join("<br>")}</div>
+  <div class="jx">【解曰】${q.jx}</div>
+  <div class="qian-num">签诗为民俗戏作 · 一笑置之，事在人为</div>
+ </div>`;
+ $("qianResult").classList.remove("hidden");
+ $("qianAgain").classList.remove("hidden");
+ if($("qianBtn"))$("qianBtn").classList.add("hidden");
+ if($("qianStage"))$("qianStage").querySelector(".sub").textContent="签已到手 · 明日再来一签";
+}
+
+/* ============ 导出运势卡片 ============ */
+function getAvatarSrc(){
+ const el=document.querySelector(".daye");
+ if(!el)return null;
+ const m=getComputedStyle(el).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+ return m?m[1]:null;
+}
+function wrapLines(ctx,text,maxW){
+ const lines=[];let cur="";
+ for(const ch of text){
+  if(ctx.measureText(cur+ch).width>maxW){lines.push(cur);cur=ch;}
+  else cur+=ch;
+ }
+ if(cur)lines.push(cur);
+ return lines;
+}
+async function exportCard(){
+ const c=window.CUR;
+ if(!c){toast("请先测算运势");return;}
+ const SERIF='"Songti SC","Noto Serif SC","STSong","SimSun",serif';
+ const ink="#332C22",sub="#8C8270",line="#D9CEB6";
+ const accent=getComputedStyle(document.body).getPropertyValue("--accent").trim()||"#9C3D2E";
+ const W=750,H=1280;
+ const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+ const x=cv.getContext("2d");
+ // 宣纸底与纹理
+ x.fillStyle="#F6F0E3";x.fillRect(0,0,W,H);
+ x.fillStyle="rgba(120,100,60,.05)";
+ for(let i=8;i<W;i+=13)for(let j=8;j<H;j+=13)x.fillRect(i,j,1.5,1.5);
+ // 双线框
+ x.strokeStyle="#8A7454";x.lineWidth=3;x.strokeRect(26,26,W-52,H-52);
+ x.strokeStyle="rgba(138,116,84,.55)";x.lineWidth=1;x.strokeRect(38,38,W-76,H-76);
+ // 水印
+ x.save();x.globalAlpha=.05;x.fillStyle=ink;x.font=`700 300px ${SERIF}`;x.textAlign="right";x.fillText("易",W-30,H-40);x.restore();
+ // 头像
+ const src=getAvatarSrc();
+ if(src){
+  const im=await new Promise(res=>{const t=new Image();t.onload=()=>res(t);t.onerror=()=>res(null);t.src=src;});
+  if(im){
+   const ax=W/2,ay=128,r=64;
+   x.save();x.beginPath();x.arc(ax,ay,r,0,7);x.closePath();x.clip();
+   x.drawImage(im,ax-r,ay-r,r*2,r*2);x.restore();
+   x.strokeStyle="#fff";x.lineWidth=5;x.beginPath();x.arc(ax,ay,r,0,7);x.stroke();
+   x.strokeStyle=accent;x.lineWidth=2;x.beginPath();x.arc(ax,ay,r+5,0,7);x.stroke();
+  }
+ }
+ // 标题
+ x.fillStyle=ink;x.textAlign="center";x.font=`700 46px ${SERIF}`;
+ x.fillText("刘大爷掐指一算",W/2,242);
+ // 印章
+ x.fillStyle="#9C3D2E";x.fillRect(W/2+232,206,44,44);
+ x.fillStyle="#FFF6EA";x.font=`700 30px ${SERIF}`;x.fillText("劉",W/2+254,238);
+ // 日期
+ x.fillStyle=sub;x.font=`24px ${SERIF}`;x.fillText(c.dateLine+(c.name?" · "+c.name:""),W/2,288);
+ // 卦象
+ const bits=c.hex.bits,yaoW=76,seg=yaoW*0.4,yaoH=9,gap=8;
+ let yy=330;
+ bits.forEach(b=>{
+  if(b){x.fillStyle=ink;x.fillRect(W/2-yaoW/2,yy,yaoW,yaoH);}
+  else{x.fillRect(W/2-yaoW/2,yy,seg,yaoH);x.fillRect(W/2+yaoW/2-seg,yy,seg,yaoH);}
+  yy+=yaoH+gap;
+ });
+ x.fillStyle=ink;x.font=`700 38px ${SERIF}`;x.fillText(c.hex.name,W/2,yy+44);
+ x.fillStyle=sub;x.font=`20px ${SERIF}`;x.fillText(`第${c.hex.num}卦 · 《象》曰：${c.hex.xiang.split("；")[0]}`,W/2,yy+78);
+ // 四项评分
+ const sc=c.scores,cy=yy+178,cr=50;
+ x.font=`24px ${SERIF}`;
+ sc.forEach(([n,v],i)=>{
+  const cx=W*(i+1)/5;
+  x.strokeStyle="#E2D7BF";x.lineWidth=9;x.beginPath();x.arc(cx,cy,cr,0,7);x.stroke();
+  x.strokeStyle=accent;x.lineCap="round";x.beginPath();x.arc(cx,cy,cr,-Math.PI/2,-Math.PI/2+7*v/100);x.stroke();
+  x.fillStyle=ink;x.font=`700 30px ${SERIF}`;x.fillText(v,cx,cy+10);
+  x.fillStyle=sub;x.font=`22px ${SERIF}`;x.fillText(n,cx,cy+cr+34);
+ });
+ // 宜忌两列
+ const topY=cy+cr+92,colW=290;
+ x.font=`700 30px ${SERIF}`;
+ x.fillStyle="#4A6B4F";x.fillText("宜",W*0.25,topY);
+ x.fillStyle="#A6402E";x.fillText("忌",W*0.75,topY);
+ x.font=`24px ${SERIF}`;
+ c.yi.forEach((it,i)=>{x.fillStyle=ink;const t=`${i+1}. ${it[0]}`;x.textAlign="left";x.fillText(t,W*0.25-100,topY+44+i*38);});
+ c.ji.forEach((it,i)=>{x.fillStyle=ink;const t=`${i+1}. ${it[0]}`;x.fillText(t,W*0.75-100,topY+44+i*38);});
+ x.textAlign="center";
+ // 幸运信息
+ let ly=topY+44+4*38+16;
+ x.fillStyle=sub;x.font=`24px ${SERIF}`;
+ x.fillText(`幸运方位 ${c.lucky.dir} · 吉色 ${c.lucky.color} · 吉数 ${c.lucky.num}`,W/2,ly);
+ // 分隔线
+ ly+=28;x.strokeStyle=line;x.lineWidth=1;x.beginPath();x.moveTo(W*0.2,ly);x.lineTo(W*0.8,ly);x.stroke();
+ // 语录
+ ly+=44;x.fillStyle=ink;x.font=`26px ${SERIF}`;
+ wrapLines(x,"「"+c.quote+"」",W-220).forEach((ln,i,arr)=>{x.fillText(ln,W/2,ly+i*42);ly+=0;});
+ ly+=42*wrapLines(x,"「"+c.quote+"」",W-220).length;
+ // 底部
+ x.fillStyle=sub;x.font=`20px ${SERIF}`;
+ x.fillText("《易》曰：积善之家，必有余庆 · 演算仅供娱乐参考",W/2,H-76);
+ // 展示
+ const url=cv.toDataURL("image/png");
+ window._cardDataUrl=url;
+ cv.toBlob(b=>{window._cardBlob=b;},"image/png");
+ $("cardImg").src=url;
+ $("cardDl").href=url;
+ // 支持系统分享（iOS Safari / 安卓 Chrome）时显示"保存/分享"按钮
+ const canShare=!!(navigator.share&&navigator.canShare);
+ $("cardShareBtn").classList.toggle("hidden",!canShare);
+ $("cardModal").classList.remove("hidden");
+}
+async function shareCard(){
+ try{
+  const blob=window._cardBlob;
+  if(!blob){toast("卡片还没生成，请稍候再试");return;}
+  const file=new File([blob],"刘大爷每日一卦.png",{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:"刘大爷每日一卦"});
+   return;
+  }
+ }catch(e){
+  if(e&&e.name==="AbortError")return; // 用户取消分享
+ }
+ toast("当前浏览器不支持直接保存，请长按上方图片选\"存储图像\"");
+}
+
+/* ============ 输入页初始化 ============ */
+const $=id=>document.getElementById(id);
+/* ============ 历法选择与日期选项 ============ */
+let CAL_TYPE=0,LUNAR_MONTHS=[];
+const CN_MONTHS=["正月","二月","三月","四月","五月","六月","七月","八月","九月","十月","冬月","腊月"];
+const CN_DAY=n=>["初一","初二","初三","初四","初五","初六","初七","初八","初九","初十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十","廿一","廿二","廿三","廿四","廿五","廿六","廿七","廿八","廿九","三十"][n-1];
+function setCalType(t){
+ CAL_TYPE=t;
+ $("segSolar").classList.toggle("active",t===0);
+ $("segLunar").classList.toggle("active",t===1);
+ buildDateOptions();
+}
+function buildDateOptions(){
+ const yEl=$("inYear"),mEl=$("inMonth"),dEl=$("inDay");
+ yEl.innerHTML="";mEl.innerHTML="";dEl.innerHTML="";
+ if(CAL_TYPE===0){
+  $("dateLabel").textContent="出生年月日（公历）";
+  const nowY=new Date().getFullYear();
+  for(let i=nowY;i>=1940;i--)yEl.add(new Option(i+"年",i));
+  for(let i=1;i<=12;i++)mEl.add(new Option(i+"月",i));
+  rebuildSolarDays();
+  yEl.value=1995;mEl.value=6;dEl.value=15;
+ }else{
+  $("dateLabel").textContent="出生年月日（农历）";
+  const nowY=new Date().getFullYear();
+  for(let i=nowY;i>=1900;i--)yEl.add(new Option(i+"年",i));
+  yEl.value=1988;
+  buildLunarMonths();buildLunarDays();
+ }
+}
+function rebuildSolarDays(){
+ const y=+$("inYear").value,m=+$("inMonth").value,dEl=$("inDay");
+ const dim=new Date(y,m,0).getDate();
+ dEl.innerHTML="";
+ for(let i=1;i<=dim;i++)dEl.add(new Option(i+"日",i));
+}
+function buildLunarMonths(){
+ const y=+$("inYear").value,leap=solarlunar.leapMonth(y);
+ LUNAR_MONTHS=[];
+ for(let i=1;i<=12;i++){LUNAR_MONTHS.push({m:i,leap:false});if(leap===i)LUNAR_MONTHS.push({m:i,leap:true});}
+ const mEl=$("inMonth");mEl.innerHTML="";
+ LUNAR_MONTHS.forEach((o,i)=>mEl.add(new Option((o.leap?"闰":"")+CN_MONTHS[o.m-1],i)));
+}
+function buildLunarDays(){
+ const y=+$("inYear").value,sel=LUNAR_MONTHS[+$("inMonth").value]||{m:1,leap:false};
+ const dim=sel.leap?solarlunar.leapDays(y):solarlunar.monthDays(y,sel.m);
+ const dEl=$("inDay");dEl.innerHTML="";
+ for(let i=1;i<=dim;i++)dEl.add(new Option(CN_DAY(i),i));
+}
+function solarFromInputs(){
+ if(CAL_TYPE===0)return{sy:+$("inYear").value,sm:+$("inMonth").value,sd:+$("inDay").value,lunarText:null};
+ const ly=+$("inYear").value,oi=+$("inMonth").value,ld=+$("inDay").value;
+ const om=LUNAR_MONTHS[oi];
+ if(!om)return null;
+ const conv=solarlunar.lunar2solar(ly,om.m,ld,om.leap);
+ if(!conv||conv===-1)return null;
+ return{sy:conv.cYear,sm:conv.cMonth,sd:conv.cDay,
+  lunarText:`农历${ly}年${(om.leap?"闰":"")+CN_MONTHS[om.m-1]}${CN_DAY(ld)} · 公历${conv.cYear}年${conv.cMonth}月${conv.cDay}日`};
+}
+
+// 出生地数据：[省名, 单选型(直辖市/特区=1), 其经度 或 [[城市,东经],...]]（经度源：阿里云DataV行政区划，北京时间120°基准，经度差1°=4分钟）
+function fillCity(pi){
+ const pr=PLACE_TREE[pi],ct=$("inCity");ct.innerHTML="";
+ if(pr[1]===1){ct.classList.add("hidden");return;}
+ ct.classList.remove("hidden");
+ ct.add(new Option("选择城市",""));
+ pr[2].forEach((c,i)=>ct.add(new Option(c[0],String(i))));
+}
+function placeFromSel(){
+ const v=$("inProvince").value;if(v==="")return null;
+ const pr=PLACE_TREE[+v];
+ if(pr[1]===1)return{name:pr[0],lon:pr[2]};
+ const c=$("inCity").value;if(c==="")return null;
+ return{name:pr[0].replace(/省$/,"")+"·"+pr[2][+c][0],lon:pr[2][+c][1]};
+}
+const PLACE_TREE=[["北京市",1,116.4],["天津市",1,117.2],["河北省",0,[["石家庄市",114.5],["唐山市",118.2],["秦皇岛市",119.6],["邯郸市",114.5],["邢台市",114.5],["保定市",115.5],["张家口市",114.9],["承德市",117.9],["沧州市",116.9],["廊坊市",116.7],["衡水市",115.7]]],["山西省",0,[["太原市",112.5],["大同市",113.3],["阳泉市",113.6],["长治市",113.1],["晋城市",112.9],["朔州市",112.4],["晋中市",112.7],["运城市",111.0],["忻州市",112.7],["临汾市",111.5],["吕梁市",111.1]]],["内蒙古自治区",0,[["呼和浩特市",111.7],["包头市",109.8],["乌海市",106.8],["赤峰市",119.0],["通辽市",122.3],["鄂尔多斯市",110.0],["呼伦贝尔市",119.8],["巴彦淖尔市",107.4],["乌兰察布市",113.1],["兴安盟",122.1],["锡林郭勒盟",116.1],["阿拉善盟",105.7]]],["辽宁省",0,[["沈阳市",123.4],["大连市",121.6],["鞍山市",123.0],["抚顺市",123.9],["本溪市",123.8],["丹东市",124.4],["锦州市",121.1],["营口市",122.2],["阜新市",121.6],["辽阳市",123.2],["盘锦市",122.1],["铁岭市",123.8],["朝阳市",120.5],["葫芦岛市",120.9]]],["吉林省",0,[["长春市",125.3],["吉林市",126.6],["四平市",124.4],["辽源市",125.1],["通化市",125.9],["白山市",126.4],["松原市",124.8],["白城市",122.8],["延边朝鲜族自治州",129.5]]],["黑龙江省",0,[["哈尔滨市",126.6],["齐齐哈尔市",124.0],["鸡西市",131.0],["鹤岗市",130.3],["双鸭山市",131.2],["大庆市",125.1],["伊春市",128.9],["佳木斯市",130.4],["七台河市",131.0],["牡丹江市",129.6],["黑河市",127.5],["绥化市",127.0],["大兴安岭地区",124.7]]],["上海市",1,121.5],["江苏省",0,[["南京市",118.8],["无锡市",120.3],["徐州市",117.2],["常州市",119.9],["苏州市",120.6],["南通市",120.9],["连云港市",119.2],["淮安市",119.0],["盐城市",120.1],["扬州市",119.4],["镇江市",119.5],["泰州市",119.9],["宿迁市",118.3]]],["浙江省",0,[["杭州市",120.2],["宁波市",121.5],["温州市",120.7],["嘉兴市",120.8],["湖州市",120.1],["绍兴市",120.6],["金华市",119.6],["衢州市",118.9],["舟山市",122.1],["台州市",121.4],["丽水市",119.9]]],["安徽省",0,[["合肥市",117.3],["芜湖市",118.4],["蚌埠市",117.4],["淮南市",117.0],["马鞍山市",118.5],["淮北市",116.8],["铜陵市",117.8],["安庆市",117.0],["黄山市",118.3],["滁州市",118.3],["阜阳市",115.8],["宿州市",117.0],["六安市",116.5],["亳州市",115.8],["池州市",117.5],["宣城市",118.8]]],["福建省",0,[["福州市",119.3],["厦门市",118.1],["莆田市",119.0],["三明市",117.6],["泉州市",118.6],["漳州市",117.7],["南平市",118.2],["龙岩市",117.0],["宁德市",119.5]]],["江西省",0,[["南昌市",115.9],["景德镇市",117.2],["萍乡市",113.9],["九江市",116.0],["新余市",114.9],["鹰潭市",117.0],["赣州市",114.9],["吉安市",115.0],["宜春市",114.4],["抚州市",116.4],["上饶市",118.0]]],["山东省",0,[["济南市",117.0],["青岛市",120.4],["淄博市",118.0],["枣庄市",117.6],["东营市",118.7],["烟台市",121.4],["潍坊市",119.1],["济宁市",116.6],["泰安市",117.1],["威海市",122.1],["日照市",119.5],["临沂市",118.3],["德州市",116.3],["聊城市",116.0],["滨州市",118.0],["菏泽市",115.5]]],["河南省",0,[["郑州市",113.7],["开封市",114.3],["洛阳市",112.4],["平顶山市",113.3],["安阳市",114.4],["鹤壁市",114.3],["新乡市",113.9],["焦作市",113.2],["濮阳市",115.0],["许昌市",113.8],["漯河市",114.0],["三门峡市",111.2],["南阳市",112.5],["商丘市",115.7],["信阳市",114.1],["周口市",114.6],["驻马店市",114.0],["济源市",112.6]]],["湖北省",0,[["武汉市",114.3],["黄石市",115.1],["十堰市",110.8],["宜昌市",111.3],["襄阳市",112.1],["鄂州市",114.9],["荆门市",112.2],["孝感市",113.9],["荆州市",112.2],["黄冈市",114.9],["咸宁市",114.3],["随州市",113.4],["恩施土家族苗族自治州",109.5],["仙桃市",113.5],["潜江市",112.9],["天门市",113.2],["神农架林区",110.7]]],["湖南省",0,[["长沙市",113.0],["株洲市",113.2],["湘潭市",112.9],["衡阳市",112.6],["邵阳市",111.5],["岳阳市",113.1],["常德市",111.7],["张家界市",110.5],["益阳市",112.4],["郴州市",113.0],["永州市",111.6],["怀化市",110.0],["娄底市",112.0],["湘西土家族苗族自治州",109.7]]],["广东省",0,[["广州市",113.3],["韶关市",113.6],["深圳市",114.1],["珠海市",113.6],["汕头市",116.7],["佛山市",113.1],["江门市",113.1],["湛江市",110.4],["茂名市",110.9],["肇庆市",112.5],["惠州市",114.4],["梅州市",116.1],["汕尾市",115.4],["河源市",114.7],["阳江市",112.0],["清远市",113.1],["东莞市",113.7],["中山市",113.4],["潮州市",116.6],["揭阳市",116.4],["云浮市",112.0]]],["广西壮族自治区",0,[["南宁市",108.3],["柳州市",109.4],["桂林市",110.3],["梧州市",111.3],["北海市",109.1],["防城港市",108.3],["钦州市",108.6],["贵港市",109.6],["玉林市",110.2],["百色市",106.6],["贺州市",111.6],["河池市",108.1],["来宾市",109.2],["崇左市",107.4]]],["海南省",0,[["海口市",110.3],["三亚市",109.5],["三沙市",112.3],["儋州市",109.6],["五指山市",109.5],["琼海市",110.5],["文昌市",110.8],["万宁市",110.4],["东方市",108.7],["定安县",110.3],["屯昌县",110.1],["澄迈县",110.0],["临高县",109.7],["白沙黎族自治县",109.5],["昌江黎族自治县",109.1],["乐东黎族自治县",109.2],["陵水黎族自治县",110.0],["保亭黎族苗族自治县",109.7],["琼中黎族苗族自治县",109.8]]],["重庆市",1,106.5],["四川省",0,[["成都市",104.1],["自贡市",104.8],["攀枝花市",101.7],["泸州市",105.4],["德阳市",104.4],["绵阳市",104.7],["广元市",105.8],["遂宁市",105.6],["内江市",105.1],["乐山市",103.8],["南充市",106.1],["眉山市",103.8],["宜宾市",104.6],["广安市",106.6],["达州市",107.5],["雅安市",103.0],["巴中市",106.8],["资阳市",104.6],["阿坝藏族羌族自治州",102.2],["甘孜藏族自治州",102.0],["凉山彝族自治州",102.3]]],["贵州省",0,[["贵阳市",106.7],["六盘水市",104.8],["遵义市",106.9],["安顺市",105.9],["毕节市",105.3],["铜仁市",109.2],["黔西南布依族苗族自治州",104.9],["黔东南苗族侗族自治州",108.0],["黔南布依族苗族自治州",107.5]]],["云南省",0,[["昆明市",102.7],["曲靖市",103.8],["玉溪市",102.5],["保山市",99.2],["昭通市",103.7],["丽江市",100.2],["普洱市",101.0],["临沧市",100.1],["楚雄彝族自治州",101.5],["红河哈尼族彝族自治州",103.4],["文山壮族苗族自治州",104.2],["西双版纳傣族自治州",100.8],["大理白族自治州",100.2],["德宏傣族景颇族自治州",98.6],["怒江傈僳族自治州",98.9],["迪庆藏族自治州",99.7]]],["西藏自治区",0,[["拉萨市",91.1],["日喀则市",88.9],["昌都市",97.2],["林芝市",94.4],["山南市",91.8],["那曲市",92.1],["阿里地区",80.1]]],["陕西省",0,[["西安市",108.9],["铜川市",109.0],["宝鸡市",107.1],["咸阳市",108.7],["渭南市",109.5],["延安市",109.5],["汉中市",107.0],["榆林市",109.7],["安康市",109.0],["商洛市",109.9]]],["甘肃省",0,[["兰州市",103.8],["嘉峪关市",98.3],["金昌市",102.2],["白银市",104.2],["天水市",105.7],["武威市",102.6],["张掖市",100.5],["平凉市",106.7],["酒泉市",98.5],["庆阳市",107.6],["定西市",104.6],["陇南市",104.9],["临夏回族自治州",103.2],["甘南藏族自治州",102.9]]],["青海省",0,[["西宁市",101.8],["海东市",102.1],["海北藏族自治州",100.9],["黄南藏族自治州",102.0],["海南藏族自治州",100.6],["果洛藏族自治州",100.2],["玉树藏族自治州",97.0],["海西蒙古族藏族自治州",97.4]]],["宁夏回族自治区",0,[["银川市",106.3],["石嘴山市",106.4],["吴忠市",106.2],["固原市",106.3],["中卫市",105.2]]],["新疆维吾尔自治区",0,[["乌鲁木齐市",87.6],["克拉玛依市",84.9],["吐鲁番市",89.2],["哈密市",93.5],["昌吉回族自治州",87.3],["博尔塔拉蒙古自治州",82.1],["巴音郭楞蒙古自治州",86.2],["阿克苏地区",80.3],["克孜勒苏柯尔克孜自治州",76.2],["喀什地区",76.0],["和田地区",79.9],["伊犁哈萨克自治州",81.3],["塔城地区",83.0],["阿勒泰地区",88.1],["石河子市",86.0],["阿拉尔市",81.3],["图木舒克市",79.1],["五家渠市",87.5],["北屯市",87.8],["铁门关市",85.5],["双河市",82.4],["可克达拉市",80.6],["昆玉市",79.3],["胡杨河市",84.8]]],["台\u6e7e省",0,[["台北市",121.6],["新北市",121.5],["桃园市",121.2],["台中市",120.6],["台南市",120.2],["高雄市",120.3],["基隆市",121.7],["新竹市",121.0],["嘉义市",120.5],["新竹县",121.0],["苗栗县",120.8],["彰化县",120.5],["南投县",120.7],["云林县",120.5],["嘉义县",120.3],["屏东县",120.5],["宜兰县",121.8],["花莲县",121.6],["台东县",121.1],["澎湖县",119.6],["金门县",118.3],["连江县",119.5]]],["香港特别行政区",1,114.2],["澳门特别行政区",1,113.5]];
+const OLD_MIG=[[0, -1], [1, -1], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, -1], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [19, 0], [20, 0], [21, -1], [22, 0], [23, 0], [24, 0], [25, 0], [26, 0], [27, 0], [28, 0], [29, 0], [30, 0], [32, -1], [33, -1], [31, -1]];
+
+(function init(){
+ // 输入页：当日通用幸运色
+ applyLuckTheme(pickLuckFor(null,null,null));
+ const y=$("inYear"),m=$("inMonth"),d=$("inDay"),h=$("inHour");
+ h.add(new Option("不选时辰",""));
+ HOUR_LABELS.forEach((t,i)=>h.add(new Option(t,i)));
+ const pv=$("inProvince"),ct=$("inCity");
+ pv.add(new Option("不填",""));
+ PLACE_TREE.forEach((pr,i)=>pv.add(new Option(pr[0],String(i))));
+ pv.addEventListener("change",function(){const v=this.value;if(v===""){ct.classList.add("hidden");window.CUR_PLACE=null;}else fillCity(+v);});
+ buildDateOptions();
+ h.value="";
+ y.addEventListener("change",()=>{CAL_TYPE===1?buildLunarMonths():rebuildSolarDays();CAL_TYPE===1&&buildLunarDays();});
+ m.addEventListener("change",()=>{CAL_TYPE===1?buildLunarDays():rebuildSolarDays();});
+ try{
+  const saved=JSON.parse(localStorage.getItem("ys_birth")||"null");
+  if(saved){
+   setCalType(saved.calType===1?1:0);
+   y.value=saved.y;
+   if(CAL_TYPE===1){buildLunarMonths();buildLunarDays();
+    const idx=LUNAR_MONTHS.findIndex(o=>o.m===saved.m&&o.leap===!!saved.leap);
+    m.value=idx>=0?idx:0;
+   }else m.value=saved.m;
+   d.value=saved.d;
+   h.value=(saved.hour===0||saved.hour)?saved.hour:"";
+   if(saved.placeP!==undefined&&saved.placeP!==null&&saved.placeP!==""){
+    pv.value=String(saved.placeP);const pr=PLACE_TREE[+saved.placeP];
+    if(pr&&pr[1]===1){ct.classList.add("hidden");window.CUR_PLACE={name:pr[0],lon:pr[2]};}
+    else if(pr){fillCity(+saved.placeP);ct.value=String(saved.placeC===undefined?"":saved.placeC);window.CUR_PLACE=placeFromSel();}
+   }else if(saved.place!==undefined&&saved.place!==null&&saved.place!==""){
+    const mg=OLD_MIG[+saved.place];
+    if(mg){pv.value=String(mg[0]);const pr=PLACE_TREE[mg[0]];
+     if(pr[1]===1){ct.classList.add("hidden");window.CUR_PLACE={name:pr[0],lon:pr[2]};}
+     else{fillCity(mg[0]);ct.value=String(mg[1]);window.CUR_PLACE=placeFromSel();}}
+   }else{window.CUR_PLACE=null;}
+   if(saved.name)$("inName").value=saved.name;
+   const r=solarFromInputs();
+   if(r)showResult(r.sy,r.sm,r.sd,saved.name||"",(saved.hour===0||saved.hour)?saved.hour:null,r.lunarText);
+  }
+ }catch(e){}
+})();
+
+function submitBirth(){
+ const name=$("inName").value.trim();
+ const hour=$("inHour").value===""?null:+$("inHour").value;
+ const r=solarFromInputs();
+ if(!r){toast("该农历日期不存在，请检查月份大小与闰月后重选");return;}
+ const saved=Object.assign({name,hour},{calType:CAL_TYPE,y:+$("inYear").value,m:+$("inMonth").value,d:+$("inDay").value});
+ if(CAL_TYPE===1){const om=LUNAR_MONTHS[+$("inMonth").value];saved.m=om.m;saved.leap=om.leap;}
+ saved.placeP=$("inProvince").value;saved.placeC=$("inCity").value;
+ window.CUR_PLACE=placeFromSel();
+ try{localStorage.setItem("ys_birth",JSON.stringify(saved));}catch(e){}
+ showResult(r.sy,r.sm,r.sd,name,hour,r.lunarText);
+}
+function backToInput(){$("pageResult").classList.add("hidden");$("pageInput").classList.remove("hidden");applyLuckTheme(pickLuckFor(null,null,null));window.scrollTo(0,0);}
+function resetAll(){
+ if(!confirm("确定刷新并清除已填的生辰、称呼、合盘等信息吗？"))return;
+ try{localStorage.removeItem("ys_birth");}catch(e){}
+ try{localStorage.removeItem("ys_qian");}catch(e){}
+ try{toast("已清除，正在刷新…");}catch(e){}
+ setTimeout(function(){location.reload();},400);
+}
+
+/* ============ 罗盘问事（法《梅花易数》：以事定卦，以卦指方） ============ */
+const TRIG_DIR=[315,270,180,90,135,0,45,225]; // 乾兑离震巽坎艮坤 → 后天八卦方位角（0°=正北）
+const TRIG_FANG=["西北","正西","正南","正东","东南","正北","东北","西南"];
+const LP_WX=["金","金","火","木","木","水","土","土"];
+const TRIG_XIANG=["天·刚健，主贵人与权势","泽·喜悦，主口才与人缘","火·文明，主文书与名气","雷·奋动，主行动与机变","风·顺入，主消息与往来","水·险陷，主智慧与奔波","山·止守，主安稳与蓄力","地·柔顺，主众人与包容"];
+const TRIG_ADVICE=["宜直接找能拍板的人，借贵人之力推进","事在人为，先把话说开，谈拢了事情就顺了","先把材料、文书、凭据备齐再动手","看准了就快做，这事宜动不宜拖","多打听、多走动，消息一到转机就来","事有周折别硬闯，稳住阵脚等水落石出","宜守不宜攻，先稳住现有的再图下一步","放下身段多商量，众人拾柴火焰高"];
+const LP_SAY=["盘针不骗人，心急的人才骗自己。","方位是助力，路还是要自己走。","卦给你指个方向，脚下留神便是。","问事先问心，罗盘只是帮你看清坡度。","东西南北皆有路，走对了少绕弯。","事缓则圆，方向对了就不怕远。"];
+function showLuopan(){
+ $("pageResult").classList.add("hidden");
+ $("pageLuopan").classList.remove("hidden");
+ if(!window.LP_RING){buildLpRing();window.LP_RING=true;}
+ window.scrollTo(0,0);
+}
+function backLuopan(){
+ $("pageLuopan").classList.add("hidden");
+ $("pageResult").classList.remove("hidden");
+ window.scrollTo(0,0);
+}
+function buildLpRing(){
+ const ring=$("lpRing"),dial=$("lpDial");
+ const d=dial.getBoundingClientRect().width||Math.min(window.innerWidth*0.78,300);
+ const R1=d/2-d*0.10, R2=d/2-d*0.185;
+ const BR=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+ let html="";
+ BR.forEach((z,i)=>{const a=i*30*Math.PI/180,x=d/2+R1*Math.sin(a),yy=d/2-R1*Math.cos(a);
+  html+='<span class="lp-zhi" style="left:'+x.toFixed(1)+'px;top:'+yy.toFixed(1)+'px">'+z+'</span>';});
+ TRIG_NAME.forEach((g,i)=>{const a=TRIG_DIR[i]*Math.PI/180,x=d/2+R2*Math.sin(a),yy=d/2-R2*Math.cos(a);
+  html+='<span class="lp-zhi gua" data-gua="'+i+'" style="left:'+x.toFixed(1)+'px;top:'+yy.toFixed(1)+'px">'+g+'</span>';});
+ ring.innerHTML=html;
+}
+function castLP(){
+ const txt=$("lpText").value.trim();
+ if(!txt){toast("先写下要占的事，再转罗盘");return;}
+ const cur=window.CUR; if(!cur){toast("请先回到运势页完成测算");return;}
+ const today=new Date();
+ const ds=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
+ const sc=[...txt.replace(/\s+/g,"")].length;
+ const seed=hash32("LP|"+txt+"|"+cur.y+"-"+cur.m+"-"+cur.d+"|"+ds);
+ const up=(sc+cur.m+1)%8, lo=(sc+cur.d+3)%8, moving=(sc+seed)%6;
+ const hnum=HEX_TABLE[up][lo];
+ const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]);
+ const vb=bits.slice(); vb[moving]=vb[moving]?0:1;
+ const tri=b=>TRIG_BITS.findIndex(a=>a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]);
+ const vlo=tri(vb.slice(0,3)), vup=tri(vb.slice(3));
+ const vnum=HEX_TABLE[vup][vlo];
+ const yong=moving<3?lo:up, ti=moving<3?up:lo; // 动爻所在为用卦（事），另一卦为体卦（己）
+ const ang=TRIG_DIR[yong];
+ document.querySelectorAll("#lpRing .lp-zhi").forEach(e=>e.classList.remove("hit"));
+ const hitEl=document.querySelector('#lpRing [data-gua="'+yong+'"]');
+ if(hitEl)hitEl.classList.add("hit");
+ window.LP_DEG=window.LP_DEG||0;
+ const delta=((ang-(window.LP_DEG%360))%360+360)%360;
+ window.LP_DEG+=1080+delta;
+ $("lpNeedle").style.transform="rotate("+window.LP_DEG+"deg)";
+ const gname=(u,l,num)=>u===l?TRIG_NAME[u]+"为"+TRIG_IMG[l]:TRIG_IMG[u]+TRIG_IMG[l]+HEX_NAMES[num-1];
+ const yaoHtml=bits.map((b,i)=>'<div class="yao '+(b?'yang':'yin')+(i===moving?' moving':'')+'"></div>').join("");
+ const yaoName=["初","二","三","四","五","上"][moving]+"爻动";
+ const lv=GUALV[vnum-1], lvT=WEN_LV_TXT[lv];
+ $("lpOut").innerHTML=
+  '<div class="lp-dir"><span class="dname">'+TRIG_FANG[yong]+'</span><span class="dwx">用卦'+TRIG_NAME[yong]+' · 五行属'+LP_WX[yong]+'</span></div>'
+ +'<div class="gua gua-big" style="display:flex;justify-content:center;gap:3px;margin-top:16px">'+yaoHtml+'</div>'
+ +'<div class="lp-xiang"><b>'+gname(up,lo,hnum)+'</b> 之 <b>'+gname(vup,vlo,vnum)+'</b> · '+yaoName+'<br>用卦'+TRIG_NAME[yong]+'，象：'+TRIG_XIANG[yong]+'</div>'
+ +'<div class="wen-guaci" style="margin-top:12px">'+GUACI[vnum-1]+'<span class="src">——《周易》第'+vnum+'卦卦辞</span></div>'
+ +'<div class="lp-advice"><b>'+lvT[0]+'</b> · 求谋留意<b>'+TRIG_FANG[yong]+'</b>一方：'+TRIG_ADVICE[yong]+'（体卦'+TRIG_NAME[ti]+'居'+TRIG_FANG[ti]+'，宜立本守）</div>'
+ +'<div class="lp-say">刘大爷曰：'+LP_SAY[seed%LP_SAY.length]+'</div>'
+ +'<div class="wen-note">法《梅花易数》以事定卦、以卦指方 · 同一件事当日指向不变 · 民俗演算仅供娱乐参考</div>';
+ $("lpResultCard").classList.remove("hidden");
+ setTimeout(function(){$("lpResultCard").scrollIntoView({behavior:"smooth",block:"start"});},2400);
+}
+
+/* ============ 主渲染 ============ */
+function showResult(y,m,d,name,hour,lunarText){
+ const today=new Date();
+ const yp=yearPillar(y,m,d),mp=monthPillar(y,m,d,yp.g),dpi=dayPillarIdx(y,m,d);
+ const dp={g:dpi%10,z:dpi%12};
+ // 出生地真太阳时校正（北京时间以东经120°为准，经度每差1°=4分钟）
+ let hourEff=(hour===0||hour)?hour:null, plTxt="", plNote="", corrMin=0;
+ const plc=window.CUR_PLACE;
+ if(plc&&plc.lon!==undefined){
+  const lon=plc.lon;corrMin=Math.round((lon-120)*4);plTxt=plc.name+"（东经"+lon+"°）";
+  if(hourEff!==null){
+   const mid=hourEff*120; // 时辰中点（分钟），子时中点为0:00
+   const cm=((mid+corrMin)%1440+1440)%1440;
+   const nb=cm<60?0:Math.floor((cm+60)/120);
+   if(nb!==hourEff){plNote="时柱按真太阳时校正为"+HOUR_LABELS[nb].slice(0,2)+"（原选"+HOUR_LABELS[hourEff].slice(0,2)+"）";hourEff=nb;}
+   else plNote="时柱已按真太阳时校正"+(corrMin>=0?"+":"")+corrMin+"分钟，时辰不变";
+  }
+ }
+ // 时柱：日干起时干（甲己日起甲子时），子时23:00起
+ const hp=hourEff!==null&&hourEff!==undefined?{g:((dp.g%5)*2+hourEff)%10,z:hourEff}:null;
+ const yIdx=((yp.year-4)%60+60)%60;
+ const elem=GAN_WX[dp.g]; // 日主五行（出生日天干）
+ const yearNayin=NAYIN[Math.floor(yIdx/2)]; // 年命纳音（仅供参考展示）
+
+ // 主题：每日幸运色（按生辰+当日日期，每人每日不同）
+ document.body.className=ELEM_THEME[elem];
+ const luckTheme=pickLuckFor(y,m,d);
+ applyLuckTheme(luckTheme);
+ window.CUR_LUCK=luckTheme;
+
+ // 命格卡
+ $("who").textContent=(name?name+" · ":"")+(lunarText||(y+"年"+m+"月"+d+"日出生"))+(hp?" · "+HOUR_LABELS[hp.z].slice(0,2)+"生":"");
+ $("elemChar").textContent=elem+"命";
+ $("nayinName").textContent="日主"+GAN[dp.g]+" · "+ELEM_DESC[elem];
+ $("yearNayinName").textContent="年命纳音："+yearNayin+"（供参考）";
+ const pnEl=$("placeNote");
+ let pn="";
+ if(plTxt)pn+="📍 出生地："+plTxt;
+ if(plNote)pn+=(pn?" · ":"")+plNote;
+ pnEl.textContent=pn;pnEl.classList.toggle("show",!!pn);
+ $("tags").innerHTML=`<span class="pill" style="background:rgba(255,255,255,.2);color:#fff">属${SHENGXIAO[yp.z]}</span><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">${zodiacEn(yp.z)}</span>`;
+ const cols=[["年柱",pillarStr(yp)],["月柱",pillarStr(mp)],["日柱",pillarStr(dp)]];
+ if(hp)cols.push(["时柱",pillarStr(hp)]);
+ cols.push(["日主",GAN[dp.g]+"("+GAN_WX[dp.g]+")"]);
+ $("bazi").innerHTML=cols.map(c=>`<div class="col"><div class="h">${c[0]}</div><div class="v">${c[1]}</div></div>`).join("");
+ $("bazi").style.gridTemplateColumns=`repeat(${cols.length},1fr)`;
+ $("bazi").classList.toggle("c5",cols.length===5);
+ // 五行统计（含时柱，地支取主气）
+ const cnt={"金":0,"木":0,"水":0,"火":0,"土":0};
+ [yp,mp,dp].concat(hp?[hp]:[]).forEach(p=>{cnt[GAN_WX[p.g]]++;cnt[ZHI_WX[p.z]]++;});
+ const mx=Math.max(...Object.values(cnt));
+ $("wxbar").innerHTML=Object.entries(cnt).map(([k,v])=>
+  `<div class="item"><span style="width:2em">${k}</span><span class="bar"><i style="width:${v/mx*100}%"></i></span><span>${v}</span></div>`).join("");
+ const lack=Object.entries(cnt).filter(([k,v])=>v===0).map(([k])=>k);
+
+ // 今日运势（确定性随机：生辰+当天日期）
+ const key=`${y}-${m}-${d}|${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+ const rnd=mulberry32(hash32(key));
+ const base=55+rnd()*20;
+ const scores=SCORE_NAMES.map(([n])=>{
+  const v=Math.max(40,Math.min(98,Math.round(base+(rnd()-0.5)*46)));
+  return [n,v];
+ });
+ $("scores").innerHTML=scores.map(([n,v])=>{
+  const C=2*Math.PI*26,off=C*(1-v/100);
+  return `<div class="score"><div class="ring">
+   <svg width="64" height="64"><circle cx="32" cy="32" r="26" fill="none" stroke="var(--accent-soft)" stroke-width="6"/>
+   <circle cx="32" cy="32" r="26" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg>
+   <div class="num">${v}</div></div><div class="name">${n}</div></div>`;
+ }).join("");
+
+ const luckyDir=DIRS[Math.floor(rnd()*DIRS.length)];
+ const caiDir=CAISHEN_DIR[dayGanIdx(today)];
+ const luckyNum=1+Math.floor(rnd()*9);
+ const luckyColor=luckTheme[0];
+ const lucky={dir:luckyDir,num:luckyNum,color:luckyColor};
+ $("lucky").innerHTML=`<span>🧭 幸运方位：${luckyDir}</span><span>💰 财位：${caiDir}</span><span>🎨 今日幸运色：${luckyColor}（底色已换）</span><span>🔢 幸运数字：${luckyNum}</span>`+(lack.length?`<span>⚖️ 五行缺${lack.join("、")}</span>`:"");
+
+ // 宜忌：随机挑4+4不重复
+ const pick=(pool,n)=>{const idx=[...pool.keys()];for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}return idx.slice(0,n).map(i=>pool[i]);};
+ const yiPicked=pick(YI,4),jiPicked=pick(JI,4);
+ $("yiList").innerHTML=yiPicked.map(([t,dd])=>`<li><span class="mk">宜</span><span>${t}<span class="d">　${dd}</span></span></li>`).join("");
+ $("jiList").innerHTML=jiPicked.map(([t,dd])=>`<li><span class="mk">忌</span><span>${t}<span class="d">　${dd}</span></span></li>`).join("");
+
+ // 一周运势趋势（未来7天，含今天；同一生辰每天结果固定）
+ const days=[];
+ for(let i=0;i<7;i++){
+  const dt=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i);
+  const k2=`${y}-${m}-${d}|${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+  const r=mulberry32(hash32(k2));
+  const b=55+r()*20;
+  const ss=SCORE_NAMES.map(()=>Math.max(40,Math.min(98,Math.round(b+(r()-0.5)*46))));
+  const avg=Math.round(ss.reduce((a,v)=>a+v,0)/ss.length);
+  const pi=[...YI.keys()];for(let j=pi.length-1;j>0;j--){const k3=Math.floor(r()*(j+1));[pi[j],pi[k3]]=[pi[k3],pi[j]];}
+  days.push({dt,avg,yi:YI[pi[0]][0]});
+ }
+ // SVG 折线图
+ const W=340,H=152,L=32,R=10,T=18,B=26;
+ const xs=i=>L+i*(W-L-R)/6, ys=v=>T+(100-v)*(H-T-B)/65;
+ let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一周运势折线图">`;
+ [40,60,80,100].forEach(g=>{
+  svg+=`<line x1="${L}" y1="${ys(g)}" x2="${W-R}" y2="${ys(g)}" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>`;
+  svg+=`<text x="${L-6}" y="${ys(g)+3.5}" text-anchor="end" font-size="10" fill="var(--sub)">${g}</text>`;
+ });
+ const best=Math.max(...days.map(x=>x.avg));
+ days.forEach((x,i)=>{
+  const px=xs(i),py=ys(x.avg);
+  if(i<6)svg+=`<line x1="${px}" y1="${py}" x2="${xs(i+1)}" y2="${ys(days[i+1].avg)}" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>`;
+  svg+=`<circle cx="${px}" cy="${py}" r="${x.avg===best?5:3.5}" fill="var(--accent)"/>`;
+  svg+=`<text x="${px}" y="${py-10}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">${x.avg}</text>`;
+  const lab=i===0?"今天":i===1?"明天":`周${"日一二三四五六"[x.dt.getDay()]}`;
+  svg+=`<text x="${px}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--sub)">${lab}</text>`;
+ });
+ svg+=`</svg>`;
+ $("weekChart").innerHTML=svg;
+ $("weekList").innerHTML=days.map((x,i)=>{
+  const isBest=x.avg===best;
+  const wd=`${x.dt.getMonth()+1}/${x.dt.getDate()} 周${"日一二三四五六"[x.dt.getDay()]}${i===0?" · 今天":""}`;
+  return `<div class="wk-row${isBest?" best":""}"><span class="wd">${wd}</span><span class="ws">${x.avg}</span><span class="wy">宜·${x.yi}</span></div>`;
+ }).join("");
+
+ // 刘大爷语录（每人每日一句，固定不变）
+ const dstr=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+ const quoteStr=QUOTES[hash32(`${y}-${m}-${d}|${dstr}`)%QUOTES.length];
+ $("dayeBubble").textContent="刘大爷曰："+quoteStr;
+
+ // 今日卦象（上卦下卦各由随机定，六十四卦查表）
+ const hr=mulberry32(hash32(`${y}-${m}-${d}|${dstr}|gua`));
+ const up=Math.floor(hr()*8), lo=Math.floor(hr()*8);
+ const hnum=HEX_TABLE[up][lo];
+ const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]); // 自下而上六爻
+ $("guaLines").innerHTML=bits.map(b=>`<div class="yao ${b?'yang':'yin'}"></div>`).join("");
+ $("guaName").textContent=up===lo ? HEX_NAMES[hnum-1]+"为"+TRIG_IMG[up] : TRIG_IMG[up]+TRIG_IMG[lo]+HEX_NAMES[hnum-1];
+ $("guaNum").textContent=`第${hnum}卦 · 上${TRIG_NAME[up]}下${TRIG_NAME[lo]} · ${TRIG_IMG[up]}${TRIG_IMG[lo]}之象`;
+ $("guaXiang").textContent="《象》曰："+HEX_XIANG[hnum-1]+"。";
+
+ // 日期头
+ const week=["日","一","二","三","四","五","六"][today.getDay()];
+ $("todayDate").textContent=`${today.getMonth()+1}月${today.getDate()}日 · 周${week}`;
+ $("todayLunar").textContent=`${GAN[dayGanIdx(today)]}${ZHI[dayZhiIdx(today)]}日`;
+
+ // 留存当日数据，供导出卡片使用
+ const week2=["日","一","二","三","四","五","六"][today.getDay()];
+ window.CUR={y,m,d,name,hour,elem,
+  dateLine:`${today.getMonth()+1}月${today.getDate()}日 · 周${week2} · ${GAN[dayGanIdx(today)]}${ZHI[dayZhiIdx(today)]}日`,
+  scores:scores.map(([n,v])=>[n,v]),lucky,yi:yiPicked,ji:jiPicked,quote:quoteStr,
+  hex:{name:$("guaName").textContent,num:hnum,up,lo,bits,xiang:HEX_XIANG[hnum-1]}};
+
+ // 显示结果页
+ $("pageInput").classList.add("hidden");
+ $("pageResult").classList.remove("hidden");
+ window.scrollTo(0,0);
+ renderQR();
+ hePrepare();
+}
+
+function dayGanIdx(t){const j=jdn(t.getFullYear(),t.getMonth()+1,t.getDate());return ((j-jdn(1949,10,1))%60+60)%60%10;}
+function dayZhiIdx(t){const j=jdn(t.getFullYear(),t.getMonth()+1,t.getDate());return ((j-jdn(1949,10,1))%60+60)%60%12;}
+function zodiacEn(z){return ["Rat 🐀","Ox 🐂","Tiger 🐅","Rabbit 🐇","Dragon 🐉","Snake 🐍","Horse 🐎","Goat 🐐","Monkey 🐒","Rooster 🐓","Dog 🐕","Pig 🐖"][z];}
+
+/* ============ 二维码分享 ============ */
+function pageUrl(){return location.href.split("#")[0];}
+function renderQR(){
+ const u=pageUrl();
+ if(location.protocol==="file:"||u.includes("localhost")||u.includes("127.0.0.1")){
+  $("qrImg").classList.add("hidden");
+  const t=$("qrUrlText");t.classList.remove("hidden");
+  t.textContent="当前是本地打开，二维码暂不可用。请用聊天中发送的公网链接（如 https://litter.catbox.moe/…）打开本页，二维码会自动指向该链接，扫码即可进入。";
+  return;
+ }
+ $("qrImg").classList.remove("hidden");
+ const img=$("qrImg");
+ img.onerror=qrFallback;
+ img.src="https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data="+encodeURIComponent(u);
+}
+function qrFallback(){
+ $("qrImg").classList.add("hidden");
+ const t=$("qrUrlText");t.classList.remove("hidden");
+ t.textContent="二维码服务暂时不可用，请直接复制下方链接在其他设备打开：\n"+pageUrl();
+}
+function copyLink(){
+ const url=pageUrl();
+ if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast("链接已复制"));}
+ else{const i=document.createElement("input");i.value=url;document.body.appendChild(i);i.select();document.execCommand("copy");i.remove();toast("链接已复制");}
+}
+/* ============ 今日问事 · 周易断可否 ============ */
+const GUACI=["乾：元亨。利貞。", "坤：元亨。利牝馬之貞。君子有攸往，先迷後得主。利西南得朋，東北喪朋。安貞，吉。", "屯：元亨，利貞。勿用有攸往，利建侯。", "蒙：亨。匪我求童蒙，童蒙求我。初筮告，再三瀆，瀆則不告。利貞。", "需：有孚，光亨。貞吉，利涉大川。", "訟：有孚，窒，惕，中吉，終凶。利見大人，不利涉大川。", "師：貞丈人吉，无咎。", "比：吉。原筮元永貞，无咎。不寧方來，後夫凶。", "小畜：亨。密雲不雨，自我西郊。", "履虎尾，不咥人，亨。", "泰：小往大來，吉亨。", "否之匪人，不利君子貞，大往小來。", "同人于野，亨。利涉大川，利君子貞。", "大有：元亨。", "謙：亨，君子有終。", "豫：利建侯行師。", "隨：元亨。利貞。无咎。", "蠱：元亨。利涉大川。先甲三日，後甲三日。", "臨：元亨。利貞。至于八月有凶。", "觀：盥而不薦，有孚顒若。", "噬嗑：亨。利用獄。", "賁：亨。小利有攸往。", "剝：不利。有攸往。", "復：亨。出入无疾，朋來无咎。反復其道，七日來復，利有攸往。", "无妄：元亨。利貞。其匪正有眚，不利有攸往。", "大畜：利貞，不家食吉，利涉大川。", "頤：貞吉。觀頤，自求口實。", "大過：棟橈，利有攸往，亨。", "习坎：有孚，維心亨。行有尚。", "離：利貞。亨。畜牝牛，吉。", "咸：亨。利貞。取女吉。", "恒：亨，无咎。利貞，利有攸往。", "遯：亨。小利貞。", "大壯：利貞。", "晉：康侯用錫馬蕃庶，晝日三接。", "明夷：利艱貞。", "家人：利女貞。", "睽：小事吉。", "蹇：利西南，不利東北；利見大人，貞吉。", "解：利西南，无所往，其來復吉。有攸往，夙吉。", "損：有孚，元吉。无咎，可貞，利有攸往。曷之用？二簋可用享。", "益：利有攸往。利涉大川。", "夬：揚于王庭，孚號，有厲，告自邑，不利即戎，利有攸往。", "姤：女壯，勿用取女。", "萃：王假有廟，利見大人，亨。利貞。用大牲吉，利有攸往。", "升：元亨，用見大人，勿恤，南征吉。", "困：亨，貞大人吉，无咎，有言不信。", "井：改邑不改井，无喪无得，往來井井。汔至亦未繘井。羸其瓶，凶。", "革：已日乃孚，元亨。利貞。悔亡。", "鼎：元吉，亨。", "震：亨。震來虩虩，笑言啞啞。震驚百里，不喪匕鬯。", "艮：艮其背，不獲其身，行其庭，不見其人，无咎。", "漸：女歸吉，利貞。", "歸妹：征凶，无攸利。", "豐：亨。王假之，勿憂，宜日中。", "旅：小亨，旅貞吉。", "巽：小亨。利有攸往。利見大人。", "兌：亨。利貞。", "渙：亨，王假有廟，利涉大川，利貞。", "節：亨。苦節不可貞。", "中孚：豚魚吉，利涉大川，利貞。", "小過：亨。利貞。可小事，不可大事。飛鳥遺之音，不宜上宜下，大吉。", "既濟：亨小。利貞。初吉終亂。", "未濟：亨。小狐汔濟，濡其尾，无攸利。"]; /* 六十四卦卦辞原文（King Wen序，录自维基文库《周易》并逐卦核验） */
+const GUALV=[1,2,2,2,1,3,2,1,2,2,1,3,1,1,1,1,1,2,1,2,2,2,3,1,1,1,2,3,2,1,1,1,2,1,1,3,1,2,3,2,2,1,2,3,1,1,3,2,1,1,2,2,1,3,1,2,2,1,2,2,1,2,1,3];
+const WEN_LV_TXT={1:["✅ 宜行","今日天时相助，可以放手去做"],2:["⚠️ 酌情","能做，但过程有波折，稳字当头"],3:["⏳ 缓议","今日不宜强推，缓一缓更顺"]};
+const WEN_YAOJIE=[
+"起手布局，宜打好地基，勿求速成",
+"稳住阵脚、内里发力，帮手多在身边",
+"正处进退关口，半渡之时，最忌反复",
+"贴近关键人，成败在配合与分寸",
+"主事在己，一锤定音，宜担纲拍板",
+"收尾之际，善始善终，勿生枝节"];
+const WEN_TIPS=[
+[/签|合同|约|谈|单|客户|买|卖|租|投资|货|价|账|开店/,"生意",[["谈成有望，落笔前把条款看仔细"],["可以谈，价格与条款还有让步余地"],["今日签约易生分歧，改日再议更稳"]]],
+[/婚|表白|恋|相亲|复合|见家长/,"情缘",[["心意相通，正是开口的好时机"],["可以见面，但话别说满，留三分"],["情绪易顶牛，今天先缓一缓"]]],
+[/搬|迁|出行|飞|出门|回|装修|动土/,"动迁",[["宜动宜迁，一路通泰"],["可以动身，行程和预算都留些余量"],["路途多阻，改期更稳妥"]]],
+[/考|试|面试|求职|辞职|跳槽|汇报|答辩/,"前程",[["临场发挥顺，放手一搏"],["有戏，但竞争不小，多备一手"],["今日露面不如改天，先备好功课"]]],
+[/病|医|手术|检查|药|体检/,"就医",[["就诊顺利，安心遵医嘱"],["检查无碍，择期安排更从容"],["非急症建议改期，急症请速就医"]]],
+[/领导|同事|朋友|父母|孩子|家人|老师/,"人际",[["贵人运旺，开门见山就能谈拢"],["对方今天心事多，挑重点说"],["话不投机，今天先不谈为妙"]]]];
+function castWen(){
+ const txt=$("wenText").value.trim();
+ if(!txt){toast("先写下要办的事，再起卦");return;}
+ const cur=window.CUR; if(!cur){toast("请先完成测算");return;}
+ const today=new Date();
+ const ds=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
+ const sc=[...txt.replace(/\s+/g,"")].length;
+ const seed=hash32(txt+"|"+cur.y+"-"+cur.m+"-"+cur.d+"|"+ds);
+ const up=(sc+today.getDate()+cur.m)%8, lo=(sc+today.getMonth()+1+cur.d)%8;
+ const moving=(sc+seed)%6;
+ const n=HEX_TABLE[up][lo];
+ const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]);
+ const vb=bits.slice(); vb[moving]=vb[moving]?0:1;
+ const tri=b=>TRIG_BITS.findIndex(a=>a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]);
+ const vlo=tri(vb.slice(0,3)), vup=tri(vb.slice(3));
+ const vn=HEX_TABLE[vup][vlo];
+ const gname=p=>p[0]===p[1]?TRIG_NAME[p[0]]+"为"+TRIG_IMG[p[1]]:TRIG_IMG[p[0]]+TRIG_IMG[p[1]]+HEX_NAMES[HEX_TABLE[p[0]][p[1]]-1];
+ const lv=GUALV[n-1];
+ const yaoHtml=bits.map((b,i)=>`<div class="yao ${b?'yang':'yin'}${i===moving?' moving':''}"></div>`).join("");
+ const found=WEN_TIPS.find(([re])=>re.test(txt));
+ const tipHtml=found?`<div class="wen-tip"><b>${found[1]}</b>：${found[2][lv-1]}</div>`:"";
+ const guaci=GUACI[n-1]||"（卦辞整理中）";
+ const safe=txt.replace(/</g,"&lt;");
+ $("wenResult").innerHTML=`
+  <div class="wen-head">
+   <div class="gua gua-big" style="margin-top:16px">${yaoHtml}</div>
+   <div>
+    <div style="font-size:19px;font-weight:700;letter-spacing:2px">${gname([up,lo])}</div>
+    <div style="font-size:12px;color:var(--sub);margin-top:4px">问「${safe}」</div>
+    <div style="margin-top:8px"><span class="wen-badge lv${lv}">${WEN_LV_TXT[lv][0]}</span></div>
+   </div>
+  </div>
+  <div class="wen-guaci">${guaci}<span class="src">—— 《周易》卦辞原文 · 第${n}卦</span></div>
+  <div class="wen-bai">${XIANG_BAIHUA[n-1]}。</div>
+  <div class="wen-yao">动在${["初","二","三","四","五","上"][moving]}爻——${WEN_YAOJIE[moving]}；动而变为「${gname([vup,vlo])}」。</div>
+  ${tipHtml}
+  <div class="wen-note">${WEN_LV_TXT[lv][1]} · 同一件事今日再问卦象不变，明日自动更新 · 民俗演算仅供娱乐参考</div>`;
+ $("wenResult").classList.remove("hidden");
+ $("wenCard").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function toast(msg){
+ const t=document.createElement("div");
+ t.textContent=msg;t.style.cssText="position:fixed;left:50%;bottom:12%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:8px 18px;border-radius:999px;font-size:14px;z-index:99";
+ document.body.appendChild(t);setTimeout(()=>t.remove(),1600);
+}
+/* ============ 缘分合盘 · 两人一卦 ============ */
+window.HE_MODE=0;
+function setHeMode(m){window.HE_MODE=m;
+ $("heModeLove").classList.toggle("active",m===0);
+ $("heModeWork").classList.toggle("active",m===1);}
+function heFillSelects(){
+ const nowY=new Date().getFullYear();
+ [["heYearA","heMonthA","heDayA","heHourA"],["heYearB","heMonthB","heDayB","heHourB"]].forEach(ids=>{
+  const ys=$(ids[0]);if(ys.options.length)return;
+  for(let y=nowY-6;y>=1940;y--)ys.add(new Option(y+"年",y));
+  for(let m=1;m<=12;m++)$(ids[1]).add(new Option(m+"月",m));
+  for(let d=1;d<=31;d++)$(ids[2]).add(new Option(d+"日",d));
+  $(ids[3]).add(new Option("不选时辰",""));
+  HOUR_LABELS.forEach((t,i)=>$(ids[3]).add(new Option(t,i)));
+ });
+}
+function heToggleMe(){$("heInputA").classList.toggle("hidden",$("heUseMe").checked);}
+function hePrepare(){
+ try{
+  heFillSelects();
+  const c=window.CUR;if(!c)return;
+  const info=(c.name?c.name+" · ":"")+c.y+"-"+c.m+"-"+c.d+((c.hour===0||c.hour)?" · "+HOUR_LABELS[c.hour].slice(0,2):"");
+  $("heMeInfo").textContent="（"+info+"）";
+  const ya=$("heYearA");
+  if(!ya.value){ya.value=c.y;$("heMonthA").value=c.m;$("heDayA").value=c.d;$("heHourA").value=(c.hour===0||c.hour)?c.hour:"";}
+ }catch(e){}
+}
+function hePillars(p){
+ const yp=yearPillar(p.y,p.m,p.d),mp=monthPillar(p.y,p.m,p.d,yp.g),dpi=dayPillarIdx(p.y,p.m,p.d);
+ const dp={g:dpi%10,z:dpi%12};
+ const hp=(p.hour===0||p.hour)?{g:((dp.g%5)*2+p.hour)%10,z:p.hour}:null;
+ return{yp,mp,dp,hp};
+}
+const HE_YAO=[
+"关系刚起步，地基比高楼重要，别急着给彼此下定义",
+"里子比面子关键，两个人把小日子先过顺，外面才顺",
+"正处在进退关口，一次认真的长谈可能定方向，半渡莫反复",
+"贵人就在身边，多听信得过的长辈一句，能省不少弯路",
+"主导权在一人手里，谁拿主意要说清楚，最忌两头做主",
+"关系到收口定型的阶段，善始善终，别在最稳的时候生枝节"];
+const HE_ADVICE={
+ love:[["把这份顺遂当燃料，多攒两个人的专属回忆，好时候最值得投资","感情正旺也别忘了嘴上留情，赢了道理，容易输了温度"],
+ ["感情有底子，节奏稳着来，大事两个人坐下来商量","能处，就是偶尔各想各的，把话摊开说，别靠猜"],
+ ["这段感情在磨性子，先各退半步，缓一缓再谈正事","考验耐心的时候，少翻旧账，多看眼前人做了什么"]],
+ work:[["合作正旺，趁热把分工、分利、时限白纸黑字定下来","这卦利搭伙做事——各展所长，别抢同一杆旗"],
+ ["合作能成，先小人后君子，权责提前讲清","共事无大碍，遇分歧就事论事，别把情绪带进工作"],
+ ["合作多波折，小事别较真，大事务必留字据","这段搭档易生分歧，规矩立在前面，丑话说在前头"]]};
+const HE_SUM=[
+"老夫把你们俩的八字摆在一块看了半宿——卦是死的，人是活的，合不合，七分靠处。",
+"卦象给个底，路还是你们自己走。多让一步，天宽地阔。",
+"老夫掐指一算：这世上没有天生就合的两个人，只有肯互相挪一步的两个人。",
+"卦里吉凶都写了。老夫再多一句：别拿这卦当圣旨，拿它当个提醒，就对了。"];
+const HE_LVCOL=[[88,"#9C3D2E"],[78,"#A8543F"],[68,"#5A5243"],[58,"#7A7263"],[48,"#3E5D6E"],[0,"#2F4A57"]];
+function castHe(){
+ heFillSelects();
+ let A;
+ if($("heUseMe").checked&&window.CUR){
+  const c=window.CUR;A={y:c.y,m:c.m,d:c.d,hour:(c.hour===0||c.hour)?c.hour:null,name:c.name||"我"};
+ }else{
+  A={y:+$("heYearA").value,m:+$("heMonthA").value,d:+$("heDayA").value,hour:$("heHourA").value===""?null:+$("heHourA").value,name:"我"};
+ }
+ const B={y:+$("heYearB").value,m:+$("heMonthB").value,d:+$("heDayB").value,hour:$("heHourB").value===""?null:+$("heHourB").value,name:$("heNameB").value.trim()||"对方"};
+ if(!A.y||!A.m||!A.d||!B.y||!B.m||!B.d){toast("先把两个人的生辰填全再起卦");return;}
+ const da=new Date(A.y,A.m-1,A.d),db=new Date(B.y,B.m-1,B.d);
+ if(da.getMonth()!==A.m-1||da.getDate()!==A.d||db.getMonth()!==B.m-1||db.getDate()!==B.d){toast("有个人生日不存在（比如2月30日），重选一下");return;}
+ if(A.y===B.y&&A.m===B.m&&A.d===B.d&&(A.hour==null?-1:A.hour)===(B.hour==null?-1:B.hour)){toast("两个人的生辰一模一样，换一个试试");return;}
+ const mode=window.HE_MODE,modeName=mode===0?"爱情":"事业";
+ const pa=hePillars(A),pb=hePillars(B);
+ const astr=A.y+"-"+A.m+"-"+A.d+"-"+(A.hour==null?"":A.hour),bstr=B.y+"-"+B.m+"-"+B.d+"-"+(B.hour==null?"":B.hour);
+ const rnd=mulberry32(hash32("he|"+mode+"|"+astr+"|"+bstr));
+ // 起卦：上卦由我方定，下卦由对方定，动爻由双方日柱合定
+ const up=(pa.yp.z+pa.dp.z+1+mode)%8, lo=(pb.yp.z+pb.dp.z+1+mode)%8;
+ const moving=(pa.dp.g+pb.dp.g+pa.dp.z+pb.dp.z+mode)%6;
+ const n=HEX_TABLE[up][lo];
+ const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]);
+ const vb=bits.slice();vb[moving]=vb[moving]?0:1;
+ const tri=b=>TRIG_BITS.findIndex(x=>x[0]===b[0]&&x[1]===b[1]&&x[2]===b[2]);
+ const vlo=tri(vb.slice(0,3)),vup=tri(vb.slice(3));
+ const vn=HEX_TABLE[vup][vlo];
+ const gname=p=>p[0]===p[1]?TRIG_NAME[p[0]]+"为"+TRIG_IMG[p[1]]:TRIG_IMG[p[0]]+TRIG_IMG[p[1]]+HEX_NAMES[HEX_TABLE[p[0]][p[1]]-1];
+ // 日主五行互动
+ const wxA=GAN_WX[pa.dp.g],wxB=GAN_WX[pb.dp.g];
+ const SHENG={"木":"火","火":"土","土":"金","金":"水","水":"木"};
+ const KE={"木":"土","土":"水","水":"火","火":"金","金":"木"};
+ let wxRel,wxScore;
+ if(wxA===wxB){wxRel=`两人日主同为${wxA}，性子同频，容易想到一块去`;wxScore=5;}
+ else if(SHENG[wxB]===wxA){wxRel=`TA属${wxB}、你属${wxA}，${wxB}生${wxA}——TA天生旺你`;wxScore=8;}
+ else if(SHENG[wxA]===wxB){wxRel=`你属${wxA}、TA属${wxB}，${wxA}生${wxB}——你天然护着TA`;wxScore=6;}
+ else if(KE[wxA]===wxB){wxRel=`你属${wxA}、TA属${wxB}，${wxA}克${wxB}——你占主导，注意别压得太狠`;wxScore=-4;}
+ else{wxRel=`TA属${wxB}、你属${wxA}，${wxB}克${wxA}——TA说话更有分量，别硬顶`;wxScore=-4;}
+ // 生肖互动（年支六合三合冲害）
+ const za=pa.yp.z,zb=pb.yp.z;
+ const LIUHE=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
+ const SANHE=[[8,0,4],[2,6,10],[5,9,1],[11,3,7]];
+ const HAI=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+ const pair=(arr)=>arr.some(([x,y])=>(x===za&&y===zb)||(x===zb&&y===za));
+ let zRel,zScore;
+ if(pair(LIUHE)){zRel=`${SHENGXIAO[za]}与${SHENGXIAO[zb]}六合——老话说天生一对`;zScore=12;}
+ else if(SANHE.some(g=>g.includes(za)&&g.includes(zb))){zRel=`${SHENGXIAO[za]}与${SHENGXIAO[zb]}三合——气场相投，越处越顺`;zScore=8;}
+ else if(Math.abs(za-zb)===6){zRel=`${SHENGXIAO[za]}与${SHENGXIAO[zb]}相冲——性子容易顶牛，冲中有情，就看你让不让`;zScore=-10;}
+ else if(pair(HAI)){zRel=`${SHENGXIAO[za]}与${SHENGXIAO[zb]}相害——小摩擦免不了，别往心里去`;zScore=-5;}
+ else{zRel=`${SHENGXIAO[za]}与${SHENGXIAO[zb]}生肖相安——不好不坏，全凭经营`;zScore=2;}
+ // 缘分指数（同一对人、同一选择永远一致）
+ const lv=GUALV[n-1],lvn=GUALV[vn-1];
+ let score=58+rnd()*18+wxScore+zScore+(lv===1?7:lv===2?0:-8)+(lvn===1?4:lvn===2?0:-4)+(rnd()-0.5)*6;
+ score=Math.max(45,Math.min(98,Math.round(score)));
+ const VC=mode===0?["天作之合","情投意合","有缘有分","缘分尚可","缘深需经营","缘浅多磨"]:["黄金搭档","配合默契","能成搭档","平稳共事","磨合着来","易生分歧"];
+ const vIdx=HE_LVCOL.findIndex(([t])=>score>=t);
+ const verdict=VC[vIdx],vcol=HE_LVCOL[vIdx][1];
+ const esc=s=>String(s).replace(/</g,"&lt;");
+ const pA=`${esc(A.name)} · 属${SHENGXIAO[pa.yp.z]} · 日柱${GAN[pa.dp.g]}${ZHI[pa.dp.z]} · ${wxA}命${pa.hp?" · "+HOUR_LABELS[pa.hp.z].slice(0,2):""}`;
+ const pB=`${esc(B.name)} · 属${SHENGXIAO[pb.yp.z]} · 日柱${GAN[pb.dp.g]}${ZHI[pb.dp.z]} · ${wxB}命${pb.hp?" · "+HOUR_LABELS[pb.hp.z].slice(0,2):""}`;
+ const adv=HE_ADVICE[mode===0?"love":"work"][lv-1][rnd()<0.5?0:1];
+ const yaoName=["初","二","三","四","五","上"][moving]+"爻";
+ $("heResult").innerHTML=`
+  <div class="he-top">
+   <div><span class="he-verdict" style="background:${vcol}">${verdict}</span>
+    <div class="he-scorelabel" style="margin-top:6px">${mode===0?"❤️ 爱情合盘":"💼 事业合盘"} · ${gname([up,lo])} 变 ${gname([vup,vlo])}</div></div>
+   <div class="he-scorelabel"><div class="he-num">${score}</div>缘分指数</div>
+  </div>
+  <div class="he-bar"><i style="width:${score}%"></i></div>
+  <div class="he-pair">
+   <div class="pp"><div class="n">${esc(A.name)}</div><div class="d">${pA.slice(esc(A.name).length+3)}</div></div>
+   <div class="pp"><div class="n">${esc(B.name)}</div><div class="d">${pB.slice(esc(B.name).length+3)}</div></div>
+  </div>
+  <div class="he-guas">
+   <div class="hg"><div class="gua">${bits.map((b,i)=>`<div class="yao ${b?'yang':'yin'}${i===moving?' moving':''}"></div>`).join("")}</div>
+    <div class="gn">${gname([up,lo])}</div><div class="gt">关系的基调</div></div>
+   <div class="he-arrow">→</div>
+   <div class="hg"><div class="gua">${vb.map(b=>`<div class="yao ${b?'yang':'yin'}"></div>`).join("")}</div>
+    <div class="gn">${gname([vup,vlo])}</div><div class="gt">关系的走向</div></div>
+  </div>
+  <div class="he-rel">
+   <div>☯ <b>五行互动</b>：${wxRel}</div>
+   <div>🏮 <b>生肖互动</b>：${zRel}</div>
+   <div>🎲 <b>动在${yaoName}</b>：${HE_YAO[moving]}</div>
+  </div>
+  <div class="he-rel" style="margin-top:8px">📜 《象》曰：${HEX_XIANG[n-1]}。${XIANG_BAIHUA[n-1]}。</div>
+  <ul class="he-advice"><li>${adv}</li></ul>
+  <div class="he-sum">刘大爷曰：${HE_SUM[Math.floor(rnd()*HE_SUM.length)]}</div>
+  <div class="he-note">同一对生辰、同一选择，卦象与指数永远一致（按双方八字推演，不随日期变）· 民俗演算仅供娱乐参考</div>`;
+ $("heResult").classList.remove("hidden");
+ $("heCard").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+/* 离线缓存：iPhone 添加主屏后，即使原链接失效也能打开 */
+(function(){
+ try{
+  if('serviceWorker' in navigator && 'caches' in window && location.protocol==='https:'){
+   navigator.serviceWorker.register(window.SW_URL||'sw.js').catch(()=>{});
+   caches.open('liudaye-yigua-v1').then(c=>c.add(location.pathname)).catch(()=>{});
+  }
+ }catch(e){}
+})();
+</script>
+<script>
+/* ===== 瘦身改造：单份240px头像，末尾注入（首屏不再被132KB图片拖住） ===== */
+(function(){
+  var AV='data:image/jpeg;base64,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';
+  var im=new Image();
+  im.onload=function(){
+    var els=document.querySelectorAll('.logo-img,.daye');
+    for(var i=0;i<els.length;i++){els[i].style.backgroundImage="url('"+AV+"')";}
+  };
+  im.src=AV;
+})();
+
+/* ============ 柒 · 麻衣相法·传照观面（法《麻衣神相》：本机测量形局三停，照片不上传，同相同断） ============ */
+var XP = {
+ shape:{
+  mu:{n:'木形之相',q:'瘦长清秀',w:2,say:'刘大爷曰：面长如松，木性主仁——长得快不如站得稳，根深自能叶茂。',
+      d:'木主仁。面形瘦长者多进取心，肯学肯钻，朋友缘好；性子直，谋定而后动更成事。宜文教策划、创意研习。'},
+  jin:{n:'金形之相',q:'方正端严',w:3,say:'刘大爷曰：面方如印，金性主刚——拿得起放得下是本事，太硬易折是提醒。',
+      d:'金主义。面方有棱多果断义气，说到做到，朋友托事放心；金太刚则折，遇争执退三分反成事。宜执纪管财、带队伍。'},
+  tu:{n:'土形之相',q:'敦厚饱满',w:3,say:'刘大爷曰：面厚如山，土性主信——稳扎稳打积得厚，迟来的福分最经用。',
+      d:'土主信。面厚而匀多稳福，能容人容事，起步慢不慌；厚积薄发，宜实业田土、稳守经营。'},
+  shui:{n:'水形之相',q:'圆融丰润',w:2,say:'刘大爷曰：面圆如月，水性主智——水不争而利万物，圆融是你的财路。',
+      d:'水主智。面圆丰润多机变，善于变通，人缘财源都活络；防样样通样样松，专一则灵。宜商贸流通、以和生财。'},
+  huo:{n:'火形之相',q:'上尖下阔',w:1,say:'刘大爷曰：面相如火，火性主礼——一腔热忱是好柴，添三分耐心更旺。',
+      d:'火主礼。额广而颌收者多热忱，行动力强，感染力足；性急是短板，趁热打铁之外添三分耐心。宜营销宣讲。'}
+ },
+ ting:{
+  avg:'三停均等：三段比例匀称，早、中、晚运接续有靠，一生衣禄无亏，走得稳。',
+  up:'上停偏旺（额相饱满）：十五至三十早运得力，读书出道顺；中年后靠中停接力。',
+  mid:'中停偏旺（眉鼻相强）：三十一至五十主进，事业家业多半在此段做起。',
+  low:'下停偏旺（地阁相厚）：五十一后晚运厚实，越老越吃香，儿孙有靠。'
+ },
+ grade:[
+  [6,'上上之相：形局端正、三停有度，守成开创两相宜，惜福即是添福。'],
+  [4,'中上之相：底子清正，后天再养——心宽、口德、早睡皆是相法。'],
+  [2,'中平之相：平凡中自有稳福，不冒险不折腾，稳字生财。'],
+  [-99,'中下之相：先天有亏处，后养得补；相由心生，境随心转，养得一分静气便添一分相。']
+ ]
+};
+function xpLines(){var a=[];for(var i=0;i<4;i++)a.push(parseFloat(document.getElementById('xpL'+i).dataset.y));return a;}
+function xpSkinTest(d,i,W){ /* 肤色判别：亮度+色度阈值 */
+  var r=d[i],g=d[i+1],b=d[i+2];
+  if(r<70)return false;
+  var Y=0.299*r+0.587*g+0.114*b; if(Y<90||Y>250)return false;
+  var cb=128-0.168736*r-0.331264*g+0.5*b, cr=128+0.5*r-0.418688*g-0.081312*b;
+  return cr>=132&&cr<=185&&cb>=72&&cb<=133;
+}
+function xpProfile(){ /* 全图中央带肤色行分析：返回每行肤色x范围 */
+  var cv=document.getElementById('xpCanvas');
+  var W=cv.width,H=cv.height,ctx=cv.getContext('2d',{willReadFrequently:true});
+  var d=ctx.getImageData(0,0,W,H).data;
+  var x0=Math.floor(W*0.2),x1=Math.floor(W*0.8);
+  var lo=new Float32Array(H).fill(-1),hi=new Float32Array(H).fill(-1);
+  for(var y=0;y<H;y++){
+    var mn=-1,mx=-1;
+    for(var x=x0;x<x1;x++){
+      if(xpSkinTest(d,(y*W+x)*4)){if(mn<0)mn=x;mx=x;}
+    }
+    lo[y]=mn;hi[y]=mx;
+  }
+  return {W:W,H:H,lo:lo,hi:hi};
+}
+function xpBandWidth(P,ym,f){ /* ym附近±f*H 带内平均肤色宽度(像素) */
+  var H=P.H,sum=0,n=0;
+  var a=Math.max(2,Math.round(ym-f*H)),b=Math.min(P.H-3,Math.round(ym+f*H));
+  for(var y=a;y<=b;y++){if(P.lo[y]>=0&&P.hi[y]>P.lo[y]){sum+=P.hi[y]-P.lo[y];n++;}}
+  return n>3?sum/n:0;
+}
+function xpAutoFit(){ /* 肤色轮廓自动定发际/下巴，眉·鼻按三停均等预置 */
+  var P=xpProfile(),H=P.H,W=P.W;
+  var cnt=new Int32Array(H);
+  for(var y=0;y<H;y++)cnt[y]=(P.lo[y]>=0)?(P.hi[y]-P.lo[y]):0;
+  var peak=0;for(var y=0;y<H;y++)if(cnt[y]>peak)peak=cnt[y];
+  var th=peak*0.30,T=-1,C=-1;
+  for(var y=6;y<H-6;y++){if(cnt[y]>th){T=y;break;}}
+  for(var y=H-7;y>6;y--){if(cnt[y]>th){C=y;break;}}
+  var ok=(T>0&&C>T&&C-T>H*0.28);
+  if(!ok){T=Math.round(H*0.30);C=Math.round(H*0.90);toast('自动定位不稳，请拖动虚线对准');}
+  var span=C-T;
+  var set=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
+  set(0,T);set(1,T+span/3);set(2,T+span*2/3);set(3,C);
+}
+function xpLoad(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var fr=new FileReader();
+  fr.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      var M=1024,r=Math.min(1,M/Math.max(img.naturalWidth,img.naturalHeight));
+      var W=Math.round(img.naturalWidth*r)||1,H=Math.round(img.naturalHeight*r)||1;
+      var cv=document.getElementById('xpCanvas');cv.width=W;cv.height=H;
+      cv.getContext('2d').drawImage(img,0,0,W,H);
+      document.getElementById('xpStage').classList.remove('hidden');
+      document.getElementById('xiangResult').classList.add('hidden');
+      xpAutoFit();
+      try{document.getElementById('xpStage').scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}
+    };
+    img.onerror=function(){toast('照片读取失败，换一张试试');};
+    img.src=fr.result;
+  };
+  fr.readAsDataURL(f);
+}
+function xpBind(){
+  document.getElementById('xpFile').addEventListener('change',xpLoad,false);
+  var wrap=document.getElementById('xpWrap');
+  for(var i=0;i<4;i++){
+    (function(i){
+      var el=document.getElementById('xpL'+i);
+      function setY(cy){
+        var r=wrap.getBoundingClientRect();
+        var t=Math.min(0.97,Math.max(0.03,(cy-r.top)/r.height));
+        el.dataset.y=t.toFixed(4);el.style.top=(t*100).toFixed(2)+'%';
+      }
+      el.addEventListener('pointerdown',function(e){el.setPointerCapture&&el.setPointerCapture(e.pointerId);el._d=1;e.preventDefault();setY(e.clientY);});
+      el.addEventListener('pointermove',function(e){if(el._d)setY(e.clientY);});
+      el.addEventListener('pointerup',function(){el._d=0;});
+      el.addEventListener('pointercancel',function(){el._d=0;});
+    })(i);
+  }
+}
+function castXiang(){
+  var cv=document.getElementById('xpCanvas');
+  if(!cv.width){toast('先选一张正面照片');return;}
+  var ys=xpLines();
+  if(!(ys[0]<ys[1]&&ys[1]<ys[2]&&ys[2]<ys[3])){toast('四条线要自上而下：发际→眉→鼻底→下巴');return;}
+  var P=xpProfile(),H=P.H,W=P.W;
+  var y0=ys[0]*H,y1=ys[1]*H,y2=ys[2]*H,y3=ys[3]*H,len=y3-y0;
+  if(len<H*0.15){toast('拉线区间太短，重新对准发际与下巴');return;}
+  var s1=(y1-y0)/len,s2=(y2-y1)/len,s3=(y3-y2)/len;
+  var wB=xpBandWidth(P,y1,0.02),wT=xpBandWidth(P,y0+len*0.08,0.015),wBm=xpBandWidth(P,y3-len*0.06,0.015);
+  if(!wB)wB=W*0.36;
+  var r=len/wB;
+  var shape;
+  if(wT>0&&wBm>0&&wT/wBm<0.85)shape='huo';
+  else if(r>=1.58)shape='mu';
+  else if(r>=1.44)shape='jin';
+  else if(r>=1.30)shape='tu';
+  else shape='shui';
+  var dev=Math.abs(s1-1/3)+Math.abs(s2-1/3)+Math.abs(s3-1/3);
+  var tingKey,mx=Math.max(s1,s2,s3);
+  if(dev<=0.10)tingKey='avg';
+  else tingKey=(mx===s1)?'up':((mx===s2)?'mid':'low');
+  var score=(tingKey==='avg'?4:(dev<=0.20?2:0));
+  if(dev>0.22)score=-1;
+  score+=XP.shape[shape].w;
+  var grade=XP.grade[3][1];
+  for(var g=0;g<XP.grade.length;g++){if(score>=XP.grade[g][0]){grade=XP.grade[g][1];break;}}
+  var pc=function(x){return Math.round(x*100)+'%';};
+  var h='<div style="text-align:center;font-size:34px;font-weight:700;letter-spacing:4px;color:var(--accent);margin:6px 0 2px">'+XP.shape[shape].n+'</div>';
+  h+='<div style="text-align:center;font-size:12px;color:var(--sub);margin-bottom:10px">'+XP.shape[shape].q+' · 面长/面宽 '+r.toFixed(2)+'</div>';
+  h+='<div style="font-size:14px;line-height:1.9">【形局断】'+XP.shape[shape].d+'</div>';
+  h+='<div style="margin:12px 0 4px;font-size:14px;font-weight:600">【三停测量】上停 '+pc(s1)+' ｜ 中停 '+pc(s2)+' ｜ 下停 '+pc(s3)+'</div>';
+  h+='<div style="display:flex;height:10px;border-radius:6px;overflow:hidden;margin:6px 0 10px"><div class="xp-bar" style="width:'+pc(s1)+'"></div><div class="xp-bar" style="width:'+pc(s2)+';opacity:.75"></div><div class="xp-bar" style="width:'+pc(s3)+';opacity:.5"></div></div>';
+  h+='<div style="font-size:14px;line-height:1.9">【三停断】'+XP.ting[tingKey]+'</div>';
+  h+='<div style="margin-top:10px;font-size:14px;line-height:1.9"><b style="color:var(--accent)">【综合断】</b>'+grade+'</div>';
+  h+='<div style="margin-top:10px;font-size:14px;line-height:1.9">'+XP.shape[shape].say+'</div>';
+  h+='<div class="src-line">观相纲本《麻衣神相》· 参《柳庄相法》《神相全编》· 本机测量，照片不上传 · 相不独论，仅供娱乐</div>';
+  var box=document.getElementById('xiangResult');
+  box.innerHTML=h;box.classList.remove('hidden');
+  try{box.scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}
+}
+xpBind();</script>
+</body>
+</html>
