@@ -1649,14 +1649,15 @@ function xpProfile(){ /* 全图中央带肤色行分析：返回每行肤色x范
   var d=ctx.getImageData(0,0,W,H).data;
   var x0=Math.floor(W*0.2),x1=Math.floor(W*0.8);
   var lo=new Float32Array(H).fill(-1),hi=new Float32Array(H).fill(-1);
+  var dn=new Float32Array(H);
   for(var y=0;y<H;y++){
-    var mn=-1,mx=-1;
+    var mn=-1,mx=-1,n=0;
     for(var x=x0;x<x1;x++){
-      if(xpSkinTest(d,(y*W+x)*4)){if(mn<0)mn=x;mx=x;}
+      if(xpSkinTest(d,(y*W+x)*4)){if(mn<0)mn=x;mx=x;n++;}
     }
-    lo[y]=mn;hi[y]=mx;
+    lo[y]=mn;hi[y]=mx;dn[y]=n;
   }
-  return {W:W,H:H,lo:lo,hi:hi};
+  return {W:W,H:H,lo:lo,hi:hi,dn:dn};
 }
 function xpBandWidth(P,ym,f){ /* ym附近±f*H 带内平均肤色宽度(像素) */
   var H=P.H,sum=0,n=0;
@@ -1664,29 +1665,31 @@ function xpBandWidth(P,ym,f){ /* ym附近±f*H 带内平均肤色宽度(像素) 
   for(var y=a;y<=b;y++){if(P.lo[y]>=0&&P.hi[y]>P.lo[y]){sum+=P.hi[y]-P.lo[y];n++;}}
   return n>3?sum/n:0;
 }
-function xpAutoFit(){ /* 全自动定三停：肤色主段定发际/下巴，眉·鼻按三停均分，无需手动拖线 */
-  var P=xpProfile(),H=P.H,W=P.W;
+function xpAutoFit(){ /* 全自动定三停：肤色密度轮廓定发际/下巴，眉·鼻按三停均分，无需手动拖线 */
+  var P=xpProfile(),H=P.H;
   var cnt=new Float32Array(H);
-  for(var y=0;y<H;y++)cnt[y]=(P.lo[y]>=0)?(P.hi[y]-P.lo[y]):0;
+  for(var y=0;y<H;y++)cnt[y]=P.dn[y];
   for(var y=1;y<H-1;y++)cnt[y]=(cnt[y-1]+cnt[y]*2+cnt[y+1])/4; /* 平滑抗噪 */
   var peak=0;for(var y=0;y<H;y++)if(cnt[y]>peak)peak=cnt[y];
-  var best=null;
-  if(peak>8){ /* 取最长连续肤色段为脸区 */
-    var th=peak*0.30,s=-1;
+  var T=-1,C=-1;
+  if(peak>30){ /* 双阈值：低阈值连段(容忍眼镜/五官低谷)，高阈值定端点(抗噪点) */
+    var thLo=peak*0.15,thHi=peak*0.30,s=-1,best=null;
     for(var y=2;y<H-2;y++){
-      if(cnt[y]>th){if(s<0)s=y;}
+      if(cnt[y]>thLo){if(s<0)s=y;}
       else if(s>=0){if(!best||y-s>best[1]-best[0])best=[s,y-1];s=-1;}
     }
     if(s>=0){if(!best||H-3-s>best[1]-best[0])best=[s,H-3];}
+    if(best&&best[1]-best[0]>H*0.20){
+      var Ts=best[0],Ce=best[1];
+      for(var y=Ts;y<=Ce;y++){if(cnt[y]>=thHi){T=y;break;}}
+      var thBot=peak*0.35; /* 下巴尖圆弧宽度<35%脸宽：段尾收紧，防止滑进脖子 */
+      for(var y=Ce;y>=Ts;y--){if(cnt[y]>=thBot){C=y;break;}}
+      var yPk=T;for(var y=T;y<=C;y++)if(cnt[y]>cnt[yPk])yPk=y;
+      var Wface=cnt[yPk];
+      if((C-T)>1.75*Wface)C=Math.round(T+1.75*Wface); /* 面长硬上限防长脖子 */
+    }
   }
-  var T=-1,C=-1;
-  if(best&&best[1]-best[0]>H*0.25){
-    T=best[0];C=best[1];
-    var c2=-1; /* 底部用更严阈值截掉窄脖子，避免把下巴拉到颈根 */
-    for(var y=C;y>T;y--){if(cnt[y]>=peak*0.55){c2=y;break;}}
-    if(c2>T+H*0.15)C=c2;
-  }
-  var ok=(T>0&&C>T&&C-T>H*0.28);
+  var ok=(T>0&&C>T&&C-T>H*0.22);
   if(!ok){T=Math.round(H*0.30);C=Math.round(H*0.90);toast('这张照片特征不明显，已按常规三停比例测量');}
   var span=C-T;
   var set=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
