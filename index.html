@@ -302,7 +302,7 @@ details.sec:nth-of-type(7) .sn{background:linear-gradient(135deg,#D0824C,#DE9866
 details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266)}   /* 捌 分享 金棕 */
 
 /* ---- 相法拉线 ---- */
-.xp-line{position:absolute;left:0;right:0;height:28px;margin-top:-14px;cursor:ns-resize;touch-action:none}
+.xp-line{position:absolute;left:0;right:0;height:28px;margin-top:-14px;pointer-events:none}
 .xp-line::before{content:'';position:absolute;left:0;right:0;top:13px;border-top:2px dashed rgba(255,122,24,.95);box-shadow:0 0 5px rgba(0,0,0,.45)}
 .xp-line span{position:absolute;right:6px;top:0;font-size:11px;color:#FFF;background:rgba(23,24,29,.72);padding:2px 9px;border-radius:10px;pointer-events:none;line-height:1.5}
 .xp-bar{height:10px;border-radius:6px;background:var(--accent-grad);min-width:6%}
@@ -570,18 +570,18 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
    <div>
       <div class="card" id="xiangCard">
         <h2>🧭 麻衣相法 · 传照观面</h2>
-        <div class="sub">选一张正面照片（或直接拍），本机自动拉线：测三停、定五行形局。照片只在本机测量，不上传不留存；虚线可上下拖动微调，再点断局</div>
+        <div class="sub">选一张正面照片（或直接拍），本机自动对齐相面：测三停、定五行形局。照片只在本机测量，不上传不留存，对齐后直接点断局</div>
         <input type="file" id="xpFile" accept="image/*" style="display:none">
         <button class="btn" style="letter-spacing:3px;text-indent:3px" onclick="document.getElementById('xpFile').click()">📷 选照片 · 观相</button>
         <div id="xpStage" class="hidden" style="margin-top:12px">
-          <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310;touch-action:none">
+          <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310">
             <canvas id="xpCanvas" style="display:block;width:100%;height:auto"></canvas>
             <div class="xp-line" id="xpL0" data-y="0.3"><span>发际</span></div>
             <div class="xp-line" id="xpL1" data-y="0.45"><span>眉</span></div>
             <div class="xp-line" id="xpL2" data-y="0.6"><span>鼻底</span></div>
             <div class="xp-line" id="xpL3" data-y="0.88"><span>下巴</span></div>
           </div>
-          <div class="sub" style="margin-top:8px">虚线没对准？上下拖到对应位置：发际线 → 眉 → 鼻底 → 下巴尖</div>
+          <div class="sub" style="margin-top:8px">三停线已按相法自动对齐（发际→眉→鼻底→下巴），直接点「观相断局」即可</div>
           <button class="btn" style="margin-top:12px" onclick="castXiang()">观 相 断 局</button>
         </div>
         <div id="xiangResult" class="hidden"></div>
@@ -1664,16 +1664,30 @@ function xpBandWidth(P,ym,f){ /* ym附近±f*H 带内平均肤色宽度(像素) 
   for(var y=a;y<=b;y++){if(P.lo[y]>=0&&P.hi[y]>P.lo[y]){sum+=P.hi[y]-P.lo[y];n++;}}
   return n>3?sum/n:0;
 }
-function xpAutoFit(){ /* 肤色轮廓自动定发际/下巴，眉·鼻按三停均等预置 */
+function xpAutoFit(){ /* 全自动定三停：肤色主段定发际/下巴，眉·鼻按三停均分，无需手动拖线 */
   var P=xpProfile(),H=P.H,W=P.W;
-  var cnt=new Int32Array(H);
+  var cnt=new Float32Array(H);
   for(var y=0;y<H;y++)cnt[y]=(P.lo[y]>=0)?(P.hi[y]-P.lo[y]):0;
+  for(var y=1;y<H-1;y++)cnt[y]=(cnt[y-1]+cnt[y]*2+cnt[y+1])/4; /* 平滑抗噪 */
   var peak=0;for(var y=0;y<H;y++)if(cnt[y]>peak)peak=cnt[y];
-  var th=peak*0.30,T=-1,C=-1;
-  for(var y=6;y<H-6;y++){if(cnt[y]>th){T=y;break;}}
-  for(var y=H-7;y>6;y--){if(cnt[y]>th){C=y;break;}}
+  var best=null;
+  if(peak>8){ /* 取最长连续肤色段为脸区 */
+    var th=peak*0.30,s=-1;
+    for(var y=2;y<H-2;y++){
+      if(cnt[y]>th){if(s<0)s=y;}
+      else if(s>=0){if(!best||y-s>best[1]-best[0])best=[s,y-1];s=-1;}
+    }
+    if(s>=0){if(!best||H-3-s>best[1]-best[0])best=[s,H-3];}
+  }
+  var T=-1,C=-1;
+  if(best&&best[1]-best[0]>H*0.25){
+    T=best[0];C=best[1];
+    var c2=-1; /* 底部用更严阈值截掉窄脖子，避免把下巴拉到颈根 */
+    for(var y=C;y>T;y--){if(cnt[y]>=peak*0.55){c2=y;break;}}
+    if(c2>T+H*0.15)C=c2;
+  }
   var ok=(T>0&&C>T&&C-T>H*0.28);
-  if(!ok){T=Math.round(H*0.30);C=Math.round(H*0.90);toast('自动定位不稳，请拖动虚线对准');}
+  if(!ok){T=Math.round(H*0.30);C=Math.round(H*0.90);toast('这张照片特征不明显，已按常规三停比例测量');}
   var span=C-T;
   var set=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
   set(0,T);set(1,T+span/3);set(2,T+span*2/3);set(3,C);
@@ -1700,30 +1714,15 @@ function xpLoad(e){
 }
 function xpBind(){
   document.getElementById('xpFile').addEventListener('change',xpLoad,false);
-  var wrap=document.getElementById('xpWrap');
-  for(var i=0;i<4;i++){
-    (function(i){
-      var el=document.getElementById('xpL'+i);
-      function setY(cy){
-        var r=wrap.getBoundingClientRect();
-        var t=Math.min(0.97,Math.max(0.03,(cy-r.top)/r.height));
-        el.dataset.y=t.toFixed(4);el.style.top=(t*100).toFixed(2)+'%';
-      }
-      el.addEventListener('pointerdown',function(e){el.setPointerCapture&&el.setPointerCapture(e.pointerId);el._d=1;e.preventDefault();setY(e.clientY);});
-      el.addEventListener('pointermove',function(e){if(el._d)setY(e.clientY);});
-      el.addEventListener('pointerup',function(){el._d=0;});
-      el.addEventListener('pointercancel',function(){el._d=0;});
-    })(i);
-  }
 }
 function castXiang(){
   var cv=document.getElementById('xpCanvas');
   if(!cv.width){toast('先选一张正面照片');return;}
   var ys=xpLines();
-  if(!(ys[0]<ys[1]&&ys[1]<ys[2]&&ys[2]<ys[3])){toast('四条线要自上而下：发际→眉→鼻底→下巴');return;}
+  if(!(ys[0]<ys[1]&&ys[1]<ys[2]&&ys[2]<ys[3])){toast('自动定位异常，请换一张正面照试试');return;}
   var P=xpProfile(),H=P.H,W=P.W;
   var y0=ys[0]*H,y1=ys[1]*H,y2=ys[2]*H,y3=ys[3]*H,len=y3-y0;
-  if(len<H*0.15){toast('拉线区间太短，重新对准发际与下巴');return;}
+  if(len<H*0.15){toast('识别的脸部区域太小，请换更近的正面照');return;}
   var s1=(y1-y0)/len,s2=(y2-y1)/len,s3=(y3-y2)/len;
   var wB=xpBandWidth(P,y1,0.02),wT=xpBandWidth(P,y0+len*0.08,0.015),wBm=xpBandWidth(P,y3-len*0.06,0.015);
   if(!wB)wB=W*0.36;
