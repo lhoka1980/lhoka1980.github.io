@@ -1674,12 +1674,11 @@ function xpBandWidth(P,ym,f){ /* ym附近±f*H 带内平均肤色宽度(像素) 
   for(var y=a;y<=b;y++){if(P.lo[y]>=0&&P.hi[y]>P.lo[y]){sum+=P.hi[y]-P.lo[y];n++;}}
   return n>3?sum/n:0;
 }
-function xpAutoFit(){ /* v6：实检测眉·鼻·下巴（脸内暗带+脸宽停滞），不再三停均分 */
+function xpAutoFit(){ /* v9：眉=暗带首带·鼻=嘴唇带锚定·下巴=下颌阴影峰，发帘带修正发际 */
   var P=xpProfile(),H=P.H,W=P.W;
   var dn=P.dn,lo=P.lo,hi=P.hi;
   var cv=document.getElementById('xpCanvas');
   var d=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,W,H).data;
-  /* rel：脸内相对暗带（各行以肤色中位亮度为基准，Y<85%计暗），定位眉/眼/唇/下颌 */
   var rel=new Float32Array(H),y,i,j;
   for(y=0;y<H;y++){
     if(lo[y]<0)continue;
@@ -1693,82 +1692,102 @@ function xpAutoFit(){ /* v6：实检测眉·鼻·下巴（脸内暗带+脸宽停
     var arr=[];for(i=0;i<n;i++)if(sk[i])arr.push(Ys[i]);
     if(arr.length>10){
       arr.sort(function(p,q){return p-q});
-      var med=arr[arr.length>>1],cnt2=0;
-      for(i=0;i<n;i++)if(!sk[i]&&Ys[i]<med*0.85&&Ys[i]>25)cnt2++;
-      rel[y]=cnt2/(b-a);
+      var med=(arr[(arr.length-1)>>1]+arr[arr.length>>1])/2,c2=0;
+      for(i=0;i<n;i++)if(!sk[i]&&Ys[i]<med*0.85&&Ys[i]>25)c2++;
+      rel[y]=c2/(b-a);
     }
   }
   var cnt=new Float32Array(H);
   for(y=0;y<H;y++)cnt[y]=dn[y];
-  for(y=1;y<H-1;y++)cnt[y]=(cnt[y-1]+cnt[y]*2+cnt[y+1])/4; /* 平滑抗噪 */
+  for(y=1;y<H-1;y++)cnt[y]=(cnt[y-1]+cnt[y]*2+cnt[y+1])/4;
   var peak=0;for(y=0;y<H;y++)if(cnt[y]>peak)peak=cnt[y];
   var T=-1,C=-1;
   if(peak>30){
-    var thLo=peak*0.15,s=-1,best=null;
+    var s=-1,best=null;
     for(y=2;y<H-2;y++){
-      if(cnt[y]>thLo){if(s<0)s=y;}
+      if(cnt[y]>peak*0.15){if(s<0)s=y;}
       else if(s>=0){if(!best||y-s>best[1]-best[0])best=[s,y-1];s=-1;}
     }
     if(s>=0){if(!best||H-3-s>best[1]-best[0])best=[s,H-3];}
     if(best&&best[1]-best[0]>H*0.20){
       var Ts=best[0],Ce=best[1];
-      /* 发际：15%端点 且其后0.05H密度中位>=0.30peak（跳过发帘/鬓角碎边） */
       var mh=Math.max(8,Math.round(H*0.05));
       for(y=Ts;y<=Ce;y++){
-        if(cnt[y]>=thLo){
+        if(cnt[y]>=peak*0.15){
           var tmp=[];for(var z=y;z<Math.min(y+mh,Ce);z++)tmp.push(cnt[z]);
           tmp.sort(function(p,q){return p-q});
           if(tmp[tmp.length>>1]>=peak*0.30){T=y;break;}
         }
       }
-      if(T<0){var thHi=peak*0.30;for(y=Ts;y<=Ce;y++){if(cnt[y]>=thHi){T=y;break;}}}
-      var thBot=peak*0.35,C35=Ce; /* 35%规则仅作兜底：圆领露脖时会滑进脖子 */
-      for(y=Ce;y>=Ts;y--){if(cnt[y]>=thBot){C35=y;break;}}
+      if(T<0){for(y=Ts;y<=Ce;y++){if(cnt[y]>=peak*0.30){T=y;break;}}}
+      var C35=Ce;
+      for(y=Ce;y>=Ts;y--){if(cnt[y]>=peak*0.35){C35=y;break;}}
       var span35=C35-T,ks=Math.max(3,Math.round(H*0.012));
-      var sr=new Float32Array(H);
-      for(y=0;y<H;y++){var s2=0,c2=0;for(j=-ks;j<=ks;j++){var yy=y+j;if(yy>=0&&yy<H){s2+=rel[yy];c2++;}}sr[y]=s2/c2;}
-      /* 嘴唇带：span35区间最强暗带（与下巴解耦，防止下巴误差拖偏） */
-      var lip=-1,a1=T+Math.round(0.45*span35),b1=T+Math.round(0.85*span35),vM=0;
-      for(y=a1;y<=b1;y++)if(sr[y]>vM){vM=sr[y];lip=y;}
-      if(vM<=0.08)lip=-1;
-      /* 下巴：脸宽深度收窄后的停滞平台（真实下巴尖） */
+      var sr=new Float32Array(H),sd=new Float32Array(H),sw=new Float32Array(H);
       var w=new Float32Array(H);
       for(y=0;y<H;y++)w[y]=lo[y]>=0?hi[y]-lo[y]:0;
-      var sw=new Float32Array(H);
-      for(y=0;y<H;y++){var s3=0,c3=0;for(j=-ks;j<=ks;j++){var y3=y+j;if(y3>=0&&y3<H){s3+=w[y3];c3++;}}sw[y]=s3/c3;}
-      var swMax=0;for(y=T;y<=C35;y++)if(sw[y]>swMax)swMax=sw[y];
-      var g=Math.max(6,Math.round(H*0.01)),plat=Math.max(8,Math.round(H*0.04));
-      C=C35;
-      for(y=T+Math.round(0.45*span35);y<=C35-plat;y++){
-        var gr=sw[y+g]-sw[y];
-        if(sw[y]<swMax*0.72&&gr>-0.02*swMax){
-          var m2=0;for(var z2=0;z2<plat;z2++)m2+=sw[y+z2];m2/=plat;
-          if(m2>=sw[y]*0.97){C=y;break;}
+      var h2=ks>>1;
+      for(y=0;y<H;y++){
+        var s2=0,c3=0,s3=0,c4=0,s4=0,c5=0;
+        for(j=-h2;j<ks-h2;j++){var yy=y+j;if(yy>=0&&yy<H){s2+=rel[yy];s3+=dn[yy];s4+=w[yy];c3++;c4++;c5++;}}
+        sr[y]=s2/c3;sd[y]=s3/c4;sw[y]=s4/c5;
+      }
+      /* 发际修正：T附近发帘暗带下缘（带内密度须<0.72peak，眉毛带不冒充） */
+      var s5=-1;
+      for(y=T;y<T+Math.round(0.10*span35)&&y<H-1;y++){
+        if(sr[y]>0.10){if(s5<0)s5=y;}
+        else if(s5>=0){
+          if(y-s5>=5){var yc=(s5+y-1)>>1;if(sd[yc]<peak*0.72)T=y-1;}
+          break;
         }
       }
-      var span=C-T;
-      /* 眉：span前段首个持续脸内暗带（眉毛上缘），回退最强带/三等分 */
-      var yb=-1,run=0;
-      a1=T+Math.round(0.08*span);b1=T+Math.round(0.35*span);
+      span35=C35-T;
+      var fl=Math.min(0.75*span35,0.60*H);
+      /* 眉：脸长前段首个持续暗带（眉毛上缘） */
+      var yb=-1,run=0,a1=T+Math.round(0.08*fl),b1=T+Math.round(0.35*fl);
       for(y=a1;y<b1;y++){
         if(sr[y]>0.05){run++;if(run>=4){yb=y-1;break;}}else run=0;
       }
       if(yb<0){
         var vB=0;
         for(y=a1;y<=b1;y++)if(sr[y]>vB){vB=sr[y];yb=y;}
-        if(vB>0.10)yb-=Math.round(0.05*span);else yb=T+Math.round(span/3);
+        if(vB>0.10)yb-=Math.round(0.05*fl);else yb=T+Math.round(fl/3);
       }
-      /* 鼻底：dn谷 与 嘴唇带-0.12span35 取靠下，不越过下巴上沿 */
-      a1=yb+Math.round(0.30*(C-yb));b1=yb+Math.round(0.72*(C-yb));
-      var sd=new Float32Array(H);
-      for(y=0;y<H;y++){var s4=0,c4=0;for(j=-ks;j<=ks;j++){var y4=y+j;if(y4>=0&&y4<H){s4+=dn[y4];c4++;}}sd[y]=s4/c4;}
-      var yn=a1;
-      for(y=a1;y<=b1;y++)if(sd[y]<sd[yn])yn=y;
-      if(lip>=0)yn=Math.max(yn,lip-Math.round(0.12*span35));
+      /* 嘴唇带：C35-yb中下段最强暗带 */
+      var lip=-1;a1=yb+Math.round(0.28*(C35-yb));b1=yb+Math.round(0.55*(C35-yb));
+      var vL=0;
+      for(y=a1;y<=b1;y++)if(sr[y]>vL){vL=sr[y];lip=y;}
+      if(vL<=0.035)lip=-1;
+      /* 下巴：下颌底阴影峰（优先），回退脸宽停滞平台 */
+      var Cc=-1;a1=yb+Math.round(0.55*(C35-yb));
+      var vC=0;
+      for(y=a1;y<=C35;y++)if(sr[y]>vC){vC=sr[y];Cc=y;}
+      if(vC<=0.05)Cc=-1;
+      if(Cc>0)C=Cc;
+      else{
+        var swM=0;for(y=T;y<=C35;y++)if(sw[y]>swM)swM=sw[y];
+        var g=Math.max(6,Math.round(H*0.01)),plat=Math.max(8,Math.round(H*0.04));
+        C=C35;
+        for(y=T+Math.round(0.45*span35);y<=C35-plat;y++){
+          var gr=sw[y+g]-sw[y];
+          if(sw[y]<swM*0.72&&gr>-0.02*swM){
+            var m3=0;for(var z3=0;z3<plat;z3++)m3+=sw[y+z3];m3/=plat;
+            if(m3>=sw[y]*0.97){C=y;break;}
+          }
+        }
+      }
+      var span=C-T;
+      /* 鼻底：嘴唇带-0.10span35（胡须会干扰密度谷，密度谷仅兜底） */
+      var yn;
+      if(lip>0)yn=lip-Math.round(0.10*span35);
+      else{
+        a1=yb+Math.round(0.30*(C-yb));b1=yb+Math.round(0.65*(C-yb));
+        yn=a1;for(y=a1;y<=b1;y++)if(sd[y]<sd[yn])yn=y;
+      }
       yn=Math.min(yn,C-Math.round(0.06*span));
       var yPk=T;for(y=T;y<=C;y++)if(cnt[y]>cnt[yPk])yPk=y;
-      var Wface=cnt[yPk];
-      if((C-T)>1.75*Wface)C=Math.round(T+1.75*Wface); /* 面长硬上限 */
+      if((C-T)>1.75*cnt[yPk])C=Math.round(T+1.75*cnt[yPk]);
+      span=C-T;
       if(T>0&&C>T&&(C-T)>H*0.22&&T<yb&&yb<yn&&yn<C){
         var set=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
         set(0,T);set(1,yb);set(2,yn);set(3,C);
