@@ -305,7 +305,7 @@ details.sec:nth-of-type(7) .sn{background:linear-gradient(135deg,#D0824C,#DE9866
 details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266)}   /* 捌 分享 金棕 */
 
 /* ---- 相法拉线 ---- */
-.xp-line{position:absolute;left:0;right:0;height:28px;margin-top:-14px;pointer-events:none}
+.xp-line{position:absolute;left:0;right:0;height:28px;margin-top:-14px;pointer-events:auto;touch-action:none;cursor:ns-resize}
 .xp-line::before{content:'';position:absolute;left:0;right:0;top:13px;border-top:2px dashed rgba(255,122,24,.95);box-shadow:0 0 5px rgba(0,0,0,.45)}
 .xp-line span{position:absolute;right:6px;top:0;font-size:11px;color:#FFF;background:rgba(23,24,29,.72);padding:2px 9px;border-radius:10px;pointer-events:none;line-height:1.5}
 .xp-bar{height:10px;border-radius:6px;background:var(--accent-grad);min-width:6%}
@@ -588,7 +588,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
             <div class="xp-line" id="xpL2" data-y="0.6"><span>鼻底</span></div>
             <div class="xp-line" id="xpL3" data-y="0.88"><span>下巴</span></div>
           </div>
-          <div class="sub" style="margin-top:8px">三停线已按相法自动对齐（发际→眉→鼻底→下巴），直接点「观相断局」即可</div>
+          <div class="sub" style="margin-top:8px">三停线已自动对齐；若光线特殊没对准，直接按住细线上下拖动微调，拖好点「观相断局」即可</div>
           <button class="btn" style="margin-top:12px" onclick="castXiang()">观 相 断 局</button>
         </div>
         <div id="xiangResult" class="hidden"></div>
@@ -1823,6 +1823,31 @@ function xpLoad(e){
 }
 function xpBind(){
   document.getElementById('xpFile').addEventListener('change',xpLoad,false);
+  /* 四条三停线支持触屏/鼠标上下拖动微调 */
+  var wrap=document.getElementById('xpWrap');
+  ['xpL0','xpL1','xpL2','xpL3'].forEach(function(id){
+    var el=document.getElementById(id),dragging=false;
+    function yFrom(e){
+      var r=wrap.getBoundingClientRect();
+      var cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+      return Math.max(0.02,Math.min(0.98,cy/r.height));
+    }
+    function start(e){dragging=true;e.preventDefault();}
+    function move(e){
+      if(!dragging)return;
+      var v=yFrom(e);
+      el.dataset.y=v.toFixed(4);
+      el.style.top=(v*100).toFixed(2)+'%';
+      e.preventDefault();
+    }
+    function end(){dragging=false;}
+    el.addEventListener('mousedown',start);
+    el.addEventListener('touchstart',start,{passive:false});
+    window.addEventListener('mousemove',move);
+    window.addEventListener('touchmove',move,{passive:false});
+    window.addEventListener('mouseup',end);
+    window.addEventListener('touchend',end);
+  });
 }
 function castXiang(){
   var cv=document.getElementById('xpCanvas');
