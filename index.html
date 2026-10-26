@@ -173,6 +173,9 @@ select:focus,input[type="text"]:focus{outline:2px solid var(--accent);outline-of
 .gd-baihua b{color:var(--accent);font-weight:700}
 
 /* ---- 每日一签 ---- */
+/* ---- 卡片动画（2026-10-26） ---- */
+.vid-banner{display:block;width:calc(100% + 36px);margin:-20px -18px 12px;aspect-ratio:2.35/1;object-fit:cover;border-radius:26px 26px 0 0;background:#D8D4EE}
+.vid-full{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px;background:#D8D4EE;margin-bottom:12px}
 .qt-row{display:flex;justify-content:center}
 .qiantong{position:relative;width:96px;height:112px;margin-top:30px;background:linear-gradient(180deg,#2E3038,#17181D);border-radius:12px 12px 16px 16px;box-shadow:0 10px 22px rgba(23,24,29,.35);transform-origin:50% 92%}
 .qiantong::before{content:'';position:absolute;left:6px;right:6px;top:10px;height:4px;background:rgba(255,255,255,.14);border-radius:2px}
@@ -444,6 +447,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
   <div class="col1">
    <div>
       <div class="card" id="wenCard">
+        <video class="vid-banner" src="wen.mp4" style="object-position:50% 58%" autoplay loop muted playsinline disablepictureinpicture preload="auto"></video>
         <h2>🕯️ 今日问事 · 周易断可否</h2>
         <div class="sub">写下今天要办的事，以字数合生辰起一卦（法《梅花易数》），卦辞出《周易》，看今天做它合不合适</div>
         <div class="wen-row">
@@ -453,6 +457,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <div id="wenResult" class="hidden"></div>
       </div>
       <div class="card" id="lpCard">
+        <video class="vid-banner" src="luopan.mp4" style="object-position:50% 55%" autoplay loop muted playsinline disablepictureinpicture preload="auto"></video>
         <h2>🧭 罗盘问事 · 指点方位</h2>
         <div class="sub">写下要占的事，转一转罗盘，看这事该往哪个方向使劲</div>
         <button class="btn" style="margin-top:14px" onclick="showLuopan()">进 入 罗 盘</button>
@@ -465,9 +470,10 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
   <div class="col1">
    <div>
       <div class="card" id="qianCard">
+        <video id="qianVid" class="vid-full" src="qian.mp4" autoplay loop muted playsinline disablepictureinpicture preload="auto"></video>
         <h2>每日一签</h2>
         <div id="qianStage">
-          <div class="qt-row">
+          <div class="qt-row" style="display:none">
             <div class="qiantong" id="qiTong"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i></div>
           </div>
           <div class="sub" style="text-align:center;margin-top:10px">心诚则灵 · 每日首签最准</div>
@@ -569,6 +575,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
   <div class="col1">
    <div>
       <div class="card" id="xiangCard">
+        <video class="vid-full" src="xiang.mp4" autoplay loop muted playsinline disablepictureinpicture preload="auto"></video>
         <h2>🧭 麻衣相法 · 传照观面</h2>
         <div class="sub">选一张正面照片（或直接拍），本机自动对齐相面：测三停、定五行形局。照片只在本机测量，不上传不留存，对齐后直接点断局</div>
         <input type="file" id="xpFile" accept="image/*" style="display:none">
@@ -836,8 +843,10 @@ function drawQian(again){
   idx=Math.floor(Math.random()*QIAN.length);
   try{localStorage.setItem("ys_qian",JSON.stringify({date:dstr,idx}));}catch(e){}
  }
- // 抽签动画
+ // 抽签动画：摇签筒视频从头重播当摇签演出，原CSS签筒已隐藏仅保留兜底
  const tong=$("qiTong");
+ const qv=$("qianVid");
+ if(qv){try{qv.currentTime=0;}catch(e){} qv.play().catch(function(){});}
  $("qianResult").classList.add("hidden");
  $("qianAgain").classList.add("hidden");
  if($("qianBtn"))$("qianBtn").classList.add("hidden");
@@ -1767,6 +1776,9 @@ function goPage(id){
   document.querySelectorAll('.page').forEach(function(p){p.classList.add('hidden');});
   document.getElementById(id).classList.remove('hidden');
   window.scrollTo(0,0);
+  /* 进入页面时唤醒卡片动画（隐藏页里的autoplay可能不触发） */
+  var vs=document.getElementById(id).querySelectorAll('video');
+  for(var i=0;i<vs.length;i++){if(vs[i].paused)vs[i].play().catch(function(){});}
 }
 function backLuopan(){goPage('pageWen');}
 function showLuopan(){
