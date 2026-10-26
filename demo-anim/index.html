@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>卡片动画方案预览</title>
+<style>
+:root{--bg:#EFEDF7;--card:#FFFFFF;--ink:#1A2029;--sub:#838A95;--line:#EBEDF1;--coral:#F4586C;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:var(--ink)}
+.wrap{max-width:430px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:20px;font-weight:900;padding:8px 2px 2px}
+.note{font-size:12.5px;color:var(--sub);padding:6px 2px 16px;line-height:1.6}
+.sec{font-size:16px;font-weight:900;padding:18px 2px 4px;display:flex;align-items:center;gap:8px}
+.sec .tag{font-size:11px;font-weight:600;background:var(--ink);color:#fff;border-radius:99px;padding:3px 10px}
+.sec+.p{font-size:12.5px;color:var(--sub);padding:2px 2px 12px}
+.card{background:var(--card);border-radius:26px;padding:16px;margin:12px 0;box-shadow:0 6px 18px rgba(26,32,41,.05);overflow:hidden}
+.ct{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800}
+.dot{width:10px;height:10px;border-radius:50%;background:#2FBF71;box-shadow:0 0 0 4px rgba(47,191,113,.15);flex:none}
+.cd{font-size:13.5px;color:var(--sub);line-height:1.65;padding:10px 2px 4px}
+.btn{display:block;width:100%;background:var(--ink);color:#fff;border:none;border-radius:22px;height:52px;font-size:17px;font-weight:700;letter-spacing:2px;margin-top:14px;font-family:inherit}
+.inrow{display:flex;gap:10px;margin-top:14px}
+.inp{flex:1;border:1.5px solid var(--line);border-radius:16px;height:52px;padding:0 14px;font-size:15px;color:#B9BEc8;display:flex;align-items:center;min-width:0}
+.gobtn{background:var(--ink);color:#fff;border:none;border-radius:18px;width:104px;font-size:17px;font-weight:700;letter-spacing:3px;font-family:inherit}
+/* 动画区 */
+.banner{margin:-16px -16px 12px;border-radius:26px 26px 0 0;overflow:hidden;aspect-ratio:2.35/1;background:#D8D4EE}
+.banner video{width:100%;height:100%;object-fit:cover;display:block}
+.full{border-radius:20px;overflow:hidden;aspect-ratio:1/1;background:#D8D4EE;margin-bottom:4px}
+.full video{width:100%;height:100%;object-fit:cover;display:block}
+.capt{font-size:12px;color:var(--sub);padding:6px 2px 0}
+/* 对比表 */
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px;background:#fff;border-radius:18px;overflow:hidden}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:#F7F6FC;font-size:12px;color:var(--sub);font-weight:600}
+td b{font-weight:800}
+.rec{background:linear-gradient(135deg,#FFF6E8,#FFE9F0);border-radius:18px;padding:14px 16px;margin-top:14px;font-size:13.5px;line-height:1.7}
+.rec b{font-weight:900}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>卡片动画 · 方案预览</h1>
+  <div class="note">四个去水印动画放进四个卡片。下面给出两种摆法，都是随手机屏宽自动伸缩（动画区域宽度始终等于卡片内宽）。看完选一种，回复「确认」我就改到正式页面。</div>
+
+  <div class="sec">方案一 <span class="tag">横幅式·推荐</span></div>
+  <div class="p">动画裁成卡片顶部的通栏横幅（约2.4:1），画面取动画主体，卡片只微微变高，页面紧凑，输入按钮仍在原位。</div>
+
+  <div class="card">
+    <div class="banner"><video src="今日问事.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>🕯️ 今日问事 · 周易断可否</div>
+    <div class="cd">写下今天要办的事，以字数合生辰起一卦（法《梅花易数》），卦辞出《周易》，看今天做它合不合适</div>
+    <div class="inrow"><div class="inp">如：签合同 / 搬家 / 谈一单生意</div><button class="gobtn">起卦</button></div>
+  </div>
+
+  <div class="card">
+    <div class="banner"><video src="罗盘问事.mp4" autoplay loop muted playsinline style="object-position:50% 55%"></video></div>
+    <div class="ct"><span class="dot"></span>🧭 罗盘问事 · 指点方位</div>
+    <div class="cd">写下要占的事，转一转罗盘，看这事该往哪个方向使劲</div>
+    <button class="btn">进 入 罗 盘</button>
+  </div>
+
+  <div class="card">
+    <div class="banner"><video src="摇签筒.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>每日一签</div>
+    <div class="cd" style="text-align:center">心诚则灵 · 每日首签最准</div>
+    <button class="btn">摇　签</button>
+  </div>
+
+  <div class="card">
+    <div class="banner"><video src="翻书.mp4" autoplay loop muted playsinline style="object-position:50% 60%"></video></div>
+    <div class="ct"><span class="dot"></span>🧭 麻衣相法 · 传照观面</div>
+    <div class="cd">选一张正面照片（或直接拍），本机自动对齐相面：测三停、定五行形局。照片只在本机测量，不上传不留存</div>
+    <button class="btn">📷 选照片 · 观相</button>
+  </div>
+
+  <div class="sec">方案二 <span class="tag">完整式</span></div>
+  <div class="p">动画以完整正方形显示（画面一字不裁），卡片高度随动画撑大，页面更饱满但滚动变长。</div>
+
+  <div class="card">
+    <div class="full"><video src="今日问事.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>🕯️ 今日问事 · 周易断可否</div>
+    <div class="inrow"><div class="inp">如：签合同 / 搬家 / 谈一单生意</div><button class="gobtn">起卦</button></div>
+  </div>
+
+  <div class="card">
+    <div class="full"><video src="罗盘问事.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>🧭 罗盘问事 · 指点方位</div>
+    <button class="btn">进 入 罗 盘</button>
+  </div>
+
+  <div class="card">
+    <div class="full"><video src="摇签筒.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>每日一签</div>
+    <div class="cd" style="text-align:center">心诚则灵 · 每日首签最准</div>
+    <button class="btn">摇　签</button>
+  </div>
+
+  <div class="card">
+    <div class="full"><video src="翻书.mp4" autoplay loop muted playsinline></video></div>
+    <div class="ct"><span class="dot"></span>🧭 麻衣相法 · 传照观面</div>
+    <button class="btn">📷 选照片 · 观相</button>
+  </div>
+
+  <div class="sec">体积与加载</div>
+  <table>
+    <tr><th>方案</th><th>格式</th><th>4个动画总大小</th><th>加载影响</th></tr>
+    <tr><td><b>视频版（本页用）</b></td><td>MP4静音循环</td><td><b>0.87MB</b></td><td>几乎无感，iPhone/安卓/APK都支持</td></tr>
+    <tr><td>GIF原版</td><td>GIF</td><td>21.7MB</td><td>首屏多等约10-20秒，不推荐</td></tr>
+    <tr><td>GIF瘦身版</td><td>GIF</td><td>约8MB</td><td>仍明显变慢且画质糊</td></tr>
+  </table>
+  <div class="rec"><b>推荐：方案一（横幅式）+ 视频版。</b>卡片面积自动适配屏宽；动画只在卡片进入屏幕时才加载播放，不打扰其他功能；APK离线包一并打入，离线也能播。没问题回复「确认」，我改到正式页面并同步APK。</div>
+</div>
+</body>
+</html>
