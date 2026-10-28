@@ -584,6 +584,19 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <div class="sub">选一张正面照片（或直接拍），本机自动对齐相面：测三停、定五行形局。照片只在本机测量，不上传不留存，对齐后直接点断局</div>
         <input type="file" id="xpFile" accept="image/*" style="display:none">
         <button class="btn" style="letter-spacing:3px;text-indent:3px" onclick="document.getElementById('xpFile').click()">📷 选照片 · 观相</button>
+        <button class="btn" style="letter-spacing:3px;text-indent:3px;margin-top:10px" onclick="xpOpenCam()">📸 直接拍照 · 观相</button>
+        <div id="xpCamWrap" class="hidden" style="margin-top:12px">
+          <div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#151310">
+            <video id="xpCam" autoplay playsinline muted style="display:block;width:100%"></video>
+            <div style="position:absolute;left:50%;top:9%;bottom:9%;width:60%;transform:translateX(-50%);border:2px dashed rgba(255,255,255,.65);border-radius:46% 46% 44% 44%/56% 56% 40% 40%;pointer-events:none"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" style="flex:1" onclick="xpSnap()">拍 下 这 张</button>
+            <button class="btn" style="flex:0 0 auto;background:#3A3F4B" onclick="xpCamFlip()">🔄</button>
+            <button class="btn" style="flex:0 0 auto;background:#3A3F4B" onclick="xpCamClose()">取消</button>
+          </div>
+          <div class="sub" style="margin-top:6px">脸对准虚线框，正面、自然光下拍最准；照片只在本机测量，不上传</div>
+        </div>
         <div id="xpStage" class="hidden" style="margin-top:12px">
           <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310">
             <canvas id="xpCanvas" style="display:block;width:100%;height:auto"></canvas>
@@ -1716,32 +1729,50 @@ function fmLoad(cb){ /* 动态加载FaceMesh资源（约10MB，首次稍慢，�
   s.onload=function(){
     try{
       var fm=new FaceMesh({locateFile:function(f){return 'assets/facemesh/'+f}});
-      fm.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+      fm.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:0.3,minTrackingConfidence:0.3});
       fm.initialize().then(function(){clearTimeout(to);finish(fm)}).catch(function(){clearTimeout(to);finish(null)});
     }catch(err){clearTimeout(to);finish(null)}
   };
   s.onerror=function(){clearTimeout(to);finish(null)};
   document.head.appendChild(s);
 }
-function xpFaceAlign(fm,cb){ /* landmark: 发际=10 眉=105/334 鼻底=2 下巴=152 */
+function xpCenterCrop(cv){ /* 中心75%裁剪：脸小时全图检测失败，贴近后重试 */
+  var W=cv.width,H=cv.height,c=document.createElement('canvas');
+  var w=Math.max(64,Math.round(W*0.75)),h=Math.max(64,Math.round(H*0.75));
+  c.width=w;c.height=h;
+  c.getContext('2d').drawImage(cv,Math.round((W-w)/2),Math.round((H-h)/2),w,h,0,0,w,h);
+  return c;
+}
+function xpFaceAlign(fm,cb){ /* landmark: 发际=10 眉=105/334 鼻底=2/94 下巴=152；全图失败→中心裁剪重试一次 */
   var cv=document.getElementById('xpCanvas');
   var H=cv.height;if(!H)return cb(false);
-  var done=false;
+  var stage=0,done=false;
   var timer=setTimeout(function(){if(!done){done=true;cb(false)}},9000);
+  var failNow=function(){if(!done){done=true;clearTimeout(timer);cb(false)}};
   fm.onResults(function(r){
-    if(done)return;done=true;clearTimeout(timer);
+    if(done)return;
     try{
       var L=r.multiFaceLandmarks&&r.multiFaceLandmarks[0];
-      if(!L)return cb(false);
-      var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=(L[2].y+L[94].y)/2,ch=L[152].y;
-      if(!(fa<br&&br<no&&no<ch))return cb(false);
-      if(ch-fa<0.18)return cb(false); /* 归一化脸长下限，防误检 */
-      fmSetLine(0,fa,H);fmSetLine(1,br,H);fmSetLine(2,no,H);fmSetLine(3,ch,H);
-      cb(true);
-    }catch(err){cb(false)}
+      if(L){
+        var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=(L[2].y+L[94].y)/2,ch=L[152].y;
+        if(stage===1){ /* 裁剪图坐标映射回整图 */
+          var w=cv.width,hh=cv.height,cw=Math.max(64,Math.round(w*0.75)),chh=Math.max(64,Math.round(hh*0.75));
+          var ox=Math.round((w-cw)/2),oy=Math.round((hh-chh)/2);
+          fa=(oy+fa*chh)/hh;br=(oy+br*chh)/hh;no=(oy+no*chh)/hh;ch=(oy+ch*chh)/hh;
+        }
+        if(fa<br&&br<no&&no<ch&&ch-fa>=0.18&&fa>-0.2&&ch<1.2){
+          fmSetLine(0,fa,H);fmSetLine(1,br,H);fmSetLine(2,no,H);fmSetLine(3,ch,H);
+          done=true;clearTimeout(timer);cb(true);return;
+        }
+      }
+    }catch(err){}
+    if(stage===0){
+      stage=1;
+      try{fm.send({image:xpCenterCrop(cv)}).catch(failNow)}catch(e){failNow()}
+    }else failNow();
   });
-  try{fm.send({image:cv}).catch(function(){if(!done){done=true;clearTimeout(timer);cb(false)}});}
-  catch(err){if(!done){done=true;clearTimeout(timer);cb(false)}}
+  try{fm.send({image:cv}).catch(failNow)}
+  catch(err){failNow()}
 }
 function xpAutoFit(){ /* v9：眉=暗带首带·鼻=嘴唇带锚定·下巴=下颌阴影峰，发帘带修正发际 */
   var P=xpProfile(),H=P.H,W=P.W;
@@ -1870,31 +1901,123 @@ function xpAutoFit(){ /* v9：眉=暗带首带·鼻=嘴唇带锚定·下巴=下�
   var span2=C-T,set2=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
   set2(0,T);set2(1,T+span2/3);set2(2,T+span2*2/3);set2(3,C);
 }
+function xpRunAlign(){ /* xpStage显示 + AI对齐（选图/拍照共用）；首载或失败时回退 v9 */
+  document.getElementById('xpStage').classList.remove('hidden');
+  document.getElementById('xiangResult').classList.add('hidden');
+  var slowTip=setTimeout(function(){toast('AI 智能对齐中，首次加载稍慢…')},1500);
+  fmLoad(function(fm){
+    clearTimeout(slowTip);
+    if(fm)xpFaceAlign(fm,function(ok){if(!ok){xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}});
+    else{xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}
+  });
+  try{document.getElementById('xpStage').scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}
+}
+function xpExifOrient(buf){ /* EXIF方向：手机竖拍orientation=6，老内核drawImage不自动转正，须手动转 */
+  try{
+    var v=new DataView(buf);
+    if(v.byteLength<12||v.getUint16(0)!==0xFFD8)return 1;
+    var off=2;
+    while(off+4<v.byteLength){
+      var m=v.getUint16(off);
+      if(m===0xFFE1){
+        if(v.getUint32(off+4)===0x45786966){ /* "Exif" */
+          var t=off+10,le=v.getUint16(t)===0x4949;
+          var u16=function(p){return le?v.getUint16(p,true):v.getUint16(p)};
+          var u32=function(p){return le?v.getUint32(p,true):v.getUint32(p)};
+          var ifd=t+u32(t+4),n=u16(ifd);
+          for(var i=0;i<n;i++){
+            var e2=ifd+2+i*12;
+            if(u16(e2)===0x0112){var o=u16(e2+8);return o>=1&&o<=8?o:1;}
+          }
+        }
+        break;
+      }else if((m>>8)===0xFF){
+        if(m===0xFFDA)break; /* 图像数据开始 */
+        off+=2+v.getUint16(off+2);
+      }else break;
+    }
+  }catch(e){}
+  return 1;
+}
+function xpFromCanvas(cv){ /* canvas→显示→AI对齐（选图/拍照统一收口） */
+  var t=document.getElementById('xpCanvas');
+  t.width=cv.width;t.height=cv.height;
+  t.getContext('2d').drawImage(cv,0,0);
+  xpRunAlign();
+}
+function xpFromBuffer(buf){ /* 读图统一入口：老内核手动转EXIF，新内核信任浏览器from-image→限边1024→对齐 */
+  var img=new Image();
+  img.onload=function(){
+    var o=xpExifOrient(buf);
+    var manual=!window.createImageBitmap&&o>=2; /* createImageBitmap=新内核标志；老内核drawImage不应用EXIF须手动转 */
+    var iw=img.naturalWidth,ih=img.naturalHeight;
+    var sw=(manual&&o>=5?ih:iw),sh=(manual&&o>=5?iw:ih); /* 5-8时宽高互换 */
+    var M=1024,r=Math.min(1,M/Math.max(sw,sh));
+    var W=Math.round(sw*r)||1,H=Math.round(sh*r)||1;
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var x=cv.getContext('2d');
+    if(manual){
+      x.save();x.translate(W/2,H/2);
+      if(o===2)x.scale(-1,1);
+      else if(o===3)x.rotate(Math.PI);
+      else if(o===4)x.scale(1,-1);
+      else if(o===5){x.rotate(Math.PI/2);x.scale(-1,1);}
+      else if(o===6)x.rotate(Math.PI/2);
+      else if(o===7){x.rotate(Math.PI/2);x.scale(1,-1);}
+      else if(o===8)x.rotate(-Math.PI/2);
+      x.drawImage(img,-iw/2,-ih/2,iw,ih);
+      x.restore();
+    }else{
+      x.drawImage(img,0,0,W,H);
+    }
+    xpFromCanvas(cv);
+  };
+  img.onerror=function(){toast('照片读取失败，换一张试试');};
+  img.src=URL.createObjectURL(new Blob([buf]));
+}
 function xpLoad(e){
   var f=e.target.files&&e.target.files[0];if(!f)return;
   var fr=new FileReader();
-  fr.onload=function(){
-    var img=new Image();
-    img.onload=function(){
-      var M=1024,r=Math.min(1,M/Math.max(img.naturalWidth,img.naturalHeight));
-      var W=Math.round(img.naturalWidth*r)||1,H=Math.round(img.naturalHeight*r)||1;
-      var cv=document.getElementById('xpCanvas');cv.width=W;cv.height=H;
-      cv.getContext('2d').drawImage(img,0,0,W,H);
-      document.getElementById('xpStage').classList.remove('hidden');
-      document.getElementById('xiangResult').classList.add('hidden');
-      /* AI 关键点对齐优先；首载或失败时回退 v9 几何算法 */
-      var slowTip=setTimeout(function(){toast('AI 智能对齐中，首次加载稍慢…')},1500);
-      fmLoad(function(fm){
-        clearTimeout(slowTip);
-        if(fm)xpFaceAlign(fm,function(ok){if(!ok){xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}});
-        else{xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}
-      });
-      try{document.getElementById('xpStage').scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}
-    };
-    img.onerror=function(){toast('照片读取失败，换一张试试');};
-    img.src=fr.result;
-  };
-  fr.readAsDataURL(f);
+  fr.onload=function(){xpFromBuffer(fr.result)};
+  fr.readAsArrayBuffer(f);
+}
+/* ---- 直接拍照：getUserMedia本机直拍，照片不上传（APK/网页通用） ---- */
+var xpCamStream=null,xpCamFacing='user';
+function xpOpenCam(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('此环境不支持拍照，请用「选照片」');return;}
+  xpStopCam();
+  navigator.mediaDevices.getUserMedia({video:{facingMode:xpCamFacing,width:{ideal:1440},height:{ideal:1440}},audio:false}).then(function(st){
+    xpCamStream=st;
+    var v=document.getElementById('xpCam');
+    v.style.transform=xpCamFacing==='user'?'scaleX(-1)':'none';
+    v.srcObject=st;
+    var p=v.play();if(p&&p.catch)p.catch(function(){});
+    document.getElementById('xpCamWrap').classList.remove('hidden');
+    document.getElementById('xpStage').classList.add('hidden');
+  }).catch(function(e){
+    toast(e&&e.name==='NotAllowedError'?'未获相机权限，请在系统设置里允许「相机」后重试':'相机打开失败，请重试');
+  });
+}
+function xpSnap(){
+  var v=document.getElementById('xpCam');
+  if(!xpCamStream||!v.videoWidth){toast('相机还没准备好，稍等一下');return;}
+  var M=1024,r=Math.min(1,M/Math.max(v.videoWidth,v.videoHeight));
+  var W=Math.round(v.videoWidth*r)||1,H=Math.round(v.videoHeight*r)||1;
+  var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  var x=cv.getContext('2d');
+  if(xpCamFacing==='user'){x.translate(W,0);x.scale(-1,1);} /* 前置拍摄所见即所得 */
+  x.drawImage(v,0,0,W,H);
+  xpCamClose();
+  xpFromCanvas(cv);
+}
+function xpCamFlip(){xpCamFacing=xpCamFacing==='user'?'environment':'user';if(xpCamStream)xpOpenCam();}
+function xpCamClose(){
+  xpStopCam();
+  document.getElementById('xpCamWrap').classList.add('hidden');
+}
+function xpStopCam(){
+  if(xpCamStream){try{xpCamStream.getTracks().forEach(function(t){t.stop()})}catch(e){}xpCamStream=null;}
+  var v=document.getElementById('xpCam');if(v)v.srcObject=null;
 }
 function xpBind(){
   document.getElementById('xpFile').addEventListener('change',xpLoad,false);
