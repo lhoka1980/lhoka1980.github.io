@@ -600,10 +600,10 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <div id="xpStage" class="hidden" style="margin-top:12px">
           <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310">
             <canvas id="xpCanvas" style="display:block;width:100%;height:auto"></canvas>
-            <div class="xp-line" id="xpL0" data-y="0.3"><span>发际</span></div>
-            <div class="xp-line" id="xpL1" data-y="0.45"><span>眉</span></div>
-            <div class="xp-line" id="xpL2" data-y="0.6"><span>鼻底</span></div>
-            <div class="xp-line" id="xpL3" data-y="0.88"><span>下巴</span></div>
+            <div class="xp-line" id="xpL0" data-y="0.3" style="top:30%"><span>发际</span></div>
+            <div class="xp-line" id="xpL1" data-y="0.45" style="top:45%"><span>眉</span></div>
+            <div class="xp-line" id="xpL2" data-y="0.6" style="top:60%"><span>鼻底</span></div>
+            <div class="xp-line" id="xpL3" data-y="0.88" style="top:88%"><span>下巴</span></div>
             <div class="xp-guide" id="xpG0"></div>
             <div class="xp-guide" id="xpG1"></div>
             <div id="xpMag"><canvas id="xpMagC"></canvas></div>
@@ -1723,7 +1723,7 @@ function fmLoad(cb){ /* 动态加载FaceMesh资源（约10MB，首次稍慢，�
   if(FMState.loading)return;
   FMState.loading=true;
   var finish=function(fm){FMState.loaded=!!fm;FMState.fm=fm||null;FMState.loading=false;var q=FMState.queue;FMState.queue=[];q.forEach(function(f){f(fm)})};
-  var to=setTimeout(function(){finish(null)},20000);
+  var to=setTimeout(function(){finish(null)},10000);
   var s=document.createElement('script');
   s.src='assets/facemesh/face_mesh.js';
   s.onload=function(){
@@ -1901,14 +1901,17 @@ function xpAutoFit(){ /* v9：眉=暗带首带·鼻=嘴唇带锚定·下巴=下�
   var span2=C-T,set2=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
   set2(0,T);set2(1,T+span2/3);set2(2,T+span2*2/3);set2(3,C);
 }
-function xpRunAlign(){ /* xpStage显示 + AI对齐（选图/拍照共用）；首载或失败时回退 v9 */
+function xpRunAlign(){ /* xpStage显示；先立即v9落线（绝不空白挤底），模型就绪后AI精调覆盖 */
   document.getElementById('xpStage').classList.remove('hidden');
   document.getElementById('xiangResult').classList.add('hidden');
-  var slowTip=setTimeout(function(){toast('AI 智能对齐中，首次加载稍慢…')},1500);
+  try{xpAutoFit();}catch(err){
+    var H=document.getElementById('xpCanvas').height||100;
+    for(var i=0;i<4;i++)fmSetLine(i,[0.30,0.50,0.70,0.90][i],H);
+    toast('已按常规三停比例测量，可拖线微调');
+  }
   fmLoad(function(fm){
-    clearTimeout(slowTip);
-    if(fm)xpFaceAlign(fm,function(ok){if(!ok){xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}});
-    else{xpAutoFit();toast('AI 对齐不可用，已用常规算法，请拖线微调')}
+    if(fm)xpFaceAlign(fm,function(ok){toast(ok?'AI 精准对齐完成，可直接断局':'AI 对齐不可用，已用常规算法，请拖线微调')});
+    else toast('AI 对齐不可用，已用常规算法，请拖线微调');
   });
   try{document.getElementById('xpStage').scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}
 }
