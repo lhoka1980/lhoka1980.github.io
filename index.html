@@ -1755,8 +1755,10 @@ function xpFaceAlign(fm,cb){ /* landmark: 发际=10 眉=105/334 鼻底=2/94 下�
     try{
       var L=r.multiFaceLandmarks&&r.multiFaceLandmarks[0];
       if(L){
-        /* 解剖校准：眉上点(105/334)向眼睑收40%落眉毛；鼻底用subnasale(2)不用鼻翼(94，偏低)；下巴(152+175)/2收脖颈 */
-        var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=L[2].y,ch=(L[152].y+L[175].y)/2;
+        /* 解剖校准：眉上点(105/334)向眼睑收40%落眉毛；鼻底用subnasale(2)不用鼻翼(94，偏低)；下巴从颏唇沟(18)向最低点(152)取62%≈颏下点，避开下颌缘/脖颈 */
+        var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=L[2].y,ch;
+        if(L[18]&&L[152].y>L[18].y)ch=L[18].y+0.62*(L[152].y-L[18].y);
+        else ch=(L[152].y+L[175].y)/2;
         var eyeL=(L[159].y+L[386].y)/2;
         if(eyeL>br)br=br+0.4*(eyeL-br);
         if(stage===1){ /* 裁剪图坐标映射回整图 */
