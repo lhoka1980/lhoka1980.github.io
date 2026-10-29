@@ -588,15 +588,18 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <div id="xpCamWrap" class="hidden" style="margin-top:12px">
           <div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#151310">
             <video id="xpCam" autoplay playsinline muted style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center"></video>
-            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64%;height:72%;border:2px dashed rgba(255,255,255,.72);border-radius:50% 50% 46% 46%/54% 54% 42% 42%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.18)"></div>
-            <div style="position:absolute;left:0;right:0;top:4%;text-align:center;color:rgba(255,255,255,.88);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none">把脸对进虚线框，正面、自然光最准</div>
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64%;height:72%;border:2px dashed rgba(255,255,255,.72);border-radius:50% 50% 46% 46%/54% 54% 42% 42%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.22)"></div>
+            <div style="position:absolute;left:50%;top:14%;transform:translate(-50%,-50%);width:42%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
+            <div style="position:absolute;left:0;right:0;top:16.5%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">↑ 发际（头发线）贴这条</div>
+            <div style="position:absolute;left:50%;top:86%;transform:translate(-50%,-50%);width:42%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
+            <div style="position:absolute;left:0;right:0;top:78%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">下巴尖贴下面这条 ↓</div>
             <div style="position:absolute;left:0;right:0;bottom:14px;display:flex;align-items:center;justify-content:center;gap:30px">
               <button type="button" aria-label="取消" onclick="xpCamClose()" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:18px;line-height:44px;padding:0;cursor:pointer">✕</button>
               <button type="button" aria-label="拍照" onclick="xpSnap()" style="width:74px;height:74px;border-radius:50%;border:4px solid rgba(255,255,255,.92);background:rgba(255,255,255,.28);box-shadow:0 4px 16px rgba(0,0,0,.35);padding:0;cursor:pointer"></button>
               <button type="button" aria-label="切换镜头" onclick="xpCamFlip()" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:17px;line-height:44px;padding:0;cursor:pointer">⟳</button>
             </div>
           </div>
-          <div class="sub" style="margin-top:6px">大圆键拍照，⟳ 转镜头；照片只在本机测量，不上传</div>
+          <div class="sub" style="margin-top:6px">发际贴上线、下巴贴下线拍——线自动落准，无需再调；照片只在本机测量，不上传</div>
         </div>
         <div id="xpStage" class="hidden" style="margin-top:12px">
           <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310">
@@ -1948,11 +1951,17 @@ function xpExifOrient(buf){ /* EXIF方向：手机竖拍orientation=6，老内�
   }catch(e){}
   return 1;
 }
-function xpFromCanvas(cv){ /* canvas→显示→AI对齐（选图/拍照统一收口） */
+function xpFromCanvas(cv,fromCam){ /* canvas→显示→对齐（拍照fromCam=按取景框架直接落线；选图走AI/v9） */
   var t=document.getElementById('xpCanvas');
   t.width=cv.width;t.height=cv.height;
   t.getContext('2d').drawImage(cv,0,0);
-  xpRunAlign();
+  if(fromCam){ /* 强制构图：框顶=发际、框底=下巴，三停等分＋4%边距，不猜不漂 */
+    var H=t.height;
+    fmSetLine(0,0.04,H);fmSetLine(1,0.373,H);fmSetLine(2,0.707,H);fmSetLine(3,0.96,H);
+    document.getElementById('xpStage').classList.remove('hidden');
+    document.getElementById('xiangResult').classList.add('hidden');
+    toast('按取景框架落线完成，可直接断局；不准可拖线微调');
+  }else xpRunAlign();
 }
 function xpFromBuffer(buf){ /* 读图统一入口：老内核手动转EXIF，新内核信任浏览器from-image→限边1024→对齐 */
   var img=new Image();
@@ -2010,18 +2019,21 @@ function xpOpenCam(){
 function xpSnap(){
   var v=document.getElementById('xpCam');
   if(!xpCamStream||!v.videoWidth){toast('相机还没准备好，稍等一下');return;}
-  /* 与显示一致的3:4 cover裁剪，所见即所得 */
+  /* 只裁取景框区域（64%宽×72%高，居中）＝强制构图：框内即标准脸位 */
   var vw=v.videoWidth,vh=v.videoHeight,tar=3/4,cw=vw,chh=vh;
   if(vw/vh>tar){cw=Math.round(vh*tar);}else{chh=Math.round(vw/tar);}
-  var sx=Math.round((vw-cw)/2),sy=Math.round((vh-chh)/2);
-  var M=1024,r=Math.min(1,M/Math.max(cw,chh));
-  var W=Math.round(cw*r)||1,H=Math.round(chh*r)||1;
+  var sx0=Math.round((vw-cw)/2),sy0=Math.round((vh-chh)/2);
+  var fx0=sx0+Math.round(cw*0.18),fx1=sx0+Math.round(cw*0.82);
+  var fy0=sy0+Math.round(chh*0.14),fy1=sy0+Math.round(chh*0.86);
+  var fw=fx1-fx0,fh=fy1-fy0;
+  var M=1024,r=Math.min(1,M/Math.max(fw,fh));
+  var W=Math.round(fw*r)||1,H=Math.round(fh*r)||1;
   var cv=document.createElement('canvas');cv.width=W;cv.height=H;
   var x=cv.getContext('2d');
   if(xpCamFacing==='user'){x.translate(W,0);x.scale(-1,1);} /* 前置拍摄所见即所得 */
-  x.drawImage(v,sx,sy,cw,chh,0,0,W,H);
+  x.drawImage(v,fx0,fy0,fw,fh,0,0,W,H);
   xpCamClose();
-  xpFromCanvas(cv);
+  xpFromCanvas(cv,true);
 }
 function xpCamFlip(){xpCamFacing=xpCamFacing==='user'?'environment':'user';if(xpCamStream)xpOpenCam();}
 function xpCamClose(){
