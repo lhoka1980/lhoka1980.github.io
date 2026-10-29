@@ -39,7 +39,8 @@ body{
   transition:background .4s;
 }
 .page{max-width:520px;margin:0 auto;padding:22px 18px 46px;position:relative;z-index:1}
-@media (min-width:700px){ .page{max-width:860px;padding-top:38px} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start} }
+@media (min-width:700px){ .page{max-width:640px;padding-top:38px} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start} }
+@media (min-width:1024px){ .page{max-width:720px} } /* 平板档略宽，折叠屏保持手机比例 */
 
 /* ---- 浮动白卡 ---- */
 .card{background:var(--card);border:none;border-radius:26px;padding:20px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative}
@@ -195,7 +196,7 @@ select:focus,input[type="text"]:focus{outline:2px solid var(--accent);outline-of
 
 /* ---- 导出弹窗 ---- */
 .modal{position:fixed;inset:0;background:rgba(23,24,29,.55);display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.modal-box{background:#fff;border-radius:26px;padding:16px;max-width:92vw;max-height:92vh;overflow:auto;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.30)}
+.modal-box{background:#fff;border-radius:26px;padding:16px;max-width:min(92vw,560px);max-height:92vh;overflow:auto;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.30)}
 .modal-box img{max-width:min(74vw,400px);border-radius:16px;display:block;margin:0 auto}
 
 /* ---- 一周趋势 ---- */
@@ -1910,9 +1911,13 @@ function xpAutoFit(){ /* v9：眉=暗带首带·鼻=嘴唇带锚定·下巴=下�
   var span2=C-T,set2=function(i,v){var el=document.getElementById('xpL'+i);el.dataset.y=(v/H).toFixed(4);el.style.top=((v/H)*100).toFixed(2)+'%';};
   set2(0,T);set2(1,T+span2/3);set2(2,T+span2*2/3);set2(3,C);
 }
+function xpScrollTo(elId){ /* 拍照/选图后自动滚到内容区顶部，免手动下滑 */
+  try{var el=document.getElementById(elId);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
+}
 function xpRunAlign(){ /* xpStage显示；先立即v9落线（绝不空白挤底），模型就绪后AI精调覆盖 */
   document.getElementById('xpStage').classList.remove('hidden');
   document.getElementById('xiangResult').classList.add('hidden');
+  xpScrollTo('xpStage');
   try{xpAutoFit();}catch(err){
     var H=document.getElementById('xpCanvas').height||100;
     for(var i=0;i<4;i++)fmSetLine(i,[0.30,0.50,0.70,0.90][i],H);
@@ -1960,6 +1965,7 @@ function xpFromCanvas(cv,fromCam){ /* canvas→显示→对齐（拍照fromCam=�
     fmSetLine(0,0.04,H);fmSetLine(1,0.373,H);fmSetLine(2,0.707,H);fmSetLine(3,0.96,H);
     document.getElementById('xpStage').classList.remove('hidden');
     document.getElementById('xiangResult').classList.add('hidden');
+    xpScrollTo('xpStage');
     toast('按取景框架落线完成，可直接断局；不准可拖线微调');
   }else xpRunAlign();
 }
@@ -2012,6 +2018,7 @@ function xpOpenCam(){
     var p=v.play();if(p&&p.catch)p.catch(function(){});
     document.getElementById('xpCamWrap').classList.remove('hidden');
     document.getElementById('xpStage').classList.add('hidden');
+    xpScrollTo('xpCamWrap'); /* 点「直接拍照」后取景框自动滚到眼前 */
   }).catch(function(e){
     toast(e&&e.name==='NotAllowedError'?'未获相机权限，请在系统设置里允许「相机」后重试':'相机打开失败，请重试');
   });
