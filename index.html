@@ -587,15 +587,16 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <button class="btn" style="letter-spacing:3px;text-indent:3px;margin-top:10px" onclick="xpOpenCam()">📸 直接拍照 · 观相</button>
         <div id="xpCamWrap" class="hidden" style="margin-top:12px">
           <div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#151310">
-            <video id="xpCam" autoplay playsinline muted style="display:block;width:100%"></video>
-            <div style="position:absolute;left:50%;top:9%;bottom:9%;width:60%;transform:translateX(-50%);border:2px dashed rgba(255,255,255,.65);border-radius:46% 46% 44% 44%/56% 56% 40% 40%;pointer-events:none"></div>
+            <video id="xpCam" autoplay playsinline muted style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center"></video>
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64%;height:72%;border:2px dashed rgba(255,255,255,.72);border-radius:50% 50% 46% 46%/54% 54% 42% 42%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.18)"></div>
+            <div style="position:absolute;left:0;right:0;top:4%;text-align:center;color:rgba(255,255,255,.88);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none">把脸对进虚线框，正面、自然光最准</div>
+            <div style="position:absolute;left:0;right:0;bottom:14px;display:flex;align-items:center;justify-content:center;gap:30px">
+              <button type="button" aria-label="取消" onclick="xpCamClose()" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:18px;line-height:44px;padding:0;cursor:pointer">✕</button>
+              <button type="button" aria-label="拍照" onclick="xpSnap()" style="width:74px;height:74px;border-radius:50%;border:4px solid rgba(255,255,255,.92);background:rgba(255,255,255,.28);box-shadow:0 4px 16px rgba(0,0,0,.35);padding:0;cursor:pointer"></button>
+              <button type="button" aria-label="切换镜头" onclick="xpCamFlip()" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:17px;line-height:44px;padding:0;cursor:pointer">⟳</button>
+            </div>
           </div>
-          <div style="display:flex;gap:10px;margin-top:10px">
-            <button class="btn" style="flex:1" onclick="xpSnap()">拍 下 这 张</button>
-            <button class="btn" style="flex:0 0 auto;background:#3A3F4B" onclick="xpCamFlip()">🔄</button>
-            <button class="btn" style="flex:0 0 auto;background:#3A3F4B" onclick="xpCamClose()">取消</button>
-          </div>
-          <div class="sub" style="margin-top:6px">脸对准虚线框，正面、自然光下拍最准；照片只在本机测量，不上传</div>
+          <div class="sub" style="margin-top:6px">大圆键拍照，⟳ 转镜头；照片只在本机测量，不上传</div>
         </div>
         <div id="xpStage" class="hidden" style="margin-top:12px">
           <div id="xpWrap" style="position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:#151310">
@@ -1754,7 +1755,10 @@ function xpFaceAlign(fm,cb){ /* landmark: 发际=10 眉=105/334 鼻底=2/94 下�
     try{
       var L=r.multiFaceLandmarks&&r.multiFaceLandmarks[0];
       if(L){
-        var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=(L[2].y+L[94].y)/2,ch=L[152].y;
+        /* 解剖校准：眉上点(105/334)向眼睑收40%落眉毛；鼻底用subnasale(2)不用鼻翼(94，偏低)；下巴(152+175)/2收脖颈 */
+        var fa=L[10].y,br=(L[105].y+L[334].y)/2,no=L[2].y,ch=(L[152].y+L[175].y)/2;
+        var eyeL=(L[159].y+L[386].y)/2;
+        if(eyeL>br)br=br+0.4*(eyeL-br);
         if(stage===1){ /* 裁剪图坐标映射回整图 */
           var w=cv.width,hh=cv.height,cw=Math.max(64,Math.round(w*0.75)),chh=Math.max(64,Math.round(hh*0.75));
           var ox=Math.round((w-cw)/2),oy=Math.round((hh-chh)/2);
@@ -2004,12 +2008,16 @@ function xpOpenCam(){
 function xpSnap(){
   var v=document.getElementById('xpCam');
   if(!xpCamStream||!v.videoWidth){toast('相机还没准备好，稍等一下');return;}
-  var M=1024,r=Math.min(1,M/Math.max(v.videoWidth,v.videoHeight));
-  var W=Math.round(v.videoWidth*r)||1,H=Math.round(v.videoHeight*r)||1;
+  /* 与显示一致的3:4 cover裁剪，所见即所得 */
+  var vw=v.videoWidth,vh=v.videoHeight,tar=3/4,cw=vw,chh=vh;
+  if(vw/vh>tar){cw=Math.round(vh*tar);}else{chh=Math.round(vw/tar);}
+  var sx=Math.round((vw-cw)/2),sy=Math.round((vh-chh)/2);
+  var M=1024,r=Math.min(1,M/Math.max(cw,chh));
+  var W=Math.round(cw*r)||1,H=Math.round(chh*r)||1;
   var cv=document.createElement('canvas');cv.width=W;cv.height=H;
   var x=cv.getContext('2d');
   if(xpCamFacing==='user'){x.translate(W,0);x.scale(-1,1);} /* 前置拍摄所见即所得 */
-  x.drawImage(v,0,0,W,H);
+  x.drawImage(v,sx,sy,cw,chh,0,0,W,H);
   xpCamClose();
   xpFromCanvas(cv);
 }
