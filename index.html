@@ -589,11 +589,11 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         <div id="xpCamWrap" class="hidden" style="margin-top:12px">
           <div style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#151310">
             <video id="xpCam" autoplay playsinline muted style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center"></video>
-            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64%;height:72%;border:2px dashed rgba(255,255,255,.72);border-radius:50% 50% 46% 46%/54% 54% 42% 42%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.22)"></div>
-            <div style="position:absolute;left:50%;top:14%;transform:translate(-50%,-50%);width:42%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
-            <div style="position:absolute;left:0;right:0;top:16.5%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">↑ 发际（头发线）贴这条</div>
-            <div style="position:absolute;left:50%;top:86%;transform:translate(-50%,-50%);width:42%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
-            <div style="position:absolute;left:0;right:0;top:78%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">下巴尖贴下面这条 ↓</div>
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:78%;height:76%;border:2px dashed rgba(255,255,255,.72);border-radius:50% 50% 46% 46%/54% 54% 42% 42%;pointer-events:none;box-shadow:0 0 0 999px rgba(0,0,0,.22)"></div>
+            <div style="position:absolute;left:50%;top:12%;transform:translate(-50%,-50%);width:52%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
+            <div style="position:absolute;left:0;right:0;top:14.5%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">↑ 发际（头发线）贴这条</div>
+            <div style="position:absolute;left:50%;top:88%;transform:translate(-50%,-50%);width:52%;border-top:2px solid rgba(255,255,255,.9);pointer-events:none"></div>
+            <div style="position:absolute;left:0;right:0;top:80%;text-align:center;color:#fff;font-size:12px;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none">下巴尖贴下面这条 ↓</div>
             <div style="position:absolute;left:0;right:0;bottom:14px;display:flex;align-items:center;justify-content:center;gap:30px">
               <button type="button" aria-label="取消" onclick="xpCamClose()" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:18px;line-height:44px;padding:0;cursor:pointer">✕</button>
               <button type="button" aria-label="拍照" onclick="xpSnap()" style="width:74px;height:74px;border-radius:50%;border:4px solid rgba(255,255,255,.92);background:rgba(255,255,255,.28);box-shadow:0 4px 16px rgba(0,0,0,.35);padding:0;cursor:pointer"></button>
@@ -1960,9 +1960,9 @@ function xpFromCanvas(cv,fromCam){ /* canvas→显示→对齐（拍照fromCam=�
   var t=document.getElementById('xpCanvas');
   t.width=cv.width;t.height=cv.height;
   t.getContext('2d').drawImage(cv,0,0);
-  if(fromCam){ /* 强制构图：框顶=发际、框底=下巴，三停等分＋4%边距，不猜不漂 */
+  if(fromCam){ /* 强制构图：框顶=发际、框底=下巴；裁剪含5%留白后按框架换算落线，不猜不漂 */
     var H=t.height;
-    fmSetLine(0,0.04,H);fmSetLine(1,0.373,H);fmSetLine(2,0.707,H);fmSetLine(3,0.96,H);
+    fmSetLine(0,0.058,H);fmSetLine(1,0.353,H);fmSetLine(2,0.647,H);fmSetLine(3,0.942,H);
     document.getElementById('xpStage').classList.remove('hidden');
     document.getElementById('xiangResult').classList.add('hidden');
     xpScrollTo('xpStage');
@@ -2026,12 +2026,12 @@ function xpOpenCam(){
 function xpSnap(){
   var v=document.getElementById('xpCam');
   if(!xpCamStream||!v.videoWidth){toast('相机还没准备好，稍等一下');return;}
-  /* 只裁取景框区域（64%宽×72%高，居中）＝强制构图：框内即标准脸位 */
+  /* 裁剪＝取景框(78%×76%)外扩留白：宽94%高86%，上下各留5%、左右各留8%，成片不顶天立地 */
   var vw=v.videoWidth,vh=v.videoHeight,tar=3/4,cw=vw,chh=vh;
   if(vw/vh>tar){cw=Math.round(vh*tar);}else{chh=Math.round(vw/tar);}
   var sx0=Math.round((vw-cw)/2),sy0=Math.round((vh-chh)/2);
-  var fx0=sx0+Math.round(cw*0.18),fx1=sx0+Math.round(cw*0.82);
-  var fy0=sy0+Math.round(chh*0.14),fy1=sy0+Math.round(chh*0.86);
+  var fx0=sx0+Math.round(cw*0.03),fx1=sx0+Math.round(cw*0.97);
+  var fy0=sy0+Math.round(chh*0.07),fy1=sy0+Math.round(chh*0.93);
   var fw=fx1-fx0,fh=fy1-fy0;
   var M=1024,r=Math.min(1,M/Math.max(fw,fh));
   var W=Math.round(fw*r)||1,H=Math.round(fh*r)||1;
