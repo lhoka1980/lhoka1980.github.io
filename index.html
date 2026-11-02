@@ -368,6 +368,11 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
   <div class="card">
     <label for="inName">称呼（可不填）</label>
     <input type="text" id="inName" maxlength="12" placeholder="如：小刘">
+    <label>性别</label>
+    <div class="calseg">
+      <button type="button" class="seg active" id="segMale" onclick="setGender(1)">男</button>
+      <button type="button" class="seg" id="segFemale" onclick="setGender(2)">女</button>
+    </div>
     <label>历法</label>
     <div class="calseg">
       <button type="button" class="seg active" id="segSolar" onclick="setCalType(0)">公历</button>
@@ -706,8 +711,8 @@ const LUCK_THEMES=[
 ["天青","#E6EFEF","#3E97A5","#E2F1F2","linear-gradient(135deg,#348998,#5FB0BC)","#DCE8E8"],
 ["金棕","#EDEAE0","#B08B4E","#F5EEDC","linear-gradient(135deg,#A57F42,#C4A266)","#E5E1D5"]];
 const LUCK_KEYS=["--bg","--accent","--accent-soft","--accent-grad","--line"];
-function pickLuckFor(y,m,d){const t=new Date();const ds=t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate();
- return LUCK_THEMES[hash32("luck|"+(y==null?"":y+"-"+m+"-"+d+"|")+ds)%LUCK_THEMES.length];}
+function pickLuckFor(y,m,d,gender){const t=new Date();const ds=t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate();
+ return LUCK_THEMES[hash32("luck|"+(y==null?"":y+"-"+m+"-"+d+"|")+"g"+(gender==null?"":(gender===2?2:1))+"|"+ds)%LUCK_THEMES.length];}
 function applyLuckTheme(t){const s=document.body.style;
  LUCK_KEYS.forEach((k,i)=>s.setProperty(k,t[i+1]));
  document.querySelector('meta[name=theme-color]').content=t[1];}
@@ -862,7 +867,7 @@ function drawQian(again){
    if(sv&&sv.date===dstr){showQian(sv.idx);return;}
   }catch(e){}
   let b={};try{b=JSON.parse(localStorage.getItem("ys_birth")||"{}")||{};}catch(e){}
-  idx=hash32(`${b.y||0}-${b.m||0}-${b.d||0}|${dstr}|qian`)%QIAN.length;
+  idx=hash32(`${b.y||0}-${b.m||0}-${b.d||0}|${dstr}|g${b.gender===2?2:1}|qian`)%QIAN.length;
   try{localStorage.setItem("ys_qian",JSON.stringify({date:dstr,idx}));}catch(e){}
  }else{
   idx=Math.floor(Math.random()*QIAN.length);
@@ -1020,9 +1025,14 @@ async function shareCard(){
 /* ============ 输入页初始化 ============ */
 const $=id=>document.getElementById(id);
 /* ============ 历法选择与日期选项 ============ */
-let CAL_TYPE=0,LUNAR_MONTHS=[];
+let CAL_TYPE=0,LUNAR_MONTHS=[],GENDER=1;
 const CN_MONTHS=["正月","二月","三月","四月","五月","六月","七月","八月","九月","十月","冬月","腊月"];
 const CN_DAY=n=>["初一","初二","初三","初四","初五","初六","初七","初八","初九","初十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十","廿一","廿二","廿三","廿四","廿五","廿六","廿七","廿八","廿九","三十"][n-1];
+function setGender(g){
+ GENDER=g;
+ $("segMale").classList.toggle("active",g===1);
+ $("segFemale").classList.toggle("active",g===2);
+}
 function setCalType(t){
  CAL_TYPE=t;
  $("segSolar").classList.toggle("active",t===0);
@@ -1097,7 +1107,7 @@ const OLD_MIG=[[0, -1], [1, -1], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
 
 (function init(){
  // 输入页：当日通用幸运色
- applyLuckTheme(pickLuckFor(null,null,null));
+ applyLuckTheme(pickLuckFor(null,null,null,GENDER));
  const y=$("inYear"),m=$("inMonth"),d=$("inDay"),h=$("inHour");
  h.add(new Option("不选时辰",""));
  HOUR_LABELS.forEach((t,i)=>h.add(new Option(t,i)));
@@ -1131,8 +1141,9 @@ const OLD_MIG=[[0, -1], [1, -1], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
      else{fillCity(mg[0]);ct.value=String(mg[1]);window.CUR_PLACE=placeFromSel();}}
    }else{window.CUR_PLACE=null;}
    if(saved.name)$("inName").value=saved.name;
+   setGender(saved.gender===2?2:1);
    const r=solarFromInputs();
-   if(r)showResult(r.sy,r.sm,r.sd,saved.name||"",(saved.hour===0||saved.hour)?saved.hour:null,r.lunarText);
+   if(r)showResult(r.sy,r.sm,r.sd,saved.name||"",(saved.hour===0||saved.hour)?saved.hour:null,r.lunarText,saved.gender===2?2:1);
   }
  }catch(e){}
 })();
@@ -1142,14 +1153,14 @@ function submitBirth(){
  const hour=$("inHour").value===""?null:+$("inHour").value;
  const r=solarFromInputs();
  if(!r){toast("该农历日期不存在，请检查月份大小与闰月后重选");return;}
- const saved=Object.assign({name,hour},{calType:CAL_TYPE,y:+$("inYear").value,m:+$("inMonth").value,d:+$("inDay").value});
+ const saved=Object.assign({name,hour,gender:GENDER},{calType:CAL_TYPE,y:+$("inYear").value,m:+$("inMonth").value,d:+$("inDay").value});
  if(CAL_TYPE===1){const om=LUNAR_MONTHS[+$("inMonth").value];saved.m=om.m;saved.leap=om.leap;}
  saved.placeP=$("inProvince").value;saved.placeC=$("inCity").value;
  window.CUR_PLACE=placeFromSel();
  try{localStorage.setItem("ys_birth",JSON.stringify(saved));}catch(e){}
- showResult(r.sy,r.sm,r.sd,name,hour,r.lunarText);
+ showResult(r.sy,r.sm,r.sd,name,hour,r.lunarText,GENDER);
 }
-function backToInput(){$("pageResult").classList.add("hidden");$("pageInput").classList.remove("hidden");applyLuckTheme(pickLuckFor(null,null,null));window.scrollTo(0,0);}
+function backToInput(){$("pageResult").classList.add("hidden");$("pageInput").classList.remove("hidden");applyLuckTheme(pickLuckFor(null,null,null,GENDER));window.scrollTo(0,0);}
 function resetAll(){
  if(!confirm("确定刷新并清除已填的生辰、称呼、合盘等信息吗？"))return;
  try{localStorage.removeItem("ys_birth");}catch(e){}
@@ -1229,7 +1240,8 @@ function castLP(){
 }
 
 /* ============ 主渲染 ============ */
-function showResult(y,m,d,name,hour,lunarText){
+function showResult(y,m,d,name,hour,lunarText,gender){
+ const gd=(gender===2?2:1);
  const today=new Date();
  const yp=yearPillar(y,m,d),mp=monthPillar(y,m,d,yp.g),dpi=dayPillarIdx(y,m,d);
  const dp={g:dpi%10,z:dpi%12};
@@ -1254,12 +1266,12 @@ function showResult(y,m,d,name,hour,lunarText){
 
  // 主题：每日幸运色（按生辰+当日日期，每人每日不同）
  document.body.className=ELEM_THEME[elem];
- const luckTheme=pickLuckFor(y,m,d);
+ const luckTheme=pickLuckFor(y,m,d,gender);
  applyLuckTheme(luckTheme);
  window.CUR_LUCK=luckTheme;
 
  // 命格卡
- $("who").textContent=(name?name+" · ":"")+(lunarText||(y+"年"+m+"月"+d+"日出生"))+(hp?" · "+HOUR_LABELS[hp.z].slice(0,2)+"生":"");
+ $("who").textContent=(name?name+" · ":"")+(gd===2?"坤造（女命）":"乾造（男命）")+" · "+(lunarText||(y+"年"+m+"月"+d+"日出生"))+(hp?" · "+HOUR_LABELS[hp.z].slice(0,2)+"生":"");
  $("elemChar").textContent=elem+"命";
  $("nayinName").textContent="日主"+GAN[dp.g]+" · "+ELEM_DESC[elem];
  $("yearNayinName").textContent="年命纳音："+yearNayin+"（供参考）";
@@ -1268,7 +1280,7 @@ function showResult(y,m,d,name,hour,lunarText){
  if(plTxt)pn+="📍 出生地："+plTxt;
  if(plNote)pn+=(pn?" · ":"")+plNote;
  pnEl.textContent=pn;pnEl.classList.toggle("show",!!pn);
- $("tags").innerHTML=`<span class="pill" style="background:rgba(255,255,255,.2);color:#fff">属${SHENGXIAO[yp.z]}</span><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">${zodiacEn(yp.z)}</span>`;
+ $("tags").innerHTML=`<span class="pill" style="background:rgba(255,255,255,.2);color:#fff">${gd===2?"坤造·女命":"乾造·男命"}</span><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">属${SHENGXIAO[yp.z]}</span><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">${zodiacEn(yp.z)}</span>`;
  const cols=[["年柱",pillarStr(yp)],["月柱",pillarStr(mp)],["日柱",pillarStr(dp)]];
  if(hp)cols.push(["时柱",pillarStr(hp)]);
  cols.push(["日主",GAN[dp.g]+"("+GAN_WX[dp.g]+")"]);
@@ -1283,8 +1295,8 @@ function showResult(y,m,d,name,hour,lunarText){
   `<div class="item"><span style="width:2em">${k}</span><span class="bar"><i style="width:${v/mx*100}%"></i></span><span>${v}</span></div>`).join("");
  const lack=Object.entries(cnt).filter(([k,v])=>v===0).map(([k])=>k);
 
- // 今日运势（确定性随机：生辰+当天日期）
- const key=`${y}-${m}-${d}|${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+ // 今日运势（确定性随机：生辰+性别+当天日期）
+ const key=`${y}-${m}-${d}|${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}|g${gd}`;
  const rnd=mulberry32(hash32(key));
  const base=55+rnd()*20;
  const scores=SCORE_NAMES.map(([n])=>{
@@ -1316,7 +1328,7 @@ function showResult(y,m,d,name,hour,lunarText){
  const days=[];
  for(let i=0;i<7;i++){
   const dt=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i);
-  const k2=`${y}-${m}-${d}|${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+  const k2=`${y}-${m}-${d}|${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}|g${gd}`;
   const r=mulberry32(hash32(k2));
   const b=55+r()*20;
   const ss=SCORE_NAMES.map(()=>Math.max(40,Math.min(98,Math.round(b+(r()-0.5)*46))));
@@ -1351,11 +1363,11 @@ function showResult(y,m,d,name,hour,lunarText){
 
  // 刘大爷语录（每人每日一句，固定不变）
  const dstr=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
- const quoteStr=QUOTES[hash32(`${y}-${m}-${d}|${dstr}`)%QUOTES.length];
+ const quoteStr=QUOTES[hash32(`${y}-${m}-${d}|${dstr}|g${gd}`)%QUOTES.length];
  $("dayeBubble").textContent="刘大爷曰："+quoteStr;
 
  // 今日卦象（上卦下卦各由随机定，六十四卦查表）
- const hr=mulberry32(hash32(`${y}-${m}-${d}|${dstr}|gua`));
+ const hr=mulberry32(hash32(`${y}-${m}-${d}|${dstr}|g${gd}|gua`));
  const up=Math.floor(hr()*8), lo=Math.floor(hr()*8);
  const hnum=HEX_TABLE[up][lo];
  const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]); // 自下而上六爻
@@ -1371,7 +1383,7 @@ function showResult(y,m,d,name,hour,lunarText){
 
  // 留存当日数据，供导出卡片使用
  const week2=["日","一","二","三","四","五","六"][today.getDay()];
- window.CUR={y,m,d,name,hour,elem,
+ window.CUR={y,m,d,name,hour,elem,gender:gd,
   dateLine:`${today.getMonth()+1}月${today.getDate()}日 · 周${week2} · ${GAN[dayGanIdx(today)]}${ZHI[dayZhiIdx(today)]}日`,
   scores:scores.map(([n,v])=>[n,v]),lucky,yi:yiPicked,ji:jiPicked,quote:quoteStr,
   hex:{name:$("guaName").textContent,num:hnum,up,lo,bits,xiang:HEX_XIANG[hnum-1]}};
@@ -1497,7 +1509,7 @@ function hePrepare(){
  try{
   heFillSelects();
   const c=window.CUR;if(!c)return;
-  const info=(c.name?c.name+" · ":"")+c.y+"-"+c.m+"-"+c.d+((c.hour===0||c.hour)?" · "+HOUR_LABELS[c.hour].slice(0,2):"");
+  const info=(c.name?c.name+" · ":"")+(c.gender===2?"女 · ":"男 · ")+c.y+"-"+c.m+"-"+c.d+((c.hour===0||c.hour)?" · "+HOUR_LABELS[c.hour].slice(0,2):"");
   $("heMeInfo").textContent="（"+info+"）";
   const ya=$("heYearA");
   if(!ya.value){ya.value=c.y;$("heMonthA").value=c.m;$("heDayA").value=c.d;$("heHourA").value=(c.hour===0||c.hour)?c.hour:"";}
