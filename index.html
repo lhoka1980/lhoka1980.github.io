@@ -425,7 +425,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 <body>
 <!-- 启动动画（冷启动播放，可跳过） -->
 <div id="splash">
-  <video id="splashVid" src="opening.mp4" autoplay muted playsinline disablepictureinpicture preload="auto"></video>
+  <video id="splashVid" src="opening.mp4" autoplay playsinline disablepictureinpicture preload="auto"></video>
   <button id="splashSkip" type="button">跳 过</button>
   <div id="splashBrand">刘大爷每日一卦</div>
 </div>
@@ -2269,8 +2269,15 @@ xpBind();</script>
  document.getElementById("splashSkip").addEventListener("click",end);
  /* 兜底：加载异常12秒后强制关闭 */
  setTimeout(end,12000);
- /* 自动播放兜底：部分内核不认autoplay属性 */
- var t=setTimeout(function(){try{if(vid.paused&&vid.readyState>=2)vid.play().catch(function(){});}catch(e){}},300);
+ /* 自动播放兜底：先尝试带声播放（APK已放开手势限制），被浏览器政策拦截则静音播放 */
+ function tryPlay(){
+  var p;
+  try{p=vid.play();}catch(e){p=null;}
+  if(p&&p.catch)p.catch(function(){vid.muted=true;try{vid.play().catch(function(){});}catch(e2){}});
+ }
+ if(vid.readyState>=2)tryPlay();
+ vid.addEventListener("loadeddata",tryPlay,{once:true});
+ setTimeout(tryPlay,400);
 })();
 function goPage(id){
   document.querySelectorAll('.page').forEach(function(p){p.classList.add('hidden');});
