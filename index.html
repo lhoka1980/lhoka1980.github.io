@@ -465,6 +465,16 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .dm-rel span{font-size:12px;padding:6px 12px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);cursor:pointer}
 .dm-t{font-size:13.5px;letter-spacing:2px;color:#5F5442;margin:13px 0 8px;font-family:var(--serif);font-weight:900}
 .dm-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;line-height:1.7}
+/* ===== 迎祥纳福 · 吉方吉色（2026-11-11） ===== */
+.lk-entry{background:#FBF4E4;box-shadow:var(--shadow),inset 0 0 0 1.5px #E2CFA5}
+.lk-entry .lk-seal{width:46px;height:46px;flex:none;border:2.5px solid var(--accent);border-radius:12px;color:var(--accent);font-family:var(--serif);font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)}
+.lk-hero{text-align:center;padding-top:20px}
+.lk-dir{font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:6px;color:var(--accent);margin-top:10px}
+.lk-sub{font-size:12px;color:var(--sub);margin-top:3px}
+.lk-big{font-family:var(--serif);font-size:26px;font-weight:900;letter-spacing:3px}
+.lk-note{font-size:12.5px;color:var(--sub);margin-top:4px;line-height:1.8}
+.lk-colorrow{display:flex;align-items:center;gap:13px}
+.lk-swatch{width:46px;height:46px;border-radius:14px;background:var(--accent);box-shadow:inset 0 0 0 2px rgba(255,255,255,.5),var(--shadow-sm);flex:none}
 /* ===== 启动动画（2026-11-05） ===== */
 #splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;touch-action:none}
 #splash.fade{opacity:0;pointer-events:none}
@@ -535,8 +545,8 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
           <div class="lunar" id="todayLunar"></div>
         </div>
         <div class="scores" id="scores"></div>
-        <div class="lucky" id="lucky"></div>
       </div>
+      <div class="entry-wide lk-entry" onclick="lkOpen()"><span class="lk-seal">吉</span><div><b>迎祥纳福</b><i id="lkPrev">吉方吉色 · 今日开运</i></div><u>→</u></div>
       <div class="grid-func">
         <div class="entry e-coral" onclick="goPage('pageQian')"><span class="e-ico">☄</span><b>一签问心</b><i>晨起一签 · 心诚则灵</i><u>→</u></div>
         <div class="entry e-white" onclick="goPage('pageWen')"><span class="e-ico e-blue">✦</span><b>叩卦问事</b><i>有事直问 · 卦象来答</i><u>→</u></div>
@@ -1071,6 +1081,36 @@ function dmSearch(){
   document.getElementById('dmResList').innerHTML=h;
 }
 dmInit();
+</script>
+
+<!-- 迎祥纳福 · 吉方吉色 -->
+<div id="pageLuck" class="page hidden">
+  <div class="navtop"><button class="backbtn" onclick="goPage('pageResult')">‹</button><span class="nt-title">迎祥纳福</span><span class="nt-sp"></span></div>
+  <div id="lkBody"></div>
+  <footer>方位吉色出于传统民俗演算，仅供娱乐参考</footer>
+</div>
+
+<script>
+/* ============ 迎祥纳福 · 吉方吉色（2026-11-11） ============ */
+const WX_TIP={金:"宜佩金银饰物、多用白色金调",木:"宜亲近绿植、衣着添青绿",水:"宜临水而行、多用蓝黑色调",火:"宜向阳而动、添红紫暖色",土:"宜近陶土黄调、安坐踏实之处"};
+function lkOpen(){lkRender();goPage("pageLuck");}
+function lkRender(){
+ const L=window.LUCKY;if(!L)return;
+ const wx=L.lack.length?("五行缺"+L.lack.join("、")):"五行俱全";
+ const tips=L.lack.map(k=>WX_TIP[k]||"宜补"+k).join("；");
+ const dirs=["北","东北","东","东南","南","西南","西","西北"];
+ const target=dirs.indexOf(L.dir.replace("正",""));
+ let lbl="";
+ for(let i=0;i<8;i++){const ang=i*45-90,rad=ang*Math.PI/180,cx=(100+63*Math.cos(rad)).toFixed(1),cy=(100+63*Math.sin(rad)).toFixed(1);
+  lbl+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="'+(i===target?900:400)+'" fill="'+(i===target?'#B3432B':'#8C7F68')+'">'+dirs[i]+'</text>';}
+ const compass='<svg viewBox="0 0 200 200" style="width:min(62vw,225px);display:block;margin:0 auto" aria-label="吉方罗盘"><circle cx="100" cy="100" r="93" fill="#FDFAF1" stroke="#E4D9C2" stroke-width="2"/><circle cx="100" cy="100" r="74" fill="none" stroke="#E4D9C2" stroke-width="1" stroke-dasharray="2 5"/>'+lbl+'<g transform="rotate('+(target*45)+' 100 100)"><path d="M100 42 L108 100 L100 92 L92 100 Z" fill="#B3432B"/></g><circle cx="100" cy="100" r="14" fill="#3A3226"/><text x="100" y="105" text-anchor="middle" font-size="13" font-weight="900" fill="#F6EFE1" font-family="serif">吉</text></svg>';
+ $("lkBody").innerHTML=
+  '<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 出行办事面朝此方</div></div>'
+ +'<div class="card"><h2 style="margin-bottom:8px">💰 财神方位</h2><div class="lk-big">'+L.cai+'</div><div class="lk-note">今日求财、谈生意，宜面朝此方落座</div></div>'
+ +'<div class="card"><h2 style="margin-bottom:8px">🎨 今日吉色</h2><div class="lk-colorrow"><span class="lk-swatch"></span><div><b class="lk-big" style="font-size:19px">'+L.color+'</b><div class="lk-note">'+(window.CUR_LUCK&&window.CUR_LUCK[0]===L.color?"已换作全App底色 · 顺色而行":"今日宜着此色、用此色")+'</div></div></div></div>'
+ +'<div class="card"><h2 style="margin-bottom:8px">🔢 今日吉数</h2><div class="lk-big">'+L.num+'</div><div class="lk-note">选号、定价、讨彩头可作参考</div></div>'
+ +'<div class="card"><h2 style="margin-bottom:8px">⚖️ '+wx+'</h2>'+(L.lack.length?'<div class="lk-note">'+tips+'</div>':'<div class="lk-note">八字五行俱全，不必刻意进补，顺其自然最好</div>')+'</div>';
+}
 </script>
 
 <!-- 导出卡片弹窗 -->
@@ -1716,7 +1756,8 @@ function showResult(y,m,d,name,hour,lunarText,gender){
  const luckyNum=1+Math.floor(rnd()*9);
  const luckyColor=luckTheme[0];
  const lucky={dir:luckyDir,num:luckyNum,color:luckyColor};
- $("lucky").innerHTML=`<span>🧭 幸运方位：${luckyDir}</span><span>💰 财位：${caiDir}</span><span>🎨 今日幸运色：${luckyColor}（底色已换）</span><span>🔢 幸运数字：${luckyNum}</span>`+(lack.length?`<span>⚖️ 五行缺${lack.join("、")}</span>`:"");
+ window.LUCKY={dir:luckyDir,cai:caiDir,num:luckyNum,color:luckyColor,lack:lack.slice()};
+ const lkPrev=$("lkPrev");if(lkPrev)lkPrev.textContent="吉方"+luckyDir+" · 吉色"+luckyColor+" · 吉数"+luckyNum;
 
  // 宜忌：随机挑4+4不重复
  const pick=(pool,n)=>{const idx=[...pool.keys()];for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}return idx.slice(0,n).map(i=>pool[i]);};
