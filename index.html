@@ -57,13 +57,13 @@ h2::before{content:'';width:8px;height:8px;background:var(--accent);border-radiu
   background-color:#EAE0CC;background-size:cover;background-position:center;
   border:5px solid #FDFAF1;box-shadow:var(--shadow);
 }
-.daye-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.daye-row{display:flex;align-items:center;gap:13px;margin-bottom:0}
 .daye{
-  width:48px;height:48px;border-radius:50%;flex:none;
+  width:78px;height:78px;border-radius:50%;flex:none;
   background-color:#EAE0CC;background-size:130% 130%;background-position:50% 18%;
   border:3px solid #FDFAF1;box-shadow:var(--shadow-sm);
 }
-.bubble{position:relative;background:var(--accent-soft);color:var(--accent);border-radius:16px 16px 16px 4px;padding:7px 13px;font-size:13px;font-weight:600}
+.bubble{position:relative;flex:1;background:var(--accent-soft);color:var(--accent);border-radius:16px 16px 16px 4px;padding:11px 14px;font-size:14.5px;font-weight:600;line-height:1.7}
 
 /* ---- 输入页 ---- */
 .brand{text-align:center;padding:30px 0 20px}
@@ -475,6 +475,10 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .lk-note{font-size:12.5px;color:var(--sub);margin-top:4px;line-height:1.8}
 .lk-colorrow{display:flex;align-items:center;gap:13px}
 .lk-swatch{width:46px;height:46px;border-radius:14px;background:var(--accent);box-shadow:inset 0 0 0 2px rgba(255,255,255,.5),var(--shadow-sm);flex:none}
+.lk-hours{display:flex;flex-wrap:wrap;gap:8px}
+.lk-hours .lk-h{background:var(--accent-soft);border-radius:12px;padding:7px 11px;font-size:13px;font-weight:800;display:flex;flex-direction:column;gap:1px;min-width:76px;color:var(--ink);line-height:1.4}
+.lk-hours .lk-h small{font-size:10px;color:var(--sub);font-weight:500}
+.lk-hours .lk-h i{font-style:normal;color:var(--accent);font-size:11px;font-weight:700}
 /* ===== 启动动画（2026-11-05） ===== */
 #splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;touch-action:none}
 #splash.fade{opacity:0;pointer-events:none}
@@ -535,11 +539,13 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 <div id="pageResult" class="page hidden">
   <div class="col1">
    <div>
-      <div class="card">
+      <div class="card greet-card">
         <div class="daye-row">
           <div class="daye" role="img" aria-label="刘大爷"></div>
           <div class="bubble" id="dayeBubble">刘大爷研墨铺纸，今日运程在此</div>
         </div>
+      </div>
+      <div class="card">
         <div class="today-head">
           <div class="date" id="todayDate"></div>
           <div class="lunar" id="todayLunar"></div>
@@ -790,7 +796,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
       <div class="card" id="qrCard">
         <h2>分享 · 扫码传阅</h2>
         <div id="qrBox">
-          <div class="sub" style="margin-bottom:10px">用手机 / 平板扫一扫，打开同一份运势</div>
+          <div class="sub" style="margin-bottom:10px">亲友扫码后输入自己的生辰，即得各自的每日运势</div>
           <img id="qrImg" alt="二维码" onerror="qrFallback()">
           <div class="urlText hidden" id="qrUrlText"></div>
           <div class="linkline" onclick="copyLink()">复制链接</div>
@@ -1094,6 +1100,17 @@ dmInit();
 /* ============ 吉时吉方 · 吉方吉色（2026-11-11） ============ */
 const WX_TIP={金:"宜佩金银饰物、多用白色金调",木:"宜亲近绿植、衣着添青绿",水:"宜临水而行、多用蓝黑色调",火:"宜向阳而动、添红紫暖色",土:"宜近陶土黄调、安坐踏实之处"};
 function lkOpen(){lkRender();goPage("pageLuck");}
+const JS_RANGE=["23:00–01:00","01:00–03:00","03:00–05:00","05:00–07:00","07:00–09:00","09:00–11:00","11:00–13:00","13:00–15:00","15:00–17:00","17:00–19:00","19:00–21:00","21:00–23:00"];
+function jiShi(){ /* 黄道吉时：俗传日黄道歌诀——寅申起子/卯酉起寅/辰戌起辰/巳亥起午/子午起申/丑未起戌，自青龙轮十二神，取六吉 */
+ const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+ const startMap={0:8,6:8,1:10,7:10,2:0,8:0,3:2,9:2,4:4,10:4,5:6,11:6};
+ const start=startMap[dayZhiIdx(new Date())];
+ const gods=["青龙","明堂","天刑","朱雀","金匮","天德","白虎","玉堂","天牢","玄武","司命","勾陈"];
+ const good=["青龙","明堂","金匮","天德","玉堂","司命"];
+ const out=[];
+ for(let k=0;k<12;k++){const g=gods[k];if(good.indexOf(g)>-1){const z=(start+k)%12;out.push({zhi:ZHI[z],range:JS_RANGE[z],god:g});}}
+ return out;
+}
 function lkRender(){
  const L=window.LUCKY;if(!L)return;
  const wx=L.lack.length?("五行缺"+L.lack.join("、")):"五行俱全";
@@ -1107,6 +1124,7 @@ function lkRender(){
  $("lkBody").innerHTML=
   '<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 出行办事面朝此方</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">💰 财神方位</h2><div class="lk-big">'+L.cai+'</div><div class="lk-note">今日求财、谈生意，宜面朝此方落座</div></div>'
+ +'<div class="card"><h2 style="margin-bottom:8px">⏳ 今日吉时</h2><div class="lk-hours">'+jiShi().map(h=>'<span class="lk-h"><b>'+h.zhi+'时</b><small>'+h.range+'</small><i>'+h.god+'</i></span>').join("")+'</div><div class="lk-note">黄道六吉时 · 择要事、订约定闹钟可作参考</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">🎨 今日吉色</h2><div class="lk-colorrow"><span class="lk-swatch"></span><div><b class="lk-big" style="font-size:19px">'+L.color+'</b><div class="lk-note">'+(window.CUR_LUCK&&window.CUR_LUCK[0]===L.color?"已换作全App底色 · 顺色而行":"今日宜着此色、用此色")+'</div></div></div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">🔢 今日吉数</h2><div class="lk-big">'+L.num+'</div><div class="lk-note">选号、定价、讨彩头可作参考</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">⚖️ '+wx+'</h2>'+(L.lack.length?'<div class="lk-note">'+tips+'</div>':'<div class="lk-note">八字五行俱全，不必刻意进补，顺其自然最好</div>')+'</div>';
