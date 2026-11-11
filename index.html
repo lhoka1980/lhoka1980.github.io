@@ -466,8 +466,15 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .dm-t{font-size:13.5px;letter-spacing:2px;color:#5F5442;margin:13px 0 8px;font-family:var(--serif);font-weight:900}
 .dm-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;line-height:1.7}
 /* ===== 吉时吉方 · 吉方吉色（2026-11-11） ===== */
-.lk-entry{background:#FBF4E4;box-shadow:var(--shadow),inset 0 0 0 1.5px #E2CFA5}
-.lk-entry .lk-seal{width:46px;height:46px;flex:none;border:2.5px solid var(--accent);border-radius:12px;color:var(--accent);font-family:var(--serif);font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)}
+.lk-card{background:#FBF4E4;box-shadow:var(--shadow),inset 0 0 0 1.5px #E2CFA5;cursor:pointer;transition:transform .15s}
+.lk-card:active{transform:scale(.985)}
+.lk-card .today-head{margin-bottom:4px}
+.lk-strip{display:flex;align-items:center;gap:12px;margin-top:6px;padding-top:12px;border-top:1.5px dashed #E2CFA5}
+.lk-strip .lk-seal{width:46px;height:46px;flex:none;border:2.5px solid var(--accent);border-radius:12px;color:var(--accent);font-family:var(--serif);font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)}
+.lk-strip .lk-tx{flex:1;min-width:0}
+.lk-strip .lk-tx b{font-size:16.5px;letter-spacing:1.5px;font-family:var(--serif)}
+.lk-strip .lk-tx i{font-style:normal;font-size:12.5px;color:var(--sub);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lk-strip .lk-arrow{color:var(--sub);font-size:18px;flex:none}
 .lk-hero{text-align:center;padding-top:20px}
 .lk-dir{font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:6px;color:var(--accent);margin-top:10px}
 .lk-sub{font-size:12px;color:var(--sub);margin-top:3px}
@@ -479,6 +486,19 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .lk-hours .lk-h{background:var(--accent-soft);border-radius:12px;padding:7px 11px;font-size:13px;font-weight:800;display:flex;flex-direction:column;gap:1px;min-width:76px;color:var(--ink);line-height:1.4}
 .lk-hours .lk-h small{font-size:10px;color:var(--sub);font-weight:500}
 .lk-hours .lk-h i{font-style:normal;color:var(--accent);font-size:11px;font-weight:700}
+/* 可动指南针 */
+.lc-wrap{position:relative;width:min(64vw,230px);height:min(64vw,230px);margin:0 auto;border-radius:50%;background:#FDFAF1;box-shadow:inset 0 0 0 2px var(--line),var(--shadow-sm);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.lc-wrap:active{cursor:grabbing}
+.lc-ring{position:absolute;inset:14px;will-change:transform}
+.lc-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:1.5px dashed var(--line)}
+.lc-l{position:absolute;left:50%;top:50%;width:22px;height:20px;margin:-10px 0 0 -11px;text-align:center;line-height:20px;font-size:13px;color:var(--sub)}
+.lc-ji{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;text-align:center;line-height:30px;font-family:var(--serif);font-weight:900;font-size:20px;color:var(--accent);border:2px solid var(--accent);border-radius:50%;background:#FDFAF1;transition:background .3s,color .3s,box-shadow .3s}
+.lc-ji.hit{background:var(--accent);color:#FDFAF1;box-shadow:0 0 0 8px rgba(179,67,43,.16)}
+.lc-needle{position:absolute;top:0;left:50%;margin-left:-9px;border-left:9px solid transparent;border-right:9px solid transparent;border-top:16px solid var(--accent);z-index:2;filter:drop-shadow(0 1px 2px rgba(120,90,40,.25))}
+.lc-cap{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:var(--ink);color:#F6EFE1;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:900;font-size:21px;z-index:2;box-shadow:var(--shadow-sm)}
+.lc-read{text-align:center;font-size:12.5px;color:var(--sub);margin-top:10px;min-height:1.5em}
+.lc-read b{color:var(--accent)}
+.lk-cbtn{display:block;margin:10px auto 0;border:none;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:9px 18px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
 /* ===== 启动动画（2026-11-05） ===== */
 #splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;touch-action:none}
 #splash.fade{opacity:0;pointer-events:none}
@@ -545,14 +565,14 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
           <div class="bubble" id="dayeBubble">刘大爷研墨铺纸，今日运程在此</div>
         </div>
       </div>
-      <div class="card">
+      <div class="card lk-card" onclick="lkOpen()">
         <div class="today-head">
           <div class="date" id="todayDate"></div>
           <div class="lunar" id="todayLunar"></div>
         </div>
         <div class="scores" id="scores"></div>
+        <div class="lk-strip"><span class="lk-seal">吉</span><div class="lk-tx"><b>吉时吉方</b><i id="lkPrev">吉方吉色 · 今日开运</i></div><span class="lk-arrow">→</span></div>
       </div>
-      <div class="entry-wide lk-entry" onclick="lkOpen()"><span class="lk-seal">吉</span><div><b>吉时吉方</b><i id="lkPrev">吉方吉色 · 今日开运</i></div><u>→</u></div>
       <div class="grid-func">
         <div class="entry e-coral" onclick="goPage('pageQian')"><span class="e-ico">☄</span><b>一签问心</b><i>晨起一签 · 心诚则灵</i><u>→</u></div>
         <div class="entry e-white" onclick="goPage('pageWen')"><span class="e-ico e-blue">✦</span><b>叩卦问事</b><i>有事直问 · 卦象来答</i><u>→</u></div>
@@ -1115,19 +1135,76 @@ function lkRender(){
  const L=window.LUCKY;if(!L)return;
  const wx=L.lack.length?("五行缺"+L.lack.join("、")):"五行俱全";
  const tips=L.lack.map(k=>WX_TIP[k]||"宜补"+k).join("；");
- const dirs=["北","东北","东","东南","南","西南","西","西北"];
- const target=dirs.indexOf(L.dir.replace("正",""));
- let lbl="";
- for(let i=0;i<8;i++){const ang=i*45-90,rad=ang*Math.PI/180,cx=(100+63*Math.cos(rad)).toFixed(1),cy=(100+63*Math.sin(rad)).toFixed(1);
-  lbl+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="'+(i===target?900:400)+'" fill="'+(i===target?'#B3432B':'#8C7F68')+'">'+dirs[i]+'</text>';}
- const compass='<svg viewBox="0 0 200 200" style="width:min(62vw,225px);display:block;margin:0 auto" aria-label="吉方罗盘"><circle cx="100" cy="100" r="93" fill="#FDFAF1" stroke="#E4D9C2" stroke-width="2"/><circle cx="100" cy="100" r="74" fill="none" stroke="#E4D9C2" stroke-width="1" stroke-dasharray="2 5"/>'+lbl+'<g transform="rotate('+(target*45)+' 100 100)"><path d="M100 42 L108 100 L100 92 L92 100 Z" fill="#B3432B"/></g><circle cx="100" cy="100" r="14" fill="#3A3226"/><text x="100" y="105" text-anchor="middle" font-size="13" font-weight="900" fill="#F6EFE1" font-family="serif">吉</text></svg>';
+ const DIR8=[["北",0],["东北",45],["东",90],["东南",135],["南",180],["西南",225],["西",270],["西北",315]];
+ const bearing={"正东":90,"正南":180,"正西":270,"正北":0,"东南":135,"西南":225,"东北":45,"西北":315}[L.dir]||0;
+ let ring='';
+ DIR8.forEach(function(d){
+  if(d[1]===bearing){ring+='<span class="lc-ji" id="lcJi" data-b="'+d[1]+'" style="transform:rotate('+d[1]+'deg) translate(0,-76px) rotate('+(-d[1])+'deg)">吉</span>';}
+  else{ring+='<span class="lc-l" data-b="'+d[1]+'" style="transform:rotate('+d[1]+'deg) translate(0,-76px) rotate('+(-d[1])+'deg)">'+d[0]+'</span>';}
+ });
+ const compass='<div class="lc-wrap" id="lcWrap"><div class="lc-ring" id="lcRing">'+ring+'</div><div class="lc-needle"></div><div class="lc-cap">吉</div></div>'
+  +'<div class="lc-read" id="lcRead">手指拖动罗盘，或点下方按钮开启真指南针</div>'
+  +'<button class="lk-cbtn" id="lcBtn" onclick="lcStartSensor()">🧭 开启真指南针 · 对准吉方</button>';
  $("lkBody").innerHTML=
-  '<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 出行办事面朝此方</div></div>'
+  '<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 指针走到「吉」字下方，吉方就在你面前</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">💰 财神方位</h2><div class="lk-big">'+L.cai+'</div><div class="lk-note">今日求财、谈生意，宜面朝此方落座</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">⏳ 今日吉时</h2><div class="lk-hours">'+jiShi().map(h=>'<span class="lk-h"><b>'+h.zhi+'时</b><small>'+h.range+'</small><i>'+h.god+'</i></span>').join("")+'</div><div class="lk-note">黄道六吉时 · 择要事、订约定闹钟可作参考</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">🎨 今日吉色</h2><div class="lk-colorrow"><span class="lk-swatch"></span><div><b class="lk-big" style="font-size:19px">'+L.color+'</b><div class="lk-note">'+(window.CUR_LUCK&&window.CUR_LUCK[0]===L.color?"已换作全App底色 · 顺色而行":"今日宜着此色、用此色")+'</div></div></div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">🔢 今日吉数</h2><div class="lk-big">'+L.num+'</div><div class="lk-note">选号、定价、讨彩头可作参考</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">⚖️ '+wx+'</h2>'+(L.lack.length?'<div class="lk-note">'+tips+'</div>':'<div class="lk-note">八字五行俱全，不必刻意进补，顺其自然最好</div>')+'</div>';
+ window.LC_BEARING=bearing;
+ lcInitDrag();
+ if(window.LC_HEADING!=null)lcPaint(window.LC_HEADING);
+}
+var lcCur=null;
+function lcPaint(h){
+ lcCur=h;window.LC_HEADING=h;
+ var ring=document.getElementById('lcRing'),read=document.getElementById('lcRead'),ji=document.getElementById('lcJi');
+ if(!ring)return;
+ ring.style.transform='rotate('+(-h)+'deg)';
+ var els=ring.querySelectorAll('.lc-l,.lc-ji');
+ for(var i=0;i<els.length;i++){var b=+els[i].dataset.b;els[i].style.transform='rotate('+b+'deg) translate(0,-76px) rotate('+(h-b)+'deg)';}
+ var DIR8=[["北",0],["东北",45],["东",90],["东南",135],["南",180],["西南",225],["西",270],["西北",315]];
+ var facing=DIR8[Math.round((((h%360)+360)%360)/45)%8][0];
+ var d=((window.LC_BEARING-h+540)%360)-180,ad=Math.abs(Math.round(d));
+ if(ji)ji.classList.toggle('hit',ad<=4);
+ if(ad<=4)read.innerHTML='<b>✓ 正对吉方</b> · 心诚则灵';
+ else read.innerHTML='朝向 '+facing+' · 吉方'+(d>0?'在右手边，向右转 ':'在左手边，向左转 ')+ad+'°';
+}
+function lcInitDrag(){
+ var w=document.getElementById('lcWrap');if(!w||w.dataset.drag)return;
+ w.dataset.drag='1';var sx=null,sh=0;
+ w.addEventListener('pointerdown',function(e){if(window.LC_SENSOR)return;sx=e.clientX;sh=lcCur==null?0:lcCur;try{w.setPointerCapture(e.pointerId);}catch(_){}});
+ w.addEventListener('pointermove',function(e){if(sx===null||window.LC_SENSOR)return;lcPaint((((sh+(e.clientX-sx)*0.45)%360)+360)%360);});
+ w.addEventListener('pointerup',function(){sx=null;});
+ w.addEventListener('pointercancel',function(){sx=null;});
+}
+function lcStartSensor(){
+ var btn=document.getElementById('lcBtn');
+ function onO(e){
+  var h=null;
+  if(e.webkitCompassHeading!=null&&!isNaN(e.webkitCompassHeading))h=e.webkitCompassHeading;
+  else if(e.alpha!=null)h=(360-e.alpha)%360;
+  if(h==null||isNaN(h))return;
+  window.LC_SENSOR=true;
+  if(btn)btn.style.display='none';
+  lcPaint(h);
+ }
+ var attached=false;
+ function attach(){
+  if(attached)return;attached=true;
+  window.addEventListener('deviceorientation',onO);
+  setTimeout(function(){if(!window.LC_SENSOR)lcDragHint();},1500);
+ }
+ if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
+  DeviceOrientationEvent.requestPermission().then(function(){attach();}).catch(function(){attach();});
+ }else attach();
+ if(btn)btn.textContent='🧭 正在开启…';
+}
+function lcDragHint(){
+ var btn=document.getElementById('lcBtn'),read=document.getElementById('lcRead');
+ if(btn)btn.style.display='none';
+ if(read&&!window.LC_SENSOR)read.textContent='此设备不支持指南针 · 手指拖动罗盘，把「吉」字转到针下';
 }
 </script>
 
