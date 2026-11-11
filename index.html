@@ -465,7 +465,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .dm-rel span{font-size:12px;padding:6px 12px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);cursor:pointer}
 .dm-t{font-size:13.5px;letter-spacing:2px;color:#5F5442;margin:13px 0 8px;font-family:var(--serif);font-weight:900}
 .dm-note{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;line-height:1.7}
-/* ===== 迎祥纳福 · 吉方吉色（2026-11-11） ===== */
+/* ===== 吉时吉方 · 吉方吉色（2026-11-11） ===== */
 .lk-entry{background:#FBF4E4;box-shadow:var(--shadow),inset 0 0 0 1.5px #E2CFA5}
 .lk-entry .lk-seal{width:46px;height:46px;flex:none;border:2.5px solid var(--accent);border-radius:12px;color:var(--accent);font-family:var(--serif);font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)}
 .lk-hero{text-align:center;padding-top:20px}
@@ -546,7 +546,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         </div>
         <div class="scores" id="scores"></div>
       </div>
-      <div class="entry-wide lk-entry" onclick="lkOpen()"><span class="lk-seal">吉</span><div><b>迎祥纳福</b><i id="lkPrev">吉方吉色 · 今日开运</i></div><u>→</u></div>
+      <div class="entry-wide lk-entry" onclick="lkOpen()"><span class="lk-seal">吉</span><div><b>吉时吉方</b><i id="lkPrev">吉方吉色 · 今日开运</i></div><u>→</u></div>
       <div class="grid-func">
         <div class="entry e-coral" onclick="goPage('pageQian')"><span class="e-ico">☄</span><b>一签问心</b><i>晨起一签 · 心诚则灵</i><u>→</u></div>
         <div class="entry e-white" onclick="goPage('pageWen')"><span class="e-ico e-blue">✦</span><b>叩卦问事</b><i>有事直问 · 卦象来答</i><u>→</u></div>
@@ -1083,15 +1083,15 @@ function dmSearch(){
 dmInit();
 </script>
 
-<!-- 迎祥纳福 · 吉方吉色 -->
+<!-- 吉时吉方 · 吉方吉色 -->
 <div id="pageLuck" class="page hidden">
-  <div class="navtop"><button class="backbtn" onclick="goPage('pageResult')">‹</button><span class="nt-title">迎祥纳福</span><span class="nt-sp"></span></div>
+  <div class="navtop"><button class="backbtn" onclick="goPage('pageResult')">‹</button><span class="nt-title">吉时吉方</span><span class="nt-sp"></span></div>
   <div id="lkBody"></div>
   <footer>方位吉色出于传统民俗演算，仅供娱乐参考</footer>
 </div>
 
 <script>
-/* ============ 迎祥纳福 · 吉方吉色（2026-11-11） ============ */
+/* ============ 吉时吉方 · 吉方吉色（2026-11-11） ============ */
 const WX_TIP={金:"宜佩金银饰物、多用白色金调",木:"宜亲近绿植、衣着添青绿",水:"宜临水而行、多用蓝黑色调",火:"宜向阳而动、添红紫暖色",土:"宜近陶土黄调、安坐踏实之处"};
 function lkOpen(){lkRender();goPage("pageLuck");}
 function lkRender(){
