@@ -499,6 +499,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .lc-read{text-align:center;font-size:12.5px;color:var(--sub);margin-top:10px;min-height:1.5em}
 .lc-read b{color:var(--accent)}
 .lk-cbtn{display:block;margin:10px auto 0;border:none;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:9px 18px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.lc-flip{text-align:center;font-size:11.5px;color:var(--sub);margin-top:9px;cursor:pointer;text-decoration:underline dotted;-webkit-text-decoration-style:dotted}
 /* ===== 启动动画（2026-11-05） ===== */
 #splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;touch-action:none}
 #splash.fade{opacity:0;pointer-events:none}
@@ -1144,7 +1145,8 @@ function lkRender(){
  });
  const compass='<div class="lc-wrap" id="lcWrap"><div class="lc-ring" id="lcRing">'+ring+'</div><div class="lc-needle"></div><div class="lc-cap">吉</div></div>'
   +'<div class="lc-read" id="lcRead">手指拖动罗盘，或点下方按钮开启真指南针</div>'
-  +'<button class="lk-cbtn" id="lcBtn" onclick="lcStartSensor()">🧭 开启真指南针 · 对准吉方</button>';
+  +'<button class="lk-cbtn" id="lcBtn" onclick="lcStartSensor()">🧭 开启真指南针 · 对准吉方</button>'
+  +'<div class="lc-flip" id="lcFlip" style="display:none" onclick="lcFlipToggle()">方向与自带指南针相反？点此校正</div>';
  $("lkBody").innerHTML=
   '<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 指针走到「吉」字下方，吉方就在你面前</div></div>'
  +'<div class="card"><h2 style="margin-bottom:8px">💰 财神方位</h2><div class="lk-big">'+L.cai+'</div><div class="lk-note">今日求财、谈生意，宜面朝此方落座</div></div>'
@@ -1181,14 +1183,17 @@ function lcInitDrag(){
 }
 function lcStartSensor(){
  var btn=document.getElementById('lcBtn');
+ /* iOS的传感器朝向与安卓坐标系相反（实测iPhone网页版与自带指南针反向）——统一反相补偿 */
+ window.LC_IOS=/iP(hone|ad|od)/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  function onO(e){
   var h=null;
   if(e.webkitCompassHeading!=null&&!isNaN(e.webkitCompassHeading))h=e.webkitCompassHeading;
   else if(e.alpha!=null)h=(360-e.alpha)%360;
   if(h==null||isNaN(h))return;
-  window.LC_SENSOR=true;
+  window.LC_RAW=h;window.LC_SENSOR=true;
+  var f=document.getElementById('lcFlip');if(f)f.style.display='';
   if(btn)btn.style.display='none';
-  lcPaint(h);
+  lcPaint(lcFix(h));
  }
  var attached=false;
  function attach(){
@@ -1200,6 +1205,19 @@ function lcStartSensor(){
   DeviceOrientationEvent.requestPermission().then(function(){attach();}).catch(function(){attach();});
  }else attach();
  if(btn)btn.textContent='🧭 正在开启…';
+}
+function lcFix(h){ /* 朝向补偿：iOS自动反相 + 用户手动镜像校正 */
+ if(window.LC_IOS)h=(360-h)%360;
+ if(window.LC_FLIP)h=(360-h)%360;
+ return((h%360)+360)%360;
+}
+try{window.LC_FLIP=localStorage.getItem('ys_lcflip')==='1';}catch(e){}
+function lcFlipToggle(){
+ window.LC_FLIP=!window.LC_FLIP;
+ try{localStorage.setItem('ys_lcflip',window.LC_FLIP?'1':'0');}catch(e){}
+ var el=document.getElementById('lcFlip');
+ if(el)el.textContent=window.LC_FLIP?'✓ 已校正 · 与自带指南针对齐（再点可恢复）':'方向与自带指南针相反？点此校正';
+ if(window.LC_RAW!=null)lcPaint(lcFix(window.LC_RAW));
 }
 function lcDragHint(){
  var btn=document.getElementById('lcBtn'),read=document.getElementById('lcRead');
