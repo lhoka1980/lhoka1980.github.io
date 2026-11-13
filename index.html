@@ -1188,7 +1188,7 @@ function lcStartSensor(){
  function onO(e){
   var h=null;
   if(e.webkitCompassHeading!=null&&!isNaN(e.webkitCompassHeading))h=e.webkitCompassHeading;
-  else if(e.alpha!=null)h=(360-e.alpha)%360;
+  else h=lcVecHeading(e.alpha,e.beta,e.gamma);
   if(h==null||isNaN(h))return;
   window.LC_RAW=h;window.LC_SENSOR=true;
   var f=document.getElementById('lcFlip');if(f)f.style.display='';
@@ -1210,6 +1210,25 @@ function lcFix(h){ /* 朝向补偿：iOS自动反相 + 用户手动镜像校正 
  if(window.LC_IOS)h=(360-h)%360;
  if(window.LC_FLIP)h=(360-h)%360;
  return((h%360)+360)%360;
+}
+function lcVecHeading(a,b,g){ /* 全姿态补偿朝向：顶边水平投影任何倾角都精确（侧倾绕顶边轴不改变其朝向）；近竖直时用背面投影并按顶边垂线洗掉侧倾分量 */
+ if(a==null||isNaN(a))return null;
+ var d2r=Math.PI/180,A=a*d2r,B=(b||0)*d2r,G=(g||0)*d2r;
+ var sA=Math.sin(A),cA=Math.cos(A),sB=Math.sin(B),cB=Math.cos(B),sG=Math.sin(G),cG=Math.cos(G);
+ var yE=-sA*cB,yN=cA*cB;                 /* 设备顶边(y轴)的水平投影 */
+ var zE=-(cA*sG+sA*sB*cG),zN=-(sA*sG-cA*sB*cG); /* 设备背面(-z)的水平投影 */
+ var wy=Math.sqrt(yE*yE+yN*yN),E,N;
+ if(wy>=0.05){E=yE;N=yN;}
+ else{
+  E=zE;N=zN;
+  if(wy>0.02){var sE=-yN/wy,sN=yE/wy,dot=zE*sE+zN*sN;E=zE-dot*sE;N=zN-dot*sN;}
+ }
+ var h=Math.atan2(E,N)/d2r;
+ var ort=0;
+ if(window.screen&&screen.orientation&&typeof screen.orientation.angle==='number')ort=screen.orientation.angle;
+ else if(typeof window.orientation==='number')ort=window.orientation;
+ h=(h+ort)%360;
+ return(h+360)%360;
 }
 try{window.LC_FLIP=localStorage.getItem('ys_lcflip')==='1';}catch(e){}
 function lcFlipToggle(){
