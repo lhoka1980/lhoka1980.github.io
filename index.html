@@ -259,27 +259,6 @@ footer{text-align:center;color:var(--sub);font-size:11px;margin-top:20px;line-he
 .src-card summary::-webkit-details-marker{display:none}
 .src-card .src-body{margin-top:8px;font-size:12.5px;line-height:2;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px;text-align:left}
 .src-card .src-body b{color:var(--accent);font-weight:600}
-/* ---- 罗盘页 ---- */
-.lp-dial-wrap{display:flex;justify-content:center;padding:18px 0 6px}
-.lp-dial{position:relative;width:min(78vw,300px);aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle at 50% 42%,#FFFFFF,#F6EFE1);border:none;box-shadow:var(--shadow),inset 0 0 0 1.5px var(--line);flex:none}
-.lp-ring{position:absolute;inset:0}
-.lp-zhi{position:absolute;width:26px;text-align:center;font-size:13px;font-weight:600;color:var(--ink);transform:translate(-50%,-50%);transition:transform .3s}
-.lp-zhi.gua{font-size:12px;font-weight:500;color:var(--sub);width:30px}
-.lp-zhi.hit{color:var(--accent);font-weight:700;transform:translate(-50%,-50%) scale(1.35)}
-.lp-center{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink);z-index:3}
-.lp-needle{position:absolute;left:50%;top:50%;width:6px;height:118px;margin:-118px 0 0 -3px;transform-origin:50% 100%;transition:transform 2.4s cubic-bezier(.15,.85,.15,1);z-index:2}
-.lp-needle i{position:absolute;left:0;width:100%;display:block}
-.lp-needle .n-up{top:0;height:64px;background:linear-gradient(var(--accent),#C96A50);clip-path:polygon(50% 0,100% 100%,0 100%)}
-.lp-needle .n-dn{bottom:-56px;height:56px;background:linear-gradient(var(--sub),#B8AD98);clip-path:polygon(0 0,100% 0,50% 100%)}
-.lp-res{margin-top:14px}
-.lp-dir{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:2px}
-.lp-dir .dname{font-family:var(--serif);font-size:23px;font-weight:900;color:var(--accent);letter-spacing:2px}
-.lp-dir .dwx{font-size:12px;color:var(--sub)}
-.lp-xiang{margin-top:10px;font-size:13.5px;line-height:1.9;text-align:center}
-.lp-advice{margin-top:10px;background:#F6EFE1;border-radius:14px;padding:11px 13px;font-size:13.5px;line-height:1.9}
-.lp-say{margin-top:12px;font-size:13px;line-height:1.9;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px;text-align:center}
-.lp-back{position:absolute;left:18px;top:22px;font-size:14px;color:var(--accent);cursor:pointer;z-index:5;font-weight:600}
-
 /* ---- 首页折叠大项 · 软糖功能卡 ---- */
 .sec{margin-top:14px;background:var(--card);border:none;border-radius:26px;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .3s}
 .sec[open]{box-shadow:0 14px 34px rgba(90,95,130,.18)}
@@ -678,12 +657,6 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
         </div>
         <div id="wenResult" class="hidden"></div>
       </div>
-      <div class="card" id="lpCard">
-        <video class="vid-banner" src="luopan.mp4" autoplay loop muted playsinline disablepictureinpicture preload="auto"></video>
-        <h2>🧭 罗盘问事 · 指点方位</h2>
-        <div class="sub">写下要占的事，转一转罗盘，看这事该往哪个方向使劲</div>
-        <button class="btn" style="margin-top:14px" onclick="showLuopan()">进 入 罗 盘</button>
-      </div>
       <div class="card" id="coinEntryCard">
         <div class="coin-banner">
           <div class="cb-coin"><b>乾</b><b>通</b><b>隆</b><b>宝</b><i></i></div>
@@ -821,7 +794,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
           <div class="src-body">
             <b>一辈子大体命运 → 八字（子平术）</b>：按出生年月日时推命，命格卡即此法；纲本《渊海子平》《三命通会》，五行格局参《滴天髓》《子平真诠》，调候参《穷通宝鉴》。<br>
             <b>专门问一件事成败 → 六爻</b>：摇铜钱、一事一占，法《增删卜易》《卜筮正宗》；本页问事卡暂以梅花起卦代之。<br>
-            <b>临时快占小事、寻物 → 梅花易数</b>：随时起卦，体用生克、八卦类象，法邵雍《梅花易数》；本页「今日问事」「罗盘问事」用此法。<br>
+            <b>临时快占小事、寻物 → 梅花易数</b>：随时起卦，体用生克、八卦类象，法邵雍《梅花易数》；本页「今日问事」用此法。<br>
             <b>大事决策 → 大六壬</b>：三式之一，体系庞大，法《六壬大全》，本页暂未设。<br>
             <b>看性格气色 → 相面</b>：法《柳庄神相》《神相全编》诸家相法，本页「相由心生」卡用此法（传照拉线，本机测量，照片不上传）。<br>
             <b>万术之源 → 《周易》</b>：本页所有卦辞皆录《周易》原文；另有《星学大成》七政四余星命，与八字非一系，未涉及。
@@ -913,30 +886,6 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
   </div>
 </div>
 
-<!-- 罗盘页 -->
-<div id="pageLuopan" class="page hidden">
-  <div class="lp-back" onclick="backLuopan()">← 返回运势</div>
-  <div class="brand" style="padding-top:40px">
-    <h1 style="font-size:22px;letter-spacing:2px">🧭 罗盘 · 指点迷津</h1>
-    <p>法《梅花易数》观物取象 · 以事定卦 · 以卦指方</p>
-  </div>
-  <div class="card">
-    <label for="lpText">要占的事</label>
-    <input type="text" id="lpText" maxlength="30" placeholder="如：该不该换工作 / 生意往哪边找">
-    <button class="btn" style="margin-top:14px" onclick="castLP()">转 盘 问 事</button>
-  </div>
-  <div class="card lp-res hidden" id="lpResultCard">
-    <div class="lp-dial-wrap">
-      <div class="lp-dial" id="lpDial">
-        <div class="lp-ring" id="lpRing"></div>
-        <div class="lp-needle" id="lpNeedle"><i class="n-up"></i><i class="n-dn"></i></div>
-        <div class="lp-center"></div>
-      </div>
-    </div>
-    <div id="lpOut"></div>
-  </div>
-  <footer>方位指示出于传统民俗演算，仅供娱乐参考</footer>
-</div>
 <!-- ===== 一枕玄机 · 解梦（梦林玄解×断梦秘书） ===== -->
 <div id="pageDream" class="page hidden">
   <div class="navtop"><button class="backbtn" onclick="goPage('pageResult')">‹</button><span class="nt-title">一枕玄机</span><span class="nt-sp"></span></div>
@@ -1825,76 +1774,6 @@ function resetAll(){
  try{localStorage.removeItem("ys_qian");}catch(e){}
  try{toast("已清除，正在刷新…");}catch(e){}
  setTimeout(function(){location.reload();},400);
-}
-
-/* ============ 罗盘问事（法《梅花易数》：以事定卦，以卦指方） ============ */
-const TRIG_DIR=[315,270,180,90,135,0,45,225]; // 乾兑离震巽坎艮坤 → 后天八卦方位角（0°=正北）
-const TRIG_FANG=["西北","正西","正南","正东","东南","正北","东北","西南"];
-const LP_WX=["金","金","火","木","木","水","土","土"];
-const TRIG_XIANG=["天·刚健，主贵人与权势","泽·喜悦，主口才与人缘","火·文明，主文书与名气","雷·奋动，主行动与机变","风·顺入，主消息与往来","水·险陷，主智慧与奔波","山·止守，主安稳与蓄力","地·柔顺，主众人与包容"];
-const TRIG_ADVICE=["宜直接找能拍板的人，借贵人之力推进","事在人为，先把话说开，谈拢了事情就顺了","先把材料、文书、凭据备齐再动手","看准了就快做，这事宜动不宜拖","多打听、多走动，消息一到转机就来","事有周折别硬闯，稳住阵脚等水落石出","宜守不宜攻，先稳住现有的再图下一步","放下身段多商量，众人拾柴火焰高"];
-const LP_SAY=["盘针不骗人，心急的人才骗自己。","方位是助力，路还是要自己走。","卦给你指个方向，脚下留神便是。","问事先问心，罗盘只是帮你看清坡度。","东西南北皆有路，走对了少绕弯。","事缓则圆，方向对了就不怕远。"];
-function showLuopan(){
- $("pageResult").classList.add("hidden");
- $("pageLuopan").classList.remove("hidden");
- if(!window.LP_RING){buildLpRing();window.LP_RING=true;}
- window.scrollTo(0,0);
-}
-function backLuopan(){
- $("pageLuopan").classList.add("hidden");
- $("pageResult").classList.remove("hidden");
- window.scrollTo(0,0);
-}
-function buildLpRing(){
- const ring=$("lpRing"),dial=$("lpDial");
- const d=dial.getBoundingClientRect().width||Math.min(window.innerWidth*0.78,300);
- const R1=d/2-d*0.10, R2=d/2-d*0.185;
- const BR=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
- let html="";
- BR.forEach((z,i)=>{const a=i*30*Math.PI/180,x=d/2+R1*Math.sin(a),yy=d/2-R1*Math.cos(a);
-  html+='<span class="lp-zhi" style="left:'+x.toFixed(1)+'px;top:'+yy.toFixed(1)+'px">'+z+'</span>';});
- TRIG_NAME.forEach((g,i)=>{const a=TRIG_DIR[i]*Math.PI/180,x=d/2+R2*Math.sin(a),yy=d/2-R2*Math.cos(a);
-  html+='<span class="lp-zhi gua" data-gua="'+i+'" style="left:'+x.toFixed(1)+'px;top:'+yy.toFixed(1)+'px">'+g+'</span>';});
- ring.innerHTML=html;
-}
-function castLP(){
- const txt=$("lpText").value.trim();
- if(!txt){toast("先写下要占的事，再转罗盘");return;}
- const cur=window.CUR; if(!cur){toast("请先回到运势页完成测算");return;}
- const today=new Date();
- const ds=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
- const sc=[...txt.replace(/\s+/g,"")].length;
- const seed=hash32("LP|"+txt+"|"+cur.y+"-"+cur.m+"-"+cur.d+"|"+ds);
- const up=(sc+cur.m+1)%8, lo=(sc+cur.d+3)%8, moving=(sc+seed)%6;
- const hnum=HEX_TABLE[up][lo];
- const bits=TRIG_BITS[lo].concat(TRIG_BITS[up]);
- const vb=bits.slice(); vb[moving]=vb[moving]?0:1;
- const tri=b=>TRIG_BITS.findIndex(a=>a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]);
- const vlo=tri(vb.slice(0,3)), vup=tri(vb.slice(3));
- const vnum=HEX_TABLE[vup][vlo];
- const yong=moving<3?lo:up, ti=moving<3?up:lo; // 动爻所在为用卦（事），另一卦为体卦（己）
- const ang=TRIG_DIR[yong];
- document.querySelectorAll("#lpRing .lp-zhi").forEach(e=>e.classList.remove("hit"));
- const hitEl=document.querySelector('#lpRing [data-gua="'+yong+'"]');
- if(hitEl)hitEl.classList.add("hit");
- window.LP_DEG=window.LP_DEG||0;
- const delta=((ang-(window.LP_DEG%360))%360+360)%360;
- window.LP_DEG+=1080+delta;
- $("lpNeedle").style.transform="rotate("+window.LP_DEG+"deg)";
- const gname=(u,l,num)=>u===l?TRIG_NAME[u]+"为"+TRIG_IMG[l]:TRIG_IMG[u]+TRIG_IMG[l]+HEX_NAMES[num-1];
- const yaoHtml=bits.map((b,i)=>'<div class="yao '+(b?'yang':'yin')+(i===moving?' moving':'')+'"></div>').join("");
- const yaoName=["初","二","三","四","五","上"][moving]+"爻动";
- const lv=GUALV[vnum-1], lvT=WEN_LV_TXT[lv];
- $("lpOut").innerHTML=
-  '<div class="lp-dir"><span class="dname">'+TRIG_FANG[yong]+'</span><span class="dwx">用卦'+TRIG_NAME[yong]+' · 五行属'+LP_WX[yong]+'</span></div>'
- +'<div class="gua gua-big" style="display:flex;justify-content:center;gap:3px;margin-top:16px">'+yaoHtml+'</div>'
- +'<div class="lp-xiang"><b>'+gname(up,lo,hnum)+'</b> 之 <b>'+gname(vup,vlo,vnum)+'</b> · '+yaoName+'<br>用卦'+TRIG_NAME[yong]+'，象：'+TRIG_XIANG[yong]+'</div>'
- +'<div class="wen-guaci" style="margin-top:12px">'+GUACI[vnum-1]+'<span class="src">——《周易》第'+vnum+'卦卦辞</span></div>'
- +'<div class="lp-advice"><b>'+lvT[0]+'</b> · 求谋留意<b>'+TRIG_FANG[yong]+'</b>一方：'+TRIG_ADVICE[yong]+'（体卦'+TRIG_NAME[ti]+'居'+TRIG_FANG[ti]+'，宜立本守）</div>'
- +'<div class="lp-say">刘大爷曰：'+LP_SAY[seed%LP_SAY.length]+'</div>'
- +'<div class="wen-note">法《梅花易数》以事定卦、以卦指方 · 同一件事当日指向不变 · 民俗演算仅供娱乐参考</div>';
- $("lpResultCard").classList.remove("hidden");
- setTimeout(function(){$("lpResultCard").scrollIntoView({behavior:"smooth",block:"start"});},2400);
 }
 
 /* ============ 主渲染 ============ */
@@ -2957,8 +2836,6 @@ function goPage(id){
   var vs=document.getElementById(id).querySelectorAll('video');
   for(var i=0;i<vs.length;i++){if(vs[i].paused)vs[i].play().catch(function(){});}
 }
-function backLuopan(){goPage('pageWen');}
-
 /* ===== 术数源流（方案D整合·翻页版） ===== */
 const YUAN_ERAS=[
  {key:"先秦",years:"约前1046 — 前221",title:"周易成书 · 诸术之源",tone:"lemon",items:[
@@ -3013,10 +2890,6 @@ function yuanInit(){
  const ph=document.getElementById("pageYuan");
  ph.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;},{passive:true});
  ph.addEventListener("touchend",function(e){if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)yuanGo(YUAN_CUR+(dx<0?1:-1));sx=null;},{passive:true});
-}
-function showLuopan(){
-  goPage('pageLuopan');
-  if(!window.LP_RING){buildLpRing();window.LP_RING=true;}
 }
 </script>
 </body>
