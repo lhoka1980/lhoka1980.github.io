@@ -527,6 +527,19 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .coin-rec .cr .ln.mv i{background:var(--accent)}
 .coin-rec .cr b{color:var(--ink);flex:none}
 .coin-rec .cr i.tag{font-style:normal;color:var(--accent);font-weight:700}
+/* 摇钱卦象解读区 */
+.cj-struct{margin-top:12px;background:#F6EFE1;border-radius:14px;padding:11px 13px;font-size:13.5px;line-height:1.9;color:var(--ink)}
+.cj-struct b{color:var(--accent)}
+.cj-xiang{margin-top:9px;font-size:13px;line-height:1.9;color:var(--sub);font-family:var(--serif);border-left:3px solid var(--accent-soft);padding-left:11px}
+.cj-list{margin-top:12px;border-top:1px dashed var(--line);padding-top:11px}
+.cj-t{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:9px}
+.cj-row{display:flex;gap:10px;align-items:flex-start;margin-top:8px;font-size:13px;line-height:1.75;color:var(--ink)}
+.cj-row .ln{flex:none;display:flex;gap:4px;margin-top:6px}
+.cj-row .ln i{display:block;width:26px;height:3.5px;border-radius:2px;background:var(--ink)}
+.cj-row .ln.yin i{width:11px}
+.cj-row .ln.mv i{background:var(--accent)}
+.cj-row b{color:var(--ink)}
+.cj-row .mv{color:var(--accent);font-weight:600}
 #splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;touch-action:none}
 #splash.fade{opacity:0;pointer-events:none}
 #splashVid{width:100%;height:100%;object-fit:cover}
@@ -2029,6 +2042,19 @@ function toast(msg){
 /* ============ 摇钱问卦 · 三枚铜钱六爻 ============ */
 var COIN={lines:[],busy:false};
 const COIN_YAO={0:["老阴","阴","动"],1:["少阳","阳",""],2:["少阴","阴",""],3:["老阳","阳","动"]};
+const TXIANG=["天·刚健而主进","泽·喜悦而主和","火·文明而主显","雷·奋动而主行","风·顺入而主消息","水·险陷而主智","山·止守而主稳","地·柔顺而主承"];
+const WXX=["金","金","火","木","木","水","土","土"];
+const YPOS=["初","二","三","四","五","上"];
+const YMEAN=["处卦之根基，如事之萌芽，宜蓄势观察，不宜急进","居下卦之中，得中和之道，稳中有进，贵人暗助","居内卦之极，古人谓多凶之地，谨慎可免其咎","近尊之位，古人谓多惧之时，谨言慎行为要","得中得正，居尊主事，正是发力的位置","处卦之终局，物极必反，功成知止则吉"];
+function yaoName(i,yang){return yang?(i===0?"初九":i===5?"上九":"九"+YPOS[i]):(i===0?"初六":i===5?"上六":"六"+YPOS[i]);}
+function wxRel(t,y){ /* 体卦t对我方、用卦y对外事：五行生克断吉凶趋势 */
+ if(t===y)return["比和","两卦同气，内外相助，事易有成"];
+ const sheng={"木":"火","火":"土","土":"金","金":"水","水":"木"},ke={"木":"土","土":"水","水":"火","火":"金","金":"木"};
+ if(sheng[y]===t)return["用生体","外境滋养于我，得人和之助，顺势而为最吉"];
+ if(sheng[t]===y)return["体生用","我气外泄，付出多而收获慢，量力而行勿硬撑"];
+ if(ke[t]===y)return["体克用","主动权在我，事可为，但须费些周折力气"];
+ return["用克体","外境压制于我，宜守不宜攻，缓图待时为上"];
+}
 function coinIntro(){
  var st=document.getElementById('coinStage');if(!st)return;
  st.classList.remove('intro');void st.offsetWidth;st.classList.add('intro');
@@ -2087,8 +2113,25 @@ function coinFinish(){
  var q=($("coinQ").value||"").trim().replace(/</g,"&lt;");
  var found=q?WEN_TIPS.find(t=>t[0].test(q)):null;
  var tipHtml=found?`<div class="wen-tip"><b>${found[1]}</b>：${found[2][lv-1]}</div>`:"";
+ var mnames=movers.map(i=>yaoName(i,COIN.lines[i].yang)).join("、");
  var dongTxt=movers.length===1?("动在"+["初","二","三","四","五","上"][movers[0]]+"爻——"+WEN_YAOJIE[movers[0]]+"；动而变为「"+gname([vup,vlo])+"」。")
-  :(movers.length>1?("动在"+movers.length+"爻，变为「"+gname([vup,vlo])+"」。"):("六爻安静，以本卦断之，守常为上。"));
+  :(movers.length>1?("动爻共"+movers.length+"处（"+mnames+"），诸老皆变，得「"+gname([vup,vlo])+"」。"):("六爻安静，以本卦断之，守常为上。"));
+ /* 卦象拆解：上下卦结构 + 体用生克 + 逐爻解读 */
+ var relTxt;
+ if(movers.length){
+  var yong=movers[0]<3?lo:up, ti=(yong===lo?up:lo);
+  var rel=wxRel(WXX[ti],WXX[yong]);
+  relTxt='体卦'+TRIG_NAME[ti]+'（'+WXX[ti]+'，为我）对用卦'+TRIG_NAME[yong]+'（'+WXX[yong]+'，为事）——<b>'+rel[0]+'</b>：'+rel[1]+'。';
+ }else{
+  var rel2=wxRel(WXX[lo],WXX[up]);
+  relTxt='六爻安静，不整体用；内卦'+TRIG_NAME[lo]+'（'+WXX[lo]+'）对外卦'+TRIG_NAME[up]+'（'+WXX[up]+'）——<b>'+rel2[0]+'</b>：'+rel2[1]+'。';
+ }
+ var structTxt='上'+TRIG_NAME[up]+'下'+TRIG_NAME[lo]+'——'+TXIANG[up]+'，居外；'+TXIANG[lo]+'，居内。'+relTxt;
+ var cjRows=COIN.lines.map(function(l,i){
+  var mini=l.yang?'<i></i>':'<i></i><i></i>';
+  var mv=l.moving?'<span class="mv">独动——'+WEN_YAOJIE[i]+'</span>':'';
+  return '<div class="cj-row"><span class="ln'+(l.yang?'':' yin')+(l.moving?' mv':'')+'">'+mini+'</span><div><b>'+yaoName(i,l.yang)+'</b> · '+(l.yang?'阳爻主刚':'阴爻主柔')+'，'+YMEAN[i]+'。'+mv+'</div></div>';
+ }).join("");
  $("coinResult").innerHTML=`
   <div class="wen-head">
    <div class="gua gua-big" style="margin-top:16px">${yaoHtml}</div>
@@ -2101,6 +2144,9 @@ function coinFinish(){
   <div class="wen-guaci">${GUACI[n-1]}<span class="src">—— 《周易》卦辞原文 · 第${n}卦</span></div>
   <div class="wen-bai">${XIANG_BAIHUA[n-1]}。</div>
   <div class="wen-yao">${dongTxt}</div>
+  <div class="cj-struct"><b>卦象拆解</b>：${structTxt}</div>
+  <div class="cj-xiang">《周易·大象传》曰：${HEX_XIANG[n-1]}。</div>
+  <div class="cj-list"><div class="cj-t">六爻逐解 · 自下而上</div>${cjRows}</div>
   ${tipHtml}
   <div class="wen-note">三枚铜钱随机成卦 · 六爻纳甲古法 · 民俗演算仅供娱乐参考</div>`;
  $("coinResult").classList.remove("hidden");
