@@ -505,7 +505,7 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
 .coin .mk.m2{right:9px}
 .coin.is-back>b{display:none}
 .coin.is-back .mk{display:block}
-.coin.spinning{animation:coinToss .9s cubic-bezier(.25,.5,.35,1) both}
+.coin.spinning{animation:coinToss .72s cubic-bezier(.25,.5,.35,1) both}
 .coin.spinning>b,.coin.spinning .mk{opacity:0}
 @keyframes coinToss{
  0%{transform:translateY(0) rotateY(0) rotate(-4deg)}
@@ -694,13 +694,13 @@ details.sec:nth-of-type(8) .sn{background:linear-gradient(135deg,#B08B4E,#C4A266
           <div class="cb-coin"><b>乾</b><b>通</b><b>隆</b><b>宝</b><i></i></div>
         </div>
         <h2>🪙 三枚铜钱 · 六摇成卦</h2>
-        <div class="sub">心中默念所问之事，连摇六次。一背少阳、二背少阴、三背老阳动、三字老阴动；六爻装毕成卦，动爻反变为变卦。</div>
+        <div class="sub">心中默念所问之事，按下「摇卦」——三枚铜钱连摇六摇（约五秒），一背少阳、二背少阴、三背老阳动、三字老阴动；六爻装毕成卦，动爻反变为变卦。</div>
         <div class="coin-stage" id="coinStage">
           <div class="coin"><b>乾</b><b>通</b><b>隆</b><b>宝</b><i></i><span class="mk m1"></span><span class="mk m2"></span></div>
           <div class="coin"><b>乾</b><b>通</b><b>隆</b><b>宝</b><i></i><span class="mk m1"></span><span class="mk m2"></span></div>
           <div class="coin"><b>乾</b><b>通</b><b>隆</b><b>宝</b><i></i><span class="mk m1"></span><span class="mk m2"></span></div>
         </div>
-        <div class="coin-call" id="coinCall">默念所问之事，按下「摇卦」开始第一摇</div>
+        <div class="coin-call" id="coinCall">默念所问之事，按下「摇卦」，约五秒成卦</div>
         <div class="coin-rec" id="coinRec"></div>
         <div class="wen-row" style="margin-top:12px">
           <input id="coinQ" maxlength="30" placeholder="要问的事（可不填，如：跳槽 / 搬家）" onkeydown="if(event.key==='Enter')coinToss()">
@@ -1420,9 +1420,9 @@ const TRIG_NAME=["乾","兑","离","震","巽","坎","艮","坤"];
 const TRIG_IMG=["天","泽","火","雷","风","水","山","地"];
 const TRIG_BITS=[[1,1,1],[1,1,0],[1,0,1],[1,0,0],[0,1,1],[0,1,0],[0,0,1],[0,0,0]];
 const HEX_TABLE=[
-[1,10,14,25,44,6,33,12],
+[1,10,13,25,44,6,33,12],
 [43,58,49,17,28,47,31,45],
-[13,38,30,21,50,64,56,35],
+[14,38,30,21,50,64,56,35],
 [34,54,55,51,32,40,62,16],
 [9,61,37,42,57,59,53,20],
 [5,60,63,3,48,29,39,8],
@@ -2059,37 +2059,41 @@ function coinIntro(){
  var st=document.getElementById('coinStage');if(!st)return;
  st.classList.remove('intro');void st.offsetWidth;st.classList.add('intro');
 }
-function coinToss(){
+function coinToss(){ /* 一键成卦：连摇六摇约5秒动画，落定后展示卦象解读 */
  if(COIN.busy)return;
  if(COIN.lines.length>=6){toast("六摇已成卦，点「再问一卦」重摇");return;}
  COIN.busy=true;
- var btn=$("coinBtn");btn.disabled=true;btn.style.opacity=.45;
+ var btn=$("coinBtn");btn.disabled=true;btn.style.opacity=.45;btn.textContent='摇 卦 中…';
  var coins=document.querySelectorAll('#coinStage .coin');
- var backs=[];
- coins.forEach(function(c){
-  c.classList.remove('spinning');void c.offsetWidth;
-  c.classList.add('spinning');
-  backs.push(Math.random()<0.5);
- });
- setTimeout(function(){
-  coins.forEach(function(c,i){
-   c.classList.remove('spinning');
-   if(backs[i])c.classList.add('is-back');else c.classList.remove('is-back');
+ var PER=833,SPIN=700;
+ var r=0;
+ function round(){
+  r++;
+  var backs=coins.map?Array.from(coins).map(function(){return Math.random()<0.5;}):Array.prototype.map.call(coins,function(){return Math.random()<0.5;});
+  coins.forEach(function(c){
+   c.classList.remove('spinning');void c.offsetWidth;
+   c.classList.add('spinning');
   });
-  try{if(navigator.vibrate)navigator.vibrate([40,40,60]);}catch(e){}
-  var nb=backs.filter(Boolean).length;
-  var yang=(nb===1||nb===3),moving=(nb===3||nb===0);
-  COIN.lines.push({yang:yang,moving:moving,nb:nb});
-  coinPaintRec();
-  $("coinCall").innerHTML='第'+COIN.lines.length+'摇 · <b>'+nb+'背'+(3-nb)+'字</b> · '+COIN_YAO[nb][0]+(moving?' · <b>动</b>':'')+(COIN.lines.length<6?'（还差'+(6-COIN.lines.length)+'摇）':' · 六摇已成');
-  if(COIN.lines.length>=6){
-   $("coinCall").innerHTML='六摇已成 · 起卦中…';
-   setTimeout(coinFinish,500);
-  }else{
-   COIN.busy=false;
-   btn.disabled=false;btn.style.opacity='';
-  }
- },920);
+  $("coinCall").innerHTML='默念所问…第<b>'+r+'</b>摇 · 铜钱起落中';
+  setTimeout(function(){
+   coins.forEach(function(c,i){
+    c.classList.remove('spinning');
+    if(backs[i])c.classList.add('is-back');else c.classList.remove('is-back');
+   });
+   try{if(navigator.vibrate)navigator.vibrate([40,40,60]);}catch(e){}
+   var nb=backs.filter(Boolean).length;
+   var yang=(nb===1||nb===3),moving=(nb===3||nb===0);
+   COIN.lines.push({yang:yang,moving:moving,nb:nb});
+   coinPaintRec();
+   $("coinCall").innerHTML='第'+r+'摇 · <b>'+nb+'背'+(3-nb)+'字</b> · '+COIN_YAO[nb][0]+(moving?' · <b>动</b>':'')+(r<6?'（已摇'+r+'摇）':'');
+   if(r<6){setTimeout(round,PER-SPIN);}
+   else{
+    $("coinCall").innerHTML='六摇已成 · 起卦中…';
+    setTimeout(coinFinish,480);
+   }
+  },SPIN);
+ }
+ round();
 }
 function coinPaintRec(){
  $("coinRec").innerHTML=COIN.lines.map(function(l,i){
@@ -2161,9 +2165,9 @@ function coinReset(){
  $("coinResult").innerHTML="";
  $("coinResult").classList.add("hidden");
  $("coinBtn").classList.remove("hidden");
- $("coinBtn").disabled=false;$("coinBtn").style.opacity='';
+ $("coinBtn").disabled=false;$("coinBtn").style.opacity='';$("coinBtn").textContent='摇 卦';
  $("coinAgain").classList.add("hidden");
- $("coinCall").textContent="默念所问之事，按下「摇卦」开始第一摇";
+ $("coinCall").textContent="默念所问之事，按下「摇卦」，约五秒成卦";
  document.querySelectorAll('#coinStage .coin').forEach(c=>c.classList.remove('is-back'));
  window.scrollTo({top:0,behavior:"smooth"});
 }
