@@ -1202,8 +1202,8 @@ function lkRender(){
  });
  const hlHead='<div class="card lk-almanac"><div class="lk-al-row"><div><b>📜 今日黄历</b><i>宜忌 · 冲煞 · 吉时 · 宣纸卡可存图</i></div><button class="lk-al-btn" onclick="yjCard()">打开黄历卡</button></div></div>';
  const compass='<div class="lc-wrap" id="lcWrap"><div class="lc-ring" id="lcRing">'+ring+'</div><div class="lc-needle"></div><div class="lc-cap">吉</div></div>'
-  +'<div class="lc-read" id="lcRead">手指拖动罗盘，或点下方按钮开启真指南针</div>'
-  +'<button class="lk-cbtn" id="lcBtn" onclick="lcStartSensor()">🧭 开启真指南针 · 对准吉方</button>'
+  +'<div class="lc-read" id="lcRead">罗盘自动跟随手机转向 · 把「吉」字转到针下就对了</div>'
+  +'<button class="lk-cbtn" id="lcBtn" onclick="lcStartSensor()">🧭 开启自动跟随</button>'
   +'<div class="lc-flip" id="lcFlip" style="display:none" onclick="lcFlipToggle()">方向与自带指南针相反？点此校正</div>';
  $("lkBody").innerHTML=hlHead
   +'<div class="card lk-hero">'+compass+'<div class="lk-dir">'+L.dir+'</div><div class="lk-sub">今日吉方 · 指针走到「吉」字下方，吉方就在你面前</div></div>'
@@ -1215,6 +1215,7 @@ function lkRender(){
  window.LC_BEARING=bearing;
  lcInitDrag();
  if(window.LC_HEADING!=null)lcPaint(window.LC_HEADING);
+ lcAutoStart(); /* 进页自动跟随手机转向，无需手动点按钮 */
 }
 var lcCur=null;
 function lcPaint(h){
@@ -1250,19 +1251,23 @@ function lcStartSensor(){
   if(h==null||isNaN(h))return;
   window.LC_RAW=h;window.LC_SENSOR=true;
   var f=document.getElementById('lcFlip');if(f)f.style.display='';
-  if(btn)btn.style.display='none';
+  var b=document.getElementById('lcBtn');if(b)b.style.display='none';
   lcPaint(lcFix(h));
  }
- var attached=false;
  function attach(){
-  if(attached)return;attached=true;
+  if(window.LC_LISTENER)return;window.LC_LISTENER=true; /* 全局只挂一次，lkRender重渲染不重复 */
   window.addEventListener('deviceorientation',onO);
-  setTimeout(function(){if(!window.LC_SENSOR)lcDragHint();},1500);
+  setTimeout(function(){if(!window.LC_SENSOR&&!window.LC_IOS)lcDragHint();},1500);
  }
  if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
-  DeviceOrientationEvent.requestPermission().then(function(){attach();}).catch(function(){attach();});
+  /* requestPermission在安卓/桌面返回prompt而非granted——无论结果都先挂监听（未授权平台事件不触发，无害） */
+  DeviceOrientationEvent.requestPermission().then(function(s){attach();if(s!=='granted'&&btn){btn.style.display='';btn.textContent='🧭 点此开启自动跟随';}}).catch(function(){attach();});
  }else attach();
- if(btn)btn.textContent='🧭 正在开启…';
+ if(btn&&!window.LC_SENSOR)btn.textContent='🧭 正在开启…';
+}
+function lcAutoStart(){ /* 进页自动跟随：直接挂传感器监听，无需点按钮；iOS首次授权需点一下按钮 */
+ if(window.LC_SENSOR&&window.LC_LISTENER)return;
+ lcStartSensor();
 }
 function lcFix(h){ /* 朝向补偿：iOS自动反相 + 用户手动镜像校正 */
  if(window.LC_IOS)h=(360-h)%360;
