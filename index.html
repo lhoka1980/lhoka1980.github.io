@@ -1216,6 +1216,7 @@ function lkRender(){
  lcInitDrag();
  if(window.LC_HEADING!=null)lcPaint(window.LC_HEADING);
  lcAutoStart(); /* 进页自动跟随手机转向，无需手动点按钮 */
+ if(window.LC_SENSOR){var _lb=$("lcBtn");if(_lb)_lb.style.display="none";} /* 已在跟随则不显示按钮 */
 }
 var lcCur=null;
 function lcPaint(h){
@@ -1257,18 +1258,30 @@ function lcStartSensor(){
  function attach(){
   if(window.LC_LISTENER)return;window.LC_LISTENER=true; /* 全局只挂一次，lkRender重渲染不重复 */
   window.addEventListener('deviceorientation',onO);
-  setTimeout(function(){if(!window.LC_SENSOR&&!window.LC_IOS)lcDragHint();},1500);
+  if(window.ondeviceorientationabsolute!==undefined)window.addEventListener('deviceorientationabsolute',onO); /* 部分机型只发absolute事件 */
+  setTimeout(function(){if(!window.LC_SENSOR&&!window.LC_IOS)lcDragHint();},2500);
  }
  if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
   /* requestPermission在安卓/桌面返回prompt而非granted——无论结果都先挂监听（未授权平台事件不触发，无害） */
-  DeviceOrientationEvent.requestPermission().then(function(s){attach();if(s!=='granted'&&btn){btn.style.display='';btn.textContent='🧭 点此开启自动跟随';}}).catch(function(){attach();});
+  DeviceOrientationEvent.requestPermission().then(function(s){attach();if(s!=='granted'&&btn){btn.style.display='';btn.textContent='🧭 点一下屏幕任意处开启';}}).catch(function(){attach();});
+  /* iOS系统规定传感器授权必须由用户手势触发——挂全局任意触摸监听，碰到屏幕任意位置即补授权，成功后全自动 */
+  if(!window.LC_ANYTAP){
+   window.LC_ANYTAP=true;
+   document.addEventListener('pointerdown',function lcAnyTap(){
+    if(window.LC_SENSOR){document.removeEventListener('pointerdown',lcAnyTap,true);return;}
+    DeviceOrientationEvent.requestPermission().then(function(s){
+     if(s==='granted'){document.removeEventListener('pointerdown',lcAnyTap,true);attach();var b=document.getElementById('lcBtn');if(b)b.style.display='none';}
+    }).catch(function(){});
+   },true);
+  }
  }else attach();
- if(btn&&!window.LC_SENSOR)btn.textContent='🧭 正在开启…';
+ if(btn&&!window.LC_SENSOR)btn.textContent='🧭 点一下屏幕任意处开启';
 }
-function lcAutoStart(){ /* 进页自动跟随：直接挂传感器监听，无需点按钮；iOS首次授权需点一下按钮 */
+function lcAutoStart(){ /* 自动跟随：App启动即挂传感器监听，进页面无需任何点击；iOS首次需触屏一次（点哪都行） */
  if(window.LC_SENSOR&&window.LC_LISTENER)return;
  lcStartSensor();
 }
+lcAutoStart();
 function lcFix(h){ /* 朝向补偿：iOS自动反相 + 用户手动镜像校正 */
  if(window.LC_IOS)h=(360-h)%360;
  if(window.LC_FLIP)h=(360-h)%360;
