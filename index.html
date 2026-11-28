@@ -1246,19 +1246,36 @@ function lcStartSensor(){
  /* iOS的传感器朝向与安卓坐标系相反（实测iPhone网页版与自带指南针反向）——统一反相补偿 */
  window.LC_IOS=/iP(hone|ad|od)/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  function onO(e){
+  if(e.type==='deviceorientation'&&window.LC_ABS_SEEN)return; /* 双流并存只认absolute，消除两股数据打架的抖动 */
   var h=null;
   if(e.webkitCompassHeading!=null&&!isNaN(e.webkitCompassHeading))h=e.webkitCompassHeading;
   else h=lcVecHeading(e.alpha,e.beta,e.gamma);
   if(h==null||isNaN(h))return;
+  if(e.type==='deviceorientationabsolute')window.LC_ABS_SEEN=true;
   window.LC_RAW=h;window.LC_SENSOR=true;
   var f=document.getElementById('lcFlip');if(f)f.style.display='';
   var b=document.getElementById('lcBtn');if(b)b.style.display='none';
-  lcPaint(lcFix(h));
+  /* 平稳显示：圆形低通滤波（平滑跟手不抖）+ 整数度步进（静止纹丝不动）+ rAF节流（每帧最多画一次） */
+  var cur=(window.LC_SMOOTH==null)?h:window.LC_SMOOTH;
+  var dd=((h-cur+540)%360)-180;
+  cur=((cur+dd*0.22)%360+360)%360;
+  window.LC_SMOOTH=cur;
+  if(!window.LC_RAF){
+   var sm=Math.round(cur)%360;
+   if(sm!==window.LC_LASTP){
+    window.LC_RAF=true;
+    requestAnimationFrame(function(){
+     window.LC_RAF=false;
+     var s2=window.LC_SMOOTH!=null?Math.round(window.LC_SMOOTH)%360:null;
+     if(s2!=null&&s2!==window.LC_LASTP){window.LC_LASTP=s2;lcPaint(s2);}
+    });
+   }
+  }
  }
  function attach(){
   if(window.LC_LISTENER)return;window.LC_LISTENER=true; /* 全局只挂一次，lkRender重渲染不重复 */
   window.addEventListener('deviceorientation',onO);
-  if(window.ondeviceorientationabsolute!==undefined)window.addEventListener('deviceorientationabsolute',onO); /* 部分机型只发absolute事件 */
+  if(window.ondeviceorientationabsolute!==undefined)window.addEventListener('deviceorientationabsolute',onO); /* 部分机型只发absolute；两流并存时onO内按LC_ABS_SEEN去重 */
   setTimeout(function(){if(!window.LC_SENSOR&&!window.LC_IOS)lcDragHint();},2500);
  }
  if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){
